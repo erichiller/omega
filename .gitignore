@@ -1,0 +1,12 @@
+#
+# omega
+# .gitignore
+# Reference: https://git-scm.com/docs/gitignore
+#
+
+node_modules
+*.log
+.DS_Store
+thumbs.db
+desktop.ini
+system/ConEmu
