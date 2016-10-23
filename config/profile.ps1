@@ -16,6 +16,7 @@ if(!$PSScriptRoot) {
 # load the functions first
 . $PSScriptRoot\ps_functions.ps1
 
+# functions to manage binary hardlinks
 test-bin-hardlinks
 install-bin-hardlinks
 
@@ -67,6 +68,7 @@ try {
 # posh-git change name of tab // remove annoying
 $GitPromptSettings.EnableWindowTitle = "git:"
 
+
 try {
 	Import-Module oh-my-posh
 	$global:ThemeSettings.MyThemesLocation = "$env:BaseDir\config\"
@@ -74,6 +76,20 @@ try {
 } catch {
 	Write-Warning "oh-my-posh module failed to load. Either not installed or there was an error."
 }
+
+try {
+	Import-Module PSSudo
+} catch {
+	Write-Warning "PSSudo module failed to load. Either not installed or there was an error."
+}
+
+try {
+	Import-Module PSColor
+} catch {
+	Write-Warning "PSSudo module failed to load. Either not installed or there was an error."
+}
+
+##  PSGnuwin32 ??
 
 
 ###########################################################################################################################################
@@ -86,4 +102,10 @@ try {
 ######            STEP #3: ALIASES          #####
 #################################################
 
-Set-Alias -Name sudo -Value $env:BaseDir\winsudo.ps1 -PassThru
+#Set-Alias -Name "sudo" -Value Invoke-ElevatedCommand.ps1 -Force
+#Set-Alias -Name "sudo" -Value "runas /user:domain\administrator"
+Set-Alias -Name "powershell" -Value %SystemRoot%\system32\WindowsPowerShell\v1.0\powershell.exe -Force
+
+Set-Alias -Name "Print-Path" -Value Print-Path
+
+

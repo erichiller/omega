@@ -47,7 +47,6 @@ function Write-Theme
     Write-Prompt -Object " $($sl.PromptSymbols.StartSymbol) " -ForegroundColor $sl.Colors.PromptForegroundColor -BackgroundColor $sl.Colors.SessionInfoBackgroundColor
 
     #check the last command state and indicate if failed
-    echo "LASTCOMMANDFAILED=$($lastCommandFailed)"##kill
     If ($lastCommandFailed)
     {
         Write-Prompt -Object "$($sl.PromptSymbols.FailedCommandSymbol) " -ForegroundColor $sl.Colors.CommandFailedIconForegroundColor -BackgroundColor $sl.Colors.SessionInfoBackgroundColor
@@ -150,7 +149,7 @@ $colors.ErrorBackgroundColor = $MASTER_BACKGROUND
 <# END #>
 
 # Clear-Host is required to apply these properties
-Clear-Host
+#Clear-Host
 
 
 $sl = $global:ThemeSettings #local settings
