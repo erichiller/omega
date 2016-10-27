@@ -13,6 +13,39 @@ function Show-Path {
 
 function Show-Env { echo (Get-ChildItem Env:) }
 
+<#
+.SYNOPSIS
+get-pass is a helper function for PoSh-KeePass
+.DESCRIPTION
+Allows for quick searching through results and displays. 
+The default behavior is to list out the entries, but not display the password.
+Use the `-showPass` flag in order to display the Password
+.PARAMETER showPass
+Flag which will 
+#>
+function get-pass {
+	param(
+		[string]$searchString,
+		[switch]$showPass,
+		[switch]$copyPass
+		)
+ 
+	if ($showPass) { 
+		Get-KeePassEntry -DatabaseProfileName $OMEGA_KEEPASS_PROFILE -AsPlainText | Select-Object -Property Title,UserName,Password,FullPath,Notes | Where {$_ -like "*${searchString}*"} | Format-Table
+	} else {
+		Get-KeePassEntry -DatabaseProfileName $OMEGA_KEEPASS_PROFILE -AsPlainText | Select-Object -Property Title,UserName,FullPath,Notes | Where {$_ -like "*${searchString}*"} | Format-Table
+	}
+	if($copyPass){
+		$pass = Get-KeePassEntry -DatabaseProfileName $OMEGA_KEEPASS_PROFILE -AsPlainText | Select-Object -Property Title,UserName,Password,FullPath,Notes | Where {$_ -like "*${searchString}*"} | Select -ExpandProperty "Password" 
+		if ( $pass.count -eq 1 ){
+			$pass | Set-Clipboard
+		} else {
+			echo "Clipboard not set as there was more than one result."
+		}
+	}
+
+	
+}
 
 <#
  Utility Functions

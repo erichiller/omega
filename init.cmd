@@ -16,7 +16,7 @@ SET PROGRAMNAME=ConEmu64.exe
 tasklist.exe /FI "IMAGENAME eq %PROGRAMNAME%" 2>NUL | find.exe /I /N "%PROGRAMNAME%">NUL
 if "%ERRORLEVEL%"=="0" (
 	::start %StartExe% -NoSingle -NoUpdate -LoadCfgFile "%ConfigDir%\ConEmu.xml" -SaveCfgFile "%ConfigDir%\ConEmu_detached.xml" -GuiMacro "WindowPosSize(0,0,\"100%%\",\"25%%\"); SetOption(\"Check\",2333,0); WindowMode(9)" -FontDir "%BaseDir%" /Icon "%BaseDir%\icons\omega256.ico" -cmd {Msys2}
-	echo foo
+	echo "Launched Second Window" :: KILLL
 ) ELSE (
-	start %StartExe% /LoadCfgFile "%ConfigDir%\ConEmu.xml" /FontDir "%FontDir%" /Icon "%BaseDir%\icons\omega_256.ico" /run "@%ConfigDir%\powershell.taskfile"
+	start %StartExe% /LoadCfgFile "%ConfigDir%\ConEmu.xml" /FontDir "%FontDir%" /Icon "%BaseDir%\icons\omega_256.ico" /run "@%ConfigDir%\powershell.cmd"
 )

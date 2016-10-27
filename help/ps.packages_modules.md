@@ -1,5 +1,9 @@
 # PowerShell Package Management
 
+## Repositories
+
+- [Technet/ScriptCenter](http://gallery.technet.microsoft.com/scriptcenter)
+
 ## Package-Management
 
 [Main documentation](https://technet.microsoft.com/en-us/library/dn890706.aspx)

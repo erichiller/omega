@@ -6,6 +6,12 @@
  ############## October 18 2016 #################
 #################################################>
 
+<################################################
+#### DEFAULT VARIABLES ##########################
+################################################>
+
+$OMEGA_KEEPASS_PROFILE = 'default'
+
 # Compatibility with PS major versions <= 2
 if(!$PSScriptRoot) {
 	$PSScriptRoot = Split-Path $Script:MyInvocation.MyCommand.Path
@@ -84,9 +90,15 @@ try {
 }
 
 try {
-	Import-Module PSColor
+	Import-Module PSColor -ErrorAction Stop >$null
 } catch {
-	Write-Warning "PSSudo module failed to load. Either not installed or there was an error."
+	Write-Warning "PSColor module failed to load. Either not installed or there was an error. Directory and console coloring will be limited."
+}
+
+try {
+	Import-Module PoShKeePass -Force -ErrorAction Stop >$null
+} catch {
+	Write-Warning "PoShKeePass module failed to load. Either not installed or there was an error. Password commands and access will be unavailable."
 }
 
 ##  PSGnuwin32 ??
@@ -102,13 +114,9 @@ try {
 ######            STEP #3: ALIASES          #####
 #################################################
 
-#Set-Alias -Name "sudo" -Value Invoke-ElevatedCommand.ps1 -Force
-#Set-Alias -Name "sudo" -Value "runas /user:domain\administrator"
 Set-Alias -Name "powershell" -Value "${env:SystemRoot}\system32\WindowsPowerShell\v1.0\powershell.exe" -Force
 
 Set-Alias -Name "Print-Path" -Value Print-Path
-#Set-Alias -Name "sudo2" -Value PsExec64.exe
-Set-Alias -Name "sudo2" -Value CPAU.exe
 
 
 

@@ -26,7 +26,7 @@ Consists of a comment block **dedicated** to help-comments (no other comments in
 
 * SYNOPSIS
 * DESCRIPTION
-* PARAMETER (multiple allowed)
+* PARAMETER (in the format `.PARAMETER <parameter name>` (multiple allowed))
 * EXAMPLE
 * NOTES
 * LINK (multiple allowed)
