@@ -34,5 +34,9 @@ $Shortcut.IconLocation = "$env:HomePath\AppData\omega\icons\omega_256.ico"
 
 $Shortcut.Save()
 ```
-
+Add hotkey? ->
+ ```
+ oLink.HotKey = "ALT+CTRL+F"
+ ```
+[MS-SHLLINK- Shell Link Binary File Format - Spec from Microsoft](https://msdn.microsoft.com/en-us/library/dd871305.aspx)
 #>
