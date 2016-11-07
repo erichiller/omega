@@ -31,20 +31,22 @@ function get-pass {
 		)
  
 	if ($showPass) { 
-		Get-KeePassEntry -DatabaseProfileName $OMEGA_KEEPASS_PROFILE -AsPlainText | Select-Object -Property Title,UserName,Password,FullPath,Notes | Where {$_ -like "*${searchString}*"} | Format-Table
+		Get-KeePassEntry -DatabaseProfileName $OMEGA_KEEPASS_PROFILE -AsPlainText | Select-Object -Property Title,UserName,Password,FullPath,Notes | Where { $_.Title , $_.Username , $_.Notes -like "*${searchString}*"} | Tee-Object -Variable KeePassEntry | Format-Table
 	} else {
-		Get-KeePassEntry -DatabaseProfileName $OMEGA_KEEPASS_PROFILE -AsPlainText | Select-Object -Property Title,UserName,FullPath,Notes | Where {$_ -like "*${searchString}*"} | Format-Table
+		#Get-KeePassEntry -DatabaseProfileName $OMEGA_KEEPASS_PROFILE -AsPlainText | Select-Object -Property Title,UserName,FullPath,Notes | Where {$_ -like "*${searchString}*"} | Format-Table | $KeePassEntry = 
+		Get-KeePassEntry -DatabaseProfileName $OMEGA_KEEPASS_PROFILE -AsPlainText | Select-Object -Property Title,UserName,FullPath,Notes | Where { $_.Title , $_.Username , $_.Notes -like "*${searchString}*"} | Tee-Object -Variable KeePassEntry | Format-Table
+
 	}
 	if($copyPass){
-		$pass = Get-KeePassEntry -DatabaseProfileName $OMEGA_KEEPASS_PROFILE -AsPlainText | Select-Object -Property Title,UserName,Password,FullPath,Notes | Where {$_ -like "*${searchString}*"} | Select -ExpandProperty "Password" 
-		if ( $pass.count -eq 1 ){
-			$pass | Set-Clipboard
+		Get-KeePassEntry -DatabaseProfileName $OMEGA_KEEPASS_PROFILE -AsPlainText | Select-Object -Property Title,UserName,Password,FullPath,Notes | Where { $_.Title , $_.Username , $_.Notes -like "*${searchString}*"} | Tee-Object -Variable KeePassEntry | Select -ExpandProperty "Password"
+		if ( $KeePassEntry.pass.count -eq 1 ){
+			$KeePassEntry.pass | Set-Clipboard
 		} else {
 			echo "Clipboard not set as there was more than one result."
 		}
 	}
-
-	
+	#return $KeePassEntry
+	return $KeePassEntry[0].Title
 }
 
 <#

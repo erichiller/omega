@@ -16,6 +16,8 @@ Defined at the beggining of the function, in a `Param()` block these are listed 
 
 [Select-Object](http://ss64.com/ps/select-object.html)
 
+[Tee-Object](https://technet.microsoft.com/en-us/library/hh849937.aspx) allows for data to continue down the _Pipeline_ as well as be sent to a _File_ or _Variable_.
+
 
 ## Error Handling
 

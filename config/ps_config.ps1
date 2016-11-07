@@ -38,5 +38,5 @@ $extBinaries = @(
 
 
 $OMEGA_EXT_BINARIES = @(
-	"OpenSSH-Win64\ssh.exe"
+#	"OpenSSH-Win64\ssh.exe"
 	)

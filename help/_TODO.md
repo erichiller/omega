@@ -1,4 +1,3 @@
-* rework `init.bat` into a powershell script that uses window=hidden
 
 * use redirection of input to send from source console to elevated console and output of elevated console to source console, see how the `Invoke-ElevatedCommand` works and see:
 	- [redirection syntax](http://ss64.com/ps/syntax-redirection.html)
@@ -7,3 +6,7 @@
 	- [tail like method in powershell](http://stackoverflow.com/questions/4426442/unix-tail-equivalent-command-in-windows-powershell)
 
 * `sudo` should load an elevated prompt which has the same prompt/theme/environment as the conemu one.
+
+* `scp` functionality?
+	- hack - use ssh like ~ `tar -c dir/ | gzip | gpg -c | ssh user@remote 'dd of=dir.tar.gz.gpg'`
+
