@@ -9,4 +9,5 @@ node_modules
 .DS_Store
 thumbs.db
 desktop.ini
-system/ConEmu
+system/**/
+!system/nerd_hack_font
