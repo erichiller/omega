@@ -21,4 +21,4 @@
     EXIT /B 1
 )
 @set PATH=%gitdir%cmd;%gitdir%usr\bin;%PATH%
-@git %*
+@git.exe %*

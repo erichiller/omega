@@ -1,0 +1,53 @@
+[
+    {
+        "type":  "psmodule",
+        "name":  "GitStatusCachePoshClient",
+        "brief":  "Caches git status, especially useful for large directories which may take significantly longer without it.",
+        "required":  true,
+        "installMethod":  "git",
+        "cloneURL":  "https://github.com/cmarcusreid/git-status-cache-posh-client",
+        "postInstall":  [
+                            "Import-Module GitStatusCachePoshClient",
+                            "Update-GitStatusCache"
+                        ],
+        "state":  {
+                      "updateDate":  "2016-Nov-20 19:30",
+                      "installed":  true
+                  }
+    },
+    {
+        "type":  "psmodule",
+        "name":  "PSColor",
+        "brief":  "Directory and console coloring will be limited.",
+        "required":  true,
+        "installMethod":  "save-package",
+        "state":  {
+                      "updateDate":  "2016-Nov-20 18:22",
+                      "installed":  true
+                  }
+    },
+    {
+        "type":  "psmodule",
+        "name":  "PoShKeePass",
+        "brief":  "Provides access to and searching of keepass database",
+        "required":  true,
+        "installMethod":  "save-package",
+        "state":  {
+                      "updateDate":  "2016-Nov-20 18:25",
+                      "installed":  true
+                  }
+    },
+    {
+        "type": "sytemPath",
+        "name": "nodejs",
+        "brief": "Javascript Desktop Engine",
+        "required": false,
+        "installMethod": "http-directory-search",
+        "searchDepth": 2,
+        "searchTerms": ["win-x64.7z"],
+        "state":  {
+                      "updateDate":  "",
+                      "installed":  false
+                  }
+    }
+]

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <key name="Software">
 	<key name="ConEmu">
-		<key name=".Vanilla" modified="2016-10-22 17:37:54" build="161009a">
+		<key name=".Vanilla" modified="2016-11-20 15:36:45" build="161022">
 			<value name="StartType" type="hex" data="00"/>
 			<value name="CmdLine" type="string" data=""/>
 			<value name="StartTasksFile" type="string" data=""/>
@@ -135,7 +135,7 @@
 			<value name="bgImageColors" type="dword" data="ffffffff"/>
 			<value name="bgOperation" type="hex" data="00"/>
 			<value name="bgPluginAllowed" type="hex" data="01"/>
-			<value name="AlphaValue" type="hex" data="c8"/>
+			<value name="AlphaValue" type="hex" data="ff"/>
 			<value name="AlphaValueSeparate" type="hex" data="00"/>
 			<value name="AlphaValueInactive" type="hex" data="ff"/>
 			<value name="UserScreenTransparent" type="hex" data="00"/>
@@ -146,20 +146,20 @@
 			<value name="Cascaded" type="hex" data="01"/>
 			<value name="IntegralSize" type="hex" data="01"/>
 			<value name="WindowMode" type="dword" data="0000051f"/>
-			<value name="ConWnd X" type="long" data="-3"/>
-			<value name="ConWnd Y" type="long" data="-3"/>
-			<value name="LastMonitor" type="string" data="0,0,1682,928"/>
-			<value name="ConWnd Width" type="dword" data="02000064"/>
+			<value name="ConWnd X" type="long" data="-1289"/>
+			<value name="ConWnd Y" type="long" data="1069"/>
+			<value name="LastMonitor" type="string" data="-1440,0,0,2520"/>
+			<value name="ConWnd Width" type="dword" data="010004b0"/>
 			<value name="ConWnd Height" type="dword" data="0000003d"/>
 			<value name="16bit Height" type="ulong" data="0"/>
-			<value name="QuakeStyle" type="hex" data="01"/>
+			<value name="QuakeStyle" type="hex" data="00"/>
 			<value name="Restore2ActiveMon" type="hex" data="01"/>
 			<value name="QuakeAnimation" type="ulong" data="300"/>
 			<value name="HideCaption" type="hex" data="00"/>
 			<value name="HideChildCaption" type="hex" data="01"/>
 			<value name="FocusInChildWindows" type="hex" data="01"/>
 			<value name="HideCaptionAlways" type="hex" data="01"/>
-			<value name="HideCaptionAlwaysFrame" type="hex" data="00"/>
+			<value name="HideCaptionAlwaysFrame" type="hex" data="ff"/>
 			<value name="HideCaptionAlwaysDelay" type="ulong" data="2000"/>
 			<value name="HideCaptionAlwaysDisappear" type="ulong" data="2000"/>
 			<value name="DownShowHiddenMessage" type="hex" data="00"/>
@@ -221,7 +221,7 @@
 			<value name="SendAltPrintScrn" type="hex" data="00"/>
 			<value name="SendPrintScrn" type="hex" data="00"/>
 			<value name="SendCtrlEsc" type="hex" data="00"/>
-			<value name="Min2Tray" type="hex" data="01"/>
+			<value name="Min2Tray" type="hex" data="00"/>
 			<value name="AlwaysShowTrayIcon" type="hex" data="00"/>
 			<value name="SafeFarClose" type="hex" data="01"/>
 			<value name="SafeFarCloseMacro" type="string" data=""/>
@@ -393,13 +393,13 @@
 			<value name="Update.DownloadPath" type="string" data="%TEMP%\ConEmu"/>
 			<value name="Update.LeavePackages" type="hex" data="00"/>
 			<value name="Update.PostUpdateCmd" type="string" data="echo Last successful update&gt;ConEmuUpdate.info &amp;&amp; date /t&gt;&gt;ConEmuUpdate.info &amp;&amp; time /t&gt;&gt;ConEmuUpdate.info"/>
-			<key name="HotKeys" modified="2016-10-22 17:37:54" build="161009a">
+			<key name="HotKeys" modified="2016-11-20 15:36:45" build="161022">
 				<value name="KeyMacroVersion" type="hex" data="02"/>
 				<value name="Multi.Modifier" type="dword" data="00000011"/>
 				<value name="Multi.ArrowsModifier" type="dword" data="0000005b"/>
 				<value name="MinimizeRestore" type="dword" data="000011c0"/>
 				<value name="MinimizeRestore2" type="dword" data="00000000"/>
-				<value name="GlobalRestore" type="dword" data="000012c0"/>
+				<value name="GlobalRestore" type="dword" data="00000000"/>
 				<value name="CdExplorerPath" type="dword" data="00000000"/>
 				<value name="ForcedFullScreen" type="dword" data="00000000"/>
 				<value name="SwitchGuiFocus" type="dword" data="00000000"/>
@@ -578,9 +578,9 @@
 				<value name="DndRKey" type="hex" data="00"/>
 				<value name="WndDragKey" type="dword" data="00121101"/>
 			</key>
-			<key name="Tasks" modified="2016-10-22 17:37:54" build="161009a">
+			<key name="Tasks" modified="2016-11-20 15:36:45" build="161022">
 				<value name="Count" type="long" data="2"/>
-				<key name="Task1" modified="2016-10-22 17:37:54" build="161009a">
+				<key name="Task1" modified="2016-11-20 15:36:45" build="161022">
 					<value name="Name" type="string" data="{PowerShell}"/>
 					<value name="Flags" type="dword" data="00000000"/>
 					<value name="Hotkey" type="dword" data="00001172"/>
@@ -589,7 +589,7 @@
 					<value name="Active" type="long" data="0"/>
 					<value name="Count" type="long" data="1"/>
 				</key>
-				<key name="Task2" modified="2016-10-22 17:37:54" build="161009a">
+				<key name="Task2" modified="2016-11-20 15:36:45" build="161022">
 					<value name="Name" type="string" data="{PowerShell_Here}"/>
 					<value name="Flags" type="dword" data="00000004"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
@@ -644,12 +644,12 @@
 					<value name="Count" type="long" data="1"/>
 				</key>
 			</key>
-			<key name="Apps" modified="2016-10-22 17:37:54" build="161009a">
+			<key name="Apps" modified="2016-11-20 15:36:45" build="161022">
 				<value name="Count" type="long" data="0"/>
 			</key>
-			<key name="Colors" modified="2016-10-22 17:37:54" build="161009a">
+			<key name="Colors" modified="2016-11-20 15:36:45" build="161022">
 				<value name="Count" type="long" data="2"/>
-				<key name="Palette1" modified="2016-10-22 17:37:54" build="161009a">
+				<key name="Palette1" modified="2016-11-20 15:36:45" build="161022">
 					<value name="Name" type="string" data="#Attached:ConEmuC"/>
 					<value name="ExtendColors" type="hex" data="00"/>
 					<value name="ExtendColorIdx" type="hex" data="0e"/>
@@ -690,7 +690,7 @@
 					<value name="ColorTable30" type="dword" data="0000ffff"/>
 					<value name="ColorTable31" type="dword" data="00ffffff"/>
 				</key>
-				<key name="Palette2" modified="2016-10-22 17:37:54" build="161009a">
+				<key name="Palette2" modified="2016-11-20 15:36:45" build="161022">
 					<value name="Name" type="string" data="Monokai"/>
 					<value name="ExtendColors" type="hex" data="00"/>
 					<value name="ExtendColorIdx" type="hex" data="0e"/>

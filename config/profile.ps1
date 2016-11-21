@@ -10,7 +10,12 @@
 #### DEFAULT VARIABLES ##########################
 ################################################>
 
-$OMEGA_KEEPASS_PROFILE = 'default'
+$OMEGA_KEEPASS_PROFILE	= 'default'
+# set THIS as the PROFILE for the user
+$PROFILE = $script:MyInvocation.MyCommand.Path;
+# By default PowerShell sets $VerbosePreference to "SilentlyContinue" which will not display verbose messages
+# Set this to continue to display verbose messages where available
+#$VerbosePreference		= "continue"
 
 # Compatibility with PS major versions <= 2
 if(!$PSScriptRoot) {
@@ -23,8 +28,7 @@ if(!$PSScriptRoot) {
 . $PSScriptRoot\ps_functions.ps1
 
 # functions to manage binary hardlinks
-test-bin-hardlinks
-install-bin-hardlinks
+& $PSScriptRoot\ps_hardlinks.ps1
 
 #################################################
 ###### STEP #1: ADD DIRECTORIES TO THE PATH #####
@@ -58,7 +62,7 @@ try {
 	# set status as true
 	$gitStatus = $true
 } catch {
-	Write-Warning "Missing git support, install posh-git with 'Install-Module posh-git' and restart conemu."
+	Write-Warning "Missing git support, install posh-git with 'Install-Module posh-git' and restart terminal (ConEmu,Omega)."
 	$gitStatus = $false
 }
 
@@ -119,4 +123,5 @@ Set-Alias -Name "powershell" -Value "${env:SystemRoot}\system32\WindowsPowerShel
 Set-Alias -Name "Print-Path" -Value Print-Path
 
 
-
+New-Alias -Name "omega-update" -Value Update-OmegaPackage
+#Set-Alias -Name "Install-Package" -Value Install-OmegaPackage

@@ -18,6 +18,16 @@ Defined at the beggining of the function, in a `Param()` block these are listed 
 
 [Tee-Object](https://technet.microsoft.com/en-us/library/hh849937.aspx) allows for data to continue down the _Pipeline_ as well as be sent to a _File_ or _Variable_.
 
+## Variables
+
+Variables are Passed by **REFERENCE**, thus
+
+```powershell
+$foo = @{ "field_1": "value_1","field_2": "value_2"}
+$bar = $foo;
+$bar.field_2 = "value_zzz";
+# now $foo = @{ "field_1": "value_1","field_2": "value_zzz"}
+```
 
 ## Error Handling
 

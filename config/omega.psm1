@@ -14,10 +14,8 @@ Eric Hiller
 function Write-Theme
 {
     param(
-        [bool]
-        $lastCommandFailed,
-        [string]
-        $with
+        [bool]$lastCommandFailed,
+        [string]$with
     )
 
     $lastColor = $sl.Colors.PromptBackgroundColor

@@ -9,6 +9,7 @@
 # (Resolve-Path ../bin).Path
 # https://technet.microsoft.com/en-us/library/hh849858.aspx
 # http://ss64.com/ps/common.html
+$env:BaseDir = Resolve-Path ( Join-Path ( Split-Path $Script:MyInvocation.MyCommand.Path ) ".." ) 
 $OMEGA_BIN_PATH = ( Join-Path $env:BaseDir "\bin\" ) 
 <#
 $extBinaries = @(

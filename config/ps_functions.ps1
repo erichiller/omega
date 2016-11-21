@@ -77,88 +77,100 @@ function Add-DirToPath($dir){
 }
 
 <##################################
- ######### symlink logic ##########
+ ######### package logic ##########
  ##################################>
 
+<#
+.SYNOPSIS
+opkg is the package management utility for omega
+.DESCRIPTION
+Can be used to install, update, list, and check the status of packages
+.PARAMETER Install
+.PARAMETER Update
+.PARAMETER List
+Lists the available Packages
+.PARAMETER Status
+Lists the statuses of the packages, if a PackageName is present, it only shows the status of that name
+.PARAMETER PackageName
+Package name to be worked with
+.LINK
+https://github.com/erichiller/omega
+#>
+function opkg {
+	param(
+	[string] $PackageName,
+	[switch] $Status,
+	[switch] $Install,
+	[switch] $Update,
+	[switch] $List,
+	[switch] $Help=[switch]::Present
+	)
 
-# cleanup the directory of items not specified
-# logic:
-# if it is a hardlink (not a local file // a file that only exists in `bin` holder)
-# it will have more than one hardlink to it in `fsutil hardlink query`
-# so check if it is in OMEGA_EXT_BINARIES array
-# if not - delete it
-function test-bin-hardlinks {
-	
-	Get-ChildItem $OMEGA_BIN_PATH |
-	ForEach-Object {
-		$bin = ( Join-Path $OMEGA_BIN_PATH $_.name ) 
-
-		$links = ( fsutil hardlink list $bin )
-		# list number of hardlinks:
-		# echo " $bin = " + (fsutil hardlink list $bin | measure-object).Count
-	#	if( ($links | measure-object).count -gt 1){ echo $links }
-
-		#Write-Host ($links | Format-Table -Force | Out-String)
-
-	#	if(Compare-Object -PassThru -IncludeEqual -ExcludeDifferent $links $OMEGA_EXT_BINARIES){
-	#		echo "$bin ======================================================================> YES";
-	#	}
-
-		if( ($links | measure-object).count -gt 1){
-			
-			$OMEGA_EXT_BINARIES_fullpath = New-Object System.Collections.ArrayList
-			foreach( $path in $OMEGA_EXT_BINARIES ){
-				$OMEGA_EXT_BINARIES_fullpath.Add( (  Split-Path -noQualifier $bin ) )
-			}
-			echo "BASEDIR=$($env:BaseDir)"
-			echo "==== fullpaths ===="
-			Show-Path $OMEGA_EXT_BINARIES_fullpath
-			echo "=== link ===="
-			Show-Path $links
-			#Split-Path -noQualifier
-
-			echo "$bin is a HARDLINK";
-			# remove if not in the array
-			# see this for array intersect comparisons
-			# http://stackoverflow.com/questions/8609204/union-and-intersection-in-powershell
-			if( -not (Compare-Object -PassThru -IncludeEqual -ExcludeDifferent $links $OMEGA_EXT_BINARIES_fullpath)){
-				echo "$bin is a hardlink and is NOT in an array... removing...."
-				rm -Force $bin
-			}
-		}
-
-	}
-}
-
-function install-bin-hardlinks {
-	foreach ($bin in $OMEGA_EXT_BINARIES) {
-		$bin =  Join-Path ( Join-Path $env:BaseDir system ) $bin 
-		if (Test-Path -Path $bin){
-			$binPath = Split-Path -Path $bin -Leaf -Resolve
-			$binPath = Join-Path $OMEGA_BIN_PATH $binPath
-			if (-not (Test-Path -Path $binPath)){
-				echo "ADDING HARDLINK for $bin to $binPath"
-				fsutil hardlink create $binPath $bin
-			}
+	$CallingDirectory = (Convert-Path . )
+	if ( $Status ) {
+		if ( $PackageName ){
+			Get-Module $PackageName
 		} else {
-			echo "!!ERROR!! the binary to be hardlinked ... $bin ... does not exist"
+			Get-Module
 		}
-
 	}
+	if ( $Install ) {
+		$Packages = ( Get-Content (Join-Path $PSScriptRoot "\manifest.json" ) | ConvertFrom-Json )
+		echo "================================================>PACKAGES========================>"
+		$Packages
+		echo "================================================>END========================>"
+		$Package = ($Packages | Where { $_.name -EQ $PackageName } )
+		echo "================================================>PACKAGE========================>"
+		$Package
+		echo "================================================>END========================>"
+		switch ( $Package.type ) {
+			"psmodule" {
+				switch ( $Package.installMethod ){
+					"git" { 
+						Set-Location $ModulePath
+						& git clone $Package.cloneURL ( Join-Path $ModulePath $Package.name )
+						break; 
+					}
+					"save-package" {
+						Save-Package -Path $ModulePath $Package.name
+						break;
+					}
+					default {
+						Write-Error "The ${Package.name} requested for installation has an unknown Installation Type of ${Package.installMethod} and package type of ${$Package.type}"
+						break;
+					}
+				}
+				break;
+			}
+			default {
+				Write-Error "The ${Package.name} requested for installation has an unknown Package Type of ${Package.type} installed via ${$Package.installMethod}"
+				break;
+			}
+		}
+		<#
+		no matter the package type
+		we run the postInstall actions
+		#>
+		Set-Location ( Join-Path $ModulePath $Package.name )
+		ForEach( $command in $Package.postInstall ) {
+			$command
+		}
+		# mark as installed in the manifest
+		$Package.state.updateDate = (Get-Date -format "yyyy-MMM-dd HH:mm" )
+		$Package.state.installed = $true
+		$Packages | ConvertTo-Json | Set-Content ( Join-Path $PSScriptRoot "\manifest.json" )
+		# import our newly installed module
+		try {
+			Import-Module -name $Package.name -ErrorAction Stop >$null
+		} catch {
+			Write-Warning "${Package.name} module failed to load. Either not installed or there was an error. This module, who's functions follow, will now be disabled:"
+			Write-Warning $Package.brief
+		}
+		
+	}
+	if ( $Help -and !$Status -and !$Install -and !$List -and !$Update ){
+		$Script:MyInvocation.invocationname
+	}
+	Set-Location $CallingDirectory
 }
 
-
-# For fsutil information
-# see technet article
-# https://technet.microsoft.com/en-ca/library/cc753059.aspx
-# http://stackoverflow.com/questions/894430/powershell-hard-and-soft-links
-
-
-#fsutil hardlink create NEW EXISTING
-#fsutil hardlink create C:\cmder\bin\ssh.exe C:\cmder\system\openssh\ssh.exe
-
-#fsutil hardlink list MyFileName.txt
-#fsutil hardlink list C:\cmder\system\openssh\ssh.exe
-
-# source - execute another script and maintain the variables within this environment
-# http://ss64.com/ps/source.html
