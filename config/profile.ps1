@@ -1,34 +1,97 @@
 <################################################
- ###### OMEGA - init script for PowerShell ######
- ################################################
- **** Setting up the PowerShell environment *****
- ############### Eric D Hiller ##################
- ############## October 18 2016 #################
+####### OMEGA - init script for PowerShell ######
+#################################################
+***** Setting up the PowerShell environment *****
+################ Eric D Hiller ##################
+############### October 18 2016 #################
 #################################################>
 
-<################################################
-#### DEFAULT VARIABLES ##########################
-################################################>
-
-$OMEGA_KEEPASS_PROFILE	= 'default'
-# set THIS as the PROFILE for the user
-$PROFILE = $script:MyInvocation.MyCommand.Path;
-# By default PowerShell sets $VerbosePreference to "SilentlyContinue" which will not display verbose messages
-# Set this to continue to display verbose messages where available
-#$VerbosePreference		= "continue"
 
 # Compatibility with PS major versions <= 2
 if(!$PSScriptRoot) {
 	$PSScriptRoot = Split-Path $Script:MyInvocation.MyCommand.Path
 }
 
-# load the configuration variables
-. $PSScriptRoot\ps_config.ps1
+# set THIS as the PROFILE for the user
+$PROFILE = $script:MyInvocation.MyCommand.Path;
+
+# load config from json into object
+$OMEGA_CONF = ( Get-Content (Join-Path $PSScriptRoot "\config.json" ) | ConvertFrom-Json )
+
+<#
+# PowerShell defaults $VerbosePreference to "SilentlyContinue" which will not display verbose messages
+# Set this to continue to display verbose messages where available
+# See $OMEGA_CONF.verbosity for these configurations
+#>
+$VerbosePreference			= $OMEGA_CONF.verbosity.verbose
+$InformationPreference		= $OMEGA_CONF.verbosity.information
+$DebugPreference			= $OMEGA_CONF.verbosity.debug
+
+# Binary files
+# array of external binaries to be added to the `bin/` folder via hardlink
+# remove them and they will be unlinked
+# MUST BEGIN WITH \
+# Resolve-Path may be useful in the future here
+# (Resolve-Path ../bin).Path
+# https://technet.microsoft.com/en-us/library/hh849858.aspx
+# http://ss64.com/ps/common.html
+$env:BaseDir = Resolve-Path ( Join-Path ( Split-Path $Script:MyInvocation.MyCommand.Path ) ".." )
+
+
+
+
+
+
+
+
+
+
+
+
+
+<#
+$extBinaries = @(
+	# openssh https://github.com/PowerShell/Win32-OpenSSH/releases/
+	"\system\openssh\ssh.exe"
+#	,"\system\openssh\sshd.exe"
+#	,"\system\openssh\sshd_config"
+	,"\system\openssh\ssh-add.exe"
+	,"\system\openssh\ssh-agent.exe"
+	,"\system\openssh\ssh-keygen.exe"
+#	,"\system\openssh\ssh-lsa.dll"
+#	,"\system\openssh\ssh-shellhost.exe"
+	,"\system\openssh\sftp.exe"
+#	,"\system\openssh\sftp-server.exe"
+#	,"\system\openssh\ntrights.exe"
+#	,"\system\openssh\install-sshd.ps1"
+#	,"\system\openssh\install-sshlsa.ps1"
+#	,"\system\openssh\uninstall-sshd.ps1"
+#	,"\system\openssh\uninstall-sshlsa.ps1"
+#	,"\system\GetGnuWin32\gnuwin32\bin\l2s.exe"
+	)
+	#>
+# see arrays here
+# http://ss64.com/ps/syntax-arrays.html
+# hash tables also look very useful
+# http://ss64.com/ps/syntax-hash-tables.html
+
+
+$OMEGA_EXT_BINARIES = @(
+#	"OpenSSH-Win64\ssh.exe"
+	)
+
+
+
+
+
+
+
+
+
+
+
 # load the functions first
 . $PSScriptRoot\ps_functions.ps1
-
-# functions to manage binary hardlinks
-& $PSScriptRoot\ps_hardlinks.ps1
 
 #################################################
 ###### STEP #1: ADD DIRECTORIES TO THE PATH #####
@@ -123,5 +186,4 @@ Set-Alias -Name "powershell" -Value "${env:SystemRoot}\system32\WindowsPowerShel
 Set-Alias -Name "Print-Path" -Value Print-Path
 
 
-New-Alias -Name "omega-update" -Value Update-OmegaPackage
-#Set-Alias -Name "Install-Package" -Value Install-OmegaPackage
+New-Alias -Name "7z" -Value "${env:ProgramFiles}\7-zip\7z.exe"

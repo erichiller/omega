@@ -11,3 +11,4 @@ thumbs.db
 desktop.ini
 system/**/
 !system/nerd_hack_font
+.vscode

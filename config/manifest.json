@@ -38,16 +38,20 @@
                   }
     },
     {
-        "type": "sytemPath",
-        "name": "nodejs",
-        "brief": "Javascript Desktop Engine",
-        "required": false,
-        "installMethod": "http-directory-search",
-        "searchDepth": 2,
-        "searchTerms": ["win-x64.7z"],
+        "type":  "system-path",
+        "name":  "nodejs",
+        "brief":  "Javascript Desktop Engine",
+        "required":  false,
+        "installMethod":  "http-directory-search",
+        "installParams":  {
+                              "searchPath":  "https://nodejs.org/download/release/latest/",
+                              "searchTerm":  "*win-x64.7z*",
+                              "versionPattern":  "^node-v(.*)-win-x64\\.7z$",
+                              "systempath":  true
+                          },
         "state":  {
-                      "updateDate":  "",
-                      "installed":  false
+                      "updateDate":  "2016-Nov-27 11:33",
+                      "installed":  true
                   }
     }
 ]

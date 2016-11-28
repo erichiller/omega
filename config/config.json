@@ -1,0 +1,22 @@
+{
+    "bindir":  "C:\\Users\\ehiller\\AppData\\Local\\omega\\bin",
+    "sysdir":  "C:\\Users\\ehiller\\AppData\\Local\\omega\\system",
+    "basedir":  "C:\\Users\\ehiller\\AppData\\Local\\omega",
+    "compression_extensions":  [
+                                   ".7z",
+                                   ".zip",
+                                   ".tar.gz",
+                                   "gz",
+                                   ".tar"
+                               ],
+    "packages":  {
+                     "keepass":  {
+                                     "profile":  "default"
+                                 }
+                 },
+    "verbosity":  {
+                      "information":  "Continue",
+                      "verbose":  "SilentlyContinue",
+                      "debug":  "Continue"
+                  }
+}

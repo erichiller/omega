@@ -9,10 +9,8 @@
 * Update script
 * `scp` functionality?
 	- hack - use ssh like ~ `tar -c dir/ | gzip | gpg -c | ssh user@remote 'dd of=dir.tar.gz.gpg'`
-* Fate of OpenSSH ? Keep or discard?
-* Remove from git tracking
-   - system/git
-   - system/OpenSSH-Win64
+* seperate developers branch with `.vscode` and full `system/` directory (and any **build** scripts if they exist)
+
 
 # Intermediate
 

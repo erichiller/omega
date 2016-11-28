@@ -132,7 +132,7 @@ $console.BackgroundColor = $MASTER_BACKGROUND
     #>
 
 $colors = $host.PrivateData
-$colors.DebugForegroundColor = [ConsoleColor]::Gray
+$colors.DebugForegroundColor = [ConsoleColor]::Blue
 $colors.DebugBackgroundColor = $MASTER_BACKGROUND
 $colors.ProgressForegroundColor = [ConsoleColor]::Yellow
 $colors.ProgressBackgroundColor = $MASTER_BACKGROUND
@@ -141,6 +141,11 @@ $colors.VerboseForegroundColor = [ConsoleColor]::Gray
 $colors.VerboseBackgroundColor = $MASTER_BACKGROUND
 $colors.WarningForegroundColor = [ConsoleColor]::Yellow
 $colors.WarningBackgroundColor = $MASTER_BACKGROUND
+
+# Most message colors can be set
+# https://technet.microsoft.com/en-us/library/ee692799.aspx
+# Write-Information can not
+# https://blogs.technet.microsoft.com/heyscriptingguy/2015/07/04/weekend-scripter-welcome-to-the-powershell-information-stream/
 $colors.ErrorForegroundColor = [ConsoleColor]::Red
 $colors.ErrorBackgroundColor = $MASTER_BACKGROUND
 
