@@ -424,8 +424,6 @@ function Update-SystemPath {
 	IF ($ENV:Path | Select-String -SimpleMatch $Directory)
 		{ Return "Folder already within $ENV:Path" }
 	$Path = "$Path;$(Resolve-Path $Directory)"
-	# Set the path
-	#Set-ItemProperty -Path "$Reg" -Name PATH -Value $Path
 	
 	# Cleanup the path
 	# rebuild, directory by directory, deleting paths who are within omega's realm, and no longer exist or are permitted to be there (via OMEGA_CONF.path_additions)
@@ -433,9 +431,25 @@ function Update-SystemPath {
 	$Dirs = Resolve-Path $Path
 	$newpath = ""
 	ForEach ($testDir in $Dirs){
-		# test that path exists on the filesystem / is a valid path (and that it is a Container type (directory))
-		if ( ! (Test-Path -Path $testDir -PathType Container) ) { continue }
-		if ( ! ($testDir -Like "$($OMEGA_CONF.basedir)*") ) { continue }
+		Write-Debug "Testing $testDir for validity within the system path."
+		# Test if $testDir is within $($OMEGA_CONF.basedir)
+		# If yes continue to test its validity within the system path.
+		# If No, it is not in our jurisdiction/concern, proceed.
+		if ( ($testDir -Like "$($OMEGA_CONF.basedir)*") ) {
+			Write-Debug "The $testDir is within $($OMEGA_CONF.basedir) - continuing to test its validity within the system path."
+			# test that path exists on the filesystem / is a valid path (and that it is a Container type (directory))
+			# not found = not valid = continue
+			if ( ! (Test-Path -Path $testDir -PathType Container) ) { continue }
+			# test if the path_additions parameter is even configured, if not, then NO PATHS FROM OMEGA ARE VALID = continue
+			if ( ! (Get-Member -InputObject $OMEGA_CONF -Name "path_additions" -Membertype Properties)) { continue }
+			# test to see if $OMEGA_CONF.path_additions contains $testDir, if it does not, then continue
+			if ( ! ( $OMEGA_CONF.path_additions -contains $testDir ) ) { continue } 
+		}
+		# All Tests Passed, the trials are complete, you, noble directory, can be added (or kept) on the system's path
+		
+
+		# Set the path
+		#Set-ItemProperty -Path "$Reg" -Name PATH -Value $Path
 
 		### how to account for SYSTEM paths ?? SUCH AS  `C:\Windows` etc... there was 4???
 
