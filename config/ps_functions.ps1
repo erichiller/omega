@@ -7,11 +7,31 @@
 # display the Path, one directory per line
 # takes one input parameters, defaults to the env:Path
 function Show-Path { 
-	param([string]$PathToPrint = $env:Path)
-	echo ($PathToPrint).Replace(';',"`n")
+	param (
+	[string] $PathToPrint = $ENV:Path,
+	[switch] $Debug,
+	[switch] $System
+	)
+	if ($System -eq $true) {
+		$PathToPrint = (Get-ItemProperty -Path "$($OMEGA_CONF.system_path_key)" -Name PATH).Path
+	}
+	if($Debug -eq $false){
+		echo ($PathToPrint).Replace(';',"`n")
+	} else {
+		Debug-Variable ($PathToPrint).Replace(';',"`n") "Show-Path"
+	}
 }
 
 function Show-Env { echo (Get-ChildItem Env:) }
+
+function Update-Config {
+	$global:OMEGA_CONF = ( Get-Content (Join-Path $PSScriptRoot "\config.json" ) | ConvertFrom-Json )
+}
+
+function Update-Environment {
+	Update-Config
+	. ${env:basedir}\$($OMEGA_CONF.confdir)\ps_functions.ps1
+}
 
 <#
 .SYNOPSIS
@@ -80,8 +100,13 @@ function Add-DirToPath($dir){
 # Adapted from
 #.Link
 # http://stackoverflow.com/questions/35624787/powershell-whats-the-best-way-to-display-variable-contents-via-write-debug
-function Debug-Variable($var){ 
+function Debug-Variable { 
+	param(
+	[Parameter(Mandatory=$True)] $var,
+	[string] $name
+	)
 	@(
+		if([string]::IsNullOrEmpty($name) -ne $true) { "Debug-Variable: ===|$name|===" }
 		#"Variable: $(Get-Variable | Where-Object {$_.Value -eq $var } )",
 		#"Debug-Variable-Type:$(get-member -inputobject $var | Format-Table -AutoSize -Wrap | Out-String )",
 		"Debug-Variable-Type:$($var.getType())",
@@ -116,8 +141,12 @@ function opkg {
 	[switch] $Install,
 	[switch] $Update,
 	[switch] $List,
-	[switch] $Help=[switch]::Present
+	[switch] $Help=[switch]::Present,
+	[switch] $UpdateHardlinks
 	)
+
+	# Make sure that the settings we are using are up to date
+	Update-Config
 
 	$CallingDirectory = (Convert-Path . )
 
@@ -184,9 +213,9 @@ function opkg {
 	# if not - delete it
 	function test-bin-hardlinks {
 		
-		Get-ChildItem $OMEGA_CONF.bindir |
+		Get-ChildItem (Join-Path $Env:Basedir $OMEGA_CONF.bindir) |
 		ForEach-Object {
-			$bin = ( Join-Path $OMEGA_CONF.bindir $_.name ) 
+			$bin = ( Join-Path (Join-Path $Env:Basedir $OMEGA_CONF.bindir)  $_.name ) 
 
 			$links = ( fsutil hardlink list $bin )
 			
@@ -234,11 +263,15 @@ function opkg {
 	}
 
 	function Update-Hardlinks {
+		
+		# verify existing hardlinks first
+		test-bin-hardlinks
+
 		foreach ($bin in ( Get-Content (Join-Path $PSScriptRoot "\config.json" ) | ConvertFrom-Json ).binlinks ) {
 			$bin =  Join-Path ( Join-Path $env:BaseDir system ) $bin 
 			if (Test-Path -Path $bin){
 				$binPath = Split-Path -Path $bin -Leaf -Resolve
-				$binPath = Join-Path $OMEGA_CONF.bindir $binPath
+				$binPath = Join-Path (Join-Path $Env:Basedir $OMEGA_CONF.bindir)  $binPath
 				if (-not (Test-Path -Path $binPath)){
 					Write-Information "ADDING HARDLINK for $bin to $binPath"
 					#See help file
@@ -315,7 +348,7 @@ function opkg {
 						
 						#Start-BitsTransfer -Source ( $Package.installParams.searchPath + $filename ) -Destination $outFile -Description "omega opkg install version $version of $($Package.installParams.searchPath)($filename)"
 
-						$deploy = ( Join-Path $OMEGA_CONF.sysdir $Package.name )
+						$deploy = (Join-Path (Join-Path $Env:Basedir $OMEGA_CONF.sysdir)  $Package.name )
 						Write-Debug "Deploy: $deploy"
 						Debug-Variable $OMEGA_CONF.compression_extensions
 						if( $OMEGA_CONF.compression_extensions -contains [IO.Path]::GetExtension($filename) ){
@@ -329,7 +362,7 @@ function opkg {
 						Write-Debug $(( Get-ChildItem -Attributes directory $deploy).Count )
 						Write-Debug $(( Get-ChildItem $deploy).Count )
 						Write-Debug $((( Get-ChildItem -Attributes directory $deploy).Count ) -eq (  ( Get-ChildItem  $deploy).Count ))
-						Write-Debug $(Get-ChildItem  $deploy)
+						Debug-Variable (Get-ChildItem $deploy)
 						Write-Debug $([IO.Path]::GetFileNameWithoutExtension($filename)) 
 						Write-Debug $( ( Get-ChildItem  $deploy | Where { $_.Name -eq [IO.Path]::GetFileNameWithoutExtension($filename)  } ))
 						Write-Debug $(( ( Get-ChildItem $deploy).Count -eq 1 ) -and ( ( Get-ChildItem  $deploy | Where { $_.Name -eq [IO.Path]::GetFileNameWithoutExtension($filename)  } )))
@@ -350,7 +383,7 @@ function opkg {
 								$cmd = "`$OMEGA_CONF.binlinks = ArrayAddUnique `$OMEGA_CONF.binlinks $(Join-Path $Package.name $binlink )"
 								$Package.postInstall = ArrayAddUnique $Package.postInstall $cmd
 							}
-							# reload config
+							# save config
 							$Package.postInstall = ArrayAddUnique $Package.postInstall "Write-OmegaConfig"
 							# run hardlinks
 							$Package.postInstall = ArrayAddUnique $Package.postInstall "Update-Hardlinks"
@@ -358,8 +391,12 @@ function opkg {
 							Debug-Variable $Package.postInstall
 						}
 						if ( $Package.installParams.systemPath ){
-							Write-Debug "Package ${Package.name} will be on the systemPath."
+							Write-Debug "Package $($Package.name) will be on the systemPath."
 							Update-SystemPath $deploy
+							# save config
+							# postInstall is not required in the manifest, but it is here, so create the array if it isn't set
+							SafeObjectArray $Package "postInstall"
+							$Package.postInstall = ArrayAddUnique $Package.postInstall "Write-OmegaConfig"
 						}
 						#Set-PSDebug -Trace 0
 						break;
@@ -394,6 +431,7 @@ function opkg {
 			Write-Warning $_.Exception.Message
 		}
 	}
+	if ( $UpdateHardlinks ){ Update-Hardlinks }
 	if ( $Help -and !$Status -and !$Install -and !$List -and !$Update ){
 		$Script:MyInvocation.invocationname
 	}
@@ -417,59 +455,59 @@ function Update-SystemPath {
 		[ValidateScript({Test-Path -Path $_ -PathType Container})]
 		[String] $Directory
 	)
-	$Reg = "Registry::HKLM\System\CurrentControlSet\Control\Session Manager\Environment"
-	$OriginalPath = (Get-ItemProperty -Path "$Reg" -Name PATH).Path
+	$OriginalPath = (Get-ItemProperty -Path "$($OMEGA_CONF.system_path_key)" -Name PATH).Path
+	Write-Debug "Checking Path at '$($OMEGA_CONF.system_path_key)' - currently set to `n$OriginalPath"
 	$Path = $OriginalPath
+	# Check to ensure that the Directory is not already on the System Path
+	if ($Path | Select-String -SimpleMatch $Directory)
+		{ Write-Warning "$Directory already within System Path" }
 	# Ensure the Directory is not already within the path
-	IF ($ENV:Path | Select-String -SimpleMatch $Directory)
-		{ Return "Folder already within $ENV:Path" }
+	if ($ENV:Path | Select-String -SimpleMatch $Directory)
+		{ Write-Warning "$Directory already within `$ENV:Path" }
+	# Check that the directory is not already on the configured path
+	if ( $OMEGA_CONF.path_additions -Contains $Directory) 
+		{ Debug-Variable $OMEGA_CONF.path_additions "path_additions"; Return "$Directory is already present in `$OMEGA_CONF.path_additions" }
+	# Add the directory to $OMEGA_CONF.path_additions
+	SafeObjectArray $OMEGA_CONF "path_additions"
+	$OMEGA_CONF.path_additions = ArrayAddUnique $OMEGA_CONF.path_additions $Directory
+	Debug-Variable $OMEGA_CONF.path_additions "OMEGA_CONF.path_additions"
+	# Safe to proceed now, add the Directory to $Path
 	$Path = "$Path;$(Resolve-Path $Directory)"
 	
 	# Cleanup the path
 	# rebuild, directory by directory, deleting paths who are within omega's realm, and no longer exist or are permitted to be there (via OMEGA_CONF.path_additions)
-	$Path = $Path.split(";") | where-object {$_ -ne " "}
-	$Dirs = Resolve-Path $Path
-	$newpath = ""
+	$Dirs = $Path.split(";") | where-object {$_ -ne " "}
+
 	ForEach ($testDir in $Dirs){
-		Write-Debug "Testing $testDir for validity within the system path."
-		# Test if $testDir is within $($OMEGA_CONF.basedir)
+		Write-Debug "Testing for validity within the system path:`t$testDir"
+		# Test if $testDir is within $($env:BaseDir)
 		# If yes continue to test its validity within the system path.
 		# If No, it is not in our jurisdiction/concern, proceed.
-		if ( ($testDir -Like "$($OMEGA_CONF.basedir)*") ) {
-			Write-Debug "The $testDir is within $($OMEGA_CONF.basedir) - continuing to test its validity within the system path."
+		if ( ($testDir -Like "$($env:BaseDir)*") ) {
+			Write-Debug "The $testDir is within ${env:BaseDir} - continuing to test its validity within the system path."
 			# test that path exists on the filesystem / is a valid path (and that it is a Container type (directory))
 			# not found = not valid = continue
-			if ( ! (Test-Path -Path $testDir -PathType Container) ) { continue }
+			if ( ! (Test-Path -Path $testDir -PathType Container) )
+				{ Write-Debug "$testDir is not a valid Path"; continue }
 			# test if the path_additions parameter is even configured, if not, then NO PATHS FROM OMEGA ARE VALID = continue
-			if ( ! (Get-Member -InputObject $OMEGA_CONF -Name "path_additions" -Membertype Properties)) { continue }
+			if ( ! (Get-Member -InputObject $OMEGA_CONF -Name "path_additions" -Membertype Properties))
+				{ Write-Debug "path_additions is not a Property of `$OMEGA_CONF" ; continue }
 			# test to see if $OMEGA_CONF.path_additions contains $testDir, if it does not, then continue
-			if ( ! ( $OMEGA_CONF.path_additions -contains $testDir ) ) { continue } 
+			if ( $OMEGA_CONF.path_additions -NotContains $testDir)
+				{ Write-Debug "$testDir not in `$OMEGA_CONF"; continue } 
 		}
-		# All Tests Passed, the trials are complete, you, noble directory, can be added (or kept) on the system's path
-		
+	}
+	$Path = $Path -join ";" 
+	# All Tests Passed, the trials are complete, you, noble directory, can be added (or kept) on the system's path
+	Write-Debug "All validity tests have passed, '$Directory' is now on '$Path'"
+	# Set the path
+	& setx PATH /m $Path
 
-		# Set the path
-		#Set-ItemProperty -Path "$Reg" -Name PATH -Value $Path
-
-		### how to account for SYSTEM paths ?? SUCH AS  `C:\Windows` etc... there was 4???
-
-	# !!!!!!!!!!!!!!!!!
-	# !!!!!!!!!!!!!!!!!
-	# !!!!!!!!!!!!!!!!! WHAT IS THIS ?????
-		# if it isn't already in the PATH, add it
-		if( -not $env:Path.Contains($dir) ){
-			$env:Path += ";" + $dir
-		}
-	# !!!!!!!!!!!!!!!!!
-	# !!!!!!!!!!!!!!!!!
-	# !!!!!!!!!!!!!!!!!
-
+	if( -not $ENV:Path.Contains($testDir) ){
+		Write-Debug "$testDir is being added to the Environment Path as well as the System Path will only refresh for new windows"
+		$ENV:Path += ";" + $testDir
 	}
 
-	###### NOTES ######
-	# !!!!!!!!!!!!!!!!!
-	# To complete this, since the SYSTEMA PATH will not be auto-reloaded in this session, replace the original $path with new $path ### see replace path here
-	# !!!!!!!!!!!!!!!!!
-	# !!!!!!!!!!!!!!!!!
+	Show-Path -Debug
 }
 

@@ -1,7 +1,8 @@
 {
-    "bindir":  "C:\\Users\\ehiller\\AppData\\Local\\omega\\bin",
-    "sysdir":  "C:\\Users\\ehiller\\AppData\\Local\\omega\\system",
-    "basedir":  "C:\\Users\\ehiller\\AppData\\Local\\omega",
+    "bindir":  "\\bin",
+    "sysdir":  "\\system",
+    "confdir":  "\\config",
+    "system_path_key":  "Registry::HKLM\\System\\CurrentControlSet\\Control\\Session Manager\\Environment",
     "compression_extensions":  [
                                    ".7z",
                                    ".zip",
@@ -18,5 +19,6 @@
                       "information":  "Continue",
                       "verbose":  "SilentlyContinue",
                       "debug":  "Continue"
-                  }
+                  },
+    "path_additions":  "C:\\Users\\ehiller\\AppData\\Local\\omega\\system\\nodejs"
 }

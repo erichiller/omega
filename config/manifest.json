@@ -50,8 +50,9 @@
                               "systempath":  true
                           },
         "state":  {
-                      "updateDate":  "2016-Nov-27 11:33",
+                      "updateDate":  "2016-Dec-03 20:26",
                       "installed":  true
-                  }
+                  },
+        "postInstall":  "Write-OmegaConfig"
     }
 ]
