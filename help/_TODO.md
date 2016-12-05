@@ -28,3 +28,22 @@
 
 
 * `qq <searchterm>` (_go to frequent_) parses `get-history` and finds the directory in which searchterm is most often, goes to that directory 
+
+```powershell
+5
+Get complete command history
+Get-History
+same
+6
+Set maximum remembered commands
+$MaximumHistoryCount = integer
+$MaximumHistoryCount = 1000
+7
+Get last n commands from history
+Get-History -count n
+ghy -Count 25
+8
+Get last n commands from history containing substring
+Get-History | Select-String string | Select -last n
+h | sls child | Select -last 25
+```

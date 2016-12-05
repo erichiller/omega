@@ -2,7 +2,7 @@
 
 ## Creating help documentation from inline / insource comments
 
-See this article on [comments-based help documentation on Microsoft Technet](https://technet.microsoft.com/en-us/library/dd819489.aspx)
+See this article on [comments-based help documentation on Microsoft Technet](https://msdn.microsoft.com/powershell/reference/5.1/Microsoft.PowerShell.Core/about/about_Comment_Based_Help)
 
 ### Format
 

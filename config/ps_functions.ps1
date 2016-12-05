@@ -33,6 +33,35 @@ function Update-Environment {
 	. ${env:basedir}\$($OMEGA_CONF.confdir)\ps_functions.ps1
 }
 
+function New-Shortcut {
+	param(
+		[string]$path
+	)
+	if(!$string){ $path = $env:basedir }
+	echo "Shortcut Created"
+
+
+	$TargetFile = ( Join-Path ( Join-Path $env:basedir $OMEGA_CONF.sysdir ) "ConEmu\ConEmu64.exe" )
+	$ShortcutFile = Join-Path $path "omega.lnk"
+	$WScriptShell = New-Object -ComObject WScript.Shell
+	$Shortcut = $WScriptShell.CreateShortcut( $ShortcutFile )
+
+	$Shortcut.TargetPath = $TargetFile
+
+	$Shortcut.Arguments =
+		'/LoadCfgFile "' + ( Join-Path ( Join-Path $Env:Basedir $OMEGA_CONF.confdir ) "ConEmu.xml" ) + '" ' + 
+		'/FontDir "' + ( Join-Path (Join-Path $Env:Basedir $OMEGA_CONF.sysdir) "fonts" ) + '" ' + 
+		'/Icon "' + ( Join-Path ( Join-Path $Env:Basedir "icons" ) "omega_256.ico" ) + '" /run "@..\..\config\powershell.cmd"'
+
+	#$Shortcut.Arguments = '/LoadCfgFile "%HomePath%\AppData\Local\omega\config\ConEmu.xml" /FontDir "%HomePath%\AppData\Local\omega\system\nerd_hack_font" /Icon "%HomePath%\AppData\Local\omega\icons\omega_256.ico" /run "@%HomePath%\AppData\Local\omega\config\powershell.cmd"'
+
+	$Shortcut.WorkingDirectory = "$env:HomePath"
+
+	$Shortcut.IconLocation = Join-Path $env:basedir "icons\omega_256.ico"
+
+	$Shortcut.Save()
+}
+
 <#
 .SYNOPSIS
 get-pass is a helper function for PoSh-KeePass

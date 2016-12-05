@@ -10,5 +10,5 @@ node_modules
 thumbs.db
 desktop.ini
 system/**/
-!system/nerd_hack_font
+!system/fonts
 .vscode

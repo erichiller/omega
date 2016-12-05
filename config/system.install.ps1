@@ -53,5 +53,12 @@ https://github.com/git-for-windows/git/releases
 # portablegit seems best
 
 Grab the fresh release from the [npm github repo](https://github.com/npm/npm)
+.
+
+
+
+
+
+
 
 #>
