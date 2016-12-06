@@ -11,7 +11,7 @@
                             "Update-GitStatusCache"
                         ],
         "state":  {
-                      "updateDate":  "2016-Nov-20 19:30",
+                      "updateDate":  "2016-Dec-05 11:55",
                       "installed":  true
                   }
     },
@@ -28,14 +28,54 @@
     },
     {
         "type":  "psmodule",
+        "name":  "posh-git",
+        "brief":  "Directory and console coloring will be limited.",
+        "required":  true,
+        "installMethod":  "save-package",
+        "state":  {
+                      "updateDate":  "2016-Dec-05 11:42",
+                      "installed":  true
+                  }
+    },
+    {
+        "type":  "psmodule",
+        "name":  "oh-my-posh",
+        "brief":  "Beautification for PowerShell console.",
+        "required":  true,
+        "installMethod":  "save-package",
+        "state":  {
+                      "updateDate":  "2016-Dec-05 11:47",
+                      "installed":  true
+                  }
+    },
+    {
+        "type":  "psmodule",
         "name":  "PoShKeePass",
         "brief":  "Provides access to and searching of keepass database",
         "required":  true,
         "installMethod":  "save-package",
         "state":  {
-                      "updateDate":  "2016-Nov-20 18:25",
+                      "updateDate":  "2016-Dec-05 11:52",
                       "installed":  true
-                  }
+                  },
+        "postInstall":  [
+
+                        ]
+    },
+    {
+        "type":  "psmodule",
+        "name":  "PSSudo",
+        "brief":  "Provides sudo-like functionality in Powershell",
+        "required":  true,
+        "installMethod":  "git",
+        "cloneURL":  "https://github.com/erichiller/pssudo",
+        "state":  {
+                      "updateDate":  "2016-Dec-05 11:58",
+                      "installed":  true
+                  },
+        "postInstall":  [
+
+                        ]
     },
     {
         "type":  "system-path",

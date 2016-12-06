@@ -348,12 +348,14 @@ function opkg {
 						break;
 					}
 				}
+				# Check for existance of $ModulePath , if it does not exist , create the directory
+				if ( -not ( Test-Path $ModulePath ) ) { New-Item $ModulePath -type directory }
 				# move to the new location
 				Set-Location ( Join-Path $ModulePath $Package.name )
 				# postInstall is not required in the manifest, but it is here, so create the array if it isn't set
-###				SafeObjectArray("postInstall",$Package)
+				SafeObjectArray $Package "postInstall"
 				# import our newly installed module
-				ArrayAddUnique $Package.postInstall { Import-Module -name $Package.name -ErrorAction Stop >$null }
+				ArrayAddUnique $Package.postInstall $("Import-Module -name $Package.name -ErrorAction Stop >"+'$null')
 				break;
 			}
 			"system-path" {

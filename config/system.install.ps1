@@ -57,6 +57,9 @@ Grab the fresh release from the [npm github repo](https://github.com/npm/npm)
 
 
 
+## init script must reset manifest.json file, 
+or have a separate file with package statuses that is .gitignore'd
+
 
 
 
