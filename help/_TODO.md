@@ -6,7 +6,7 @@
 
 # Soon
 
-* Update script
+* Update opkg script
 * `scp` functionality?
 	- hack - use ssh like ~ `tar -c dir/ | gzip | gpg -c | ssh user@remote 'dd of=dir.tar.gz.gpg'`
 * seperate developers branch with `.vscode` and full `system/` directory (and any **build** scripts if they exist)
@@ -15,6 +15,8 @@
 # Intermediate
 
 * `sudo` should load an elevated prompt which has the same prompt/theme/environment as the conemu one.
+* a script fix for `EnvironmentSet` in `ConEmu.xml` so that it doesn't keep setting `%PATH%` with copies of _SCRIPTS_
+* ssh key push script mush check for pre-existance of key, and not duplicative add
 
 
 

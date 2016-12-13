@@ -65,6 +65,8 @@ try {
 	Import-Module -Name "posh-git" -ErrorAction Stop >$null
 	# set status as true
 	$gitStatus = $true
+	# if git is loaded, this means ssh is most likely available, lets check for KeeAgent's socket too and set if present
+	if ( Test-Path ( Join-Path $env:TEMP "KeeAgent.sock" ) ) { $env:SSH_AUTH_SOCK = Join-Path $env:TEMP "KeeAgent.sock" }
 } catch {
 	Write-Warning "Missing git support, install posh-git with 'Install-Module posh-git' and restart terminal (ConEmu,Omega)."
 	$gitStatus = $false

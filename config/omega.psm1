@@ -157,21 +157,21 @@ $colors.ErrorBackgroundColor = $MASTER_BACKGROUND
 
 $sl = $global:ThemeSettings #local settings
 
-$sl.PromptSymbols.StartSymbol                       = [char]::ConvertFromUtf32(0x03a9)     # greek omega
+$sl.PromptSymbols.StartSymbol                       = [char]::ConvertFromUtf32(0x03a9)     # greek omega , b1 is alpha
 
-$sl.PromptSymbols.ElevatedSymbol                    = [char]::ConvertFromUtf32(0xf0e7)
-$sl.PromptSymbols.FailedCommandSymbol               = [char]::ConvertFromUtf32(0xf468)
+$sl.PromptSymbols.ElevatedSymbol                    = [char]::ConvertFromUtf32(0x26A1)      # Octicons "zap"
+$sl.PromptSymbols.FailedCommandSymbol               = [char]::ConvertFromUtf32(0xf081)      # Octicons "x"
 
 $sl.PromptSymbols.SegmentForwardSymbol              = [char]::ConvertFromUtf32(0xE0B0)
 $sl.PromptSymbols.SegmentBackwardSymbol             = [char]::ConvertFromUtf32(0xE0B2)
 $sl.PromptSymbols.SegmentSeparatorForwardSymbol     = [char]::ConvertFromUtf32(0xE0B1)
 $sl.PromptSymbols.SegmentSeparatorBackwardSymbol    = [char]::ConvertFromUtf32(0xE0B3)
 
-$sl.GitSymbols.BranchSymbol                         = [char]::ConvertFromUtf32(0xf418)
+$sl.GitSymbols.BranchSymbol                         = [char]::ConvertFromUtf32(0xf020)      # Octicons "git-branch"
 $sl.GitSymbols.BranchUntrackedSymbol                = [char]::ConvertFromUtf32(0x2A2F)
 $sl.GitSymbols.BranchIdenticalStatusToSymbol        = [char]::ConvertFromUtf32(0x2261)
-$sl.GitSymbols.BranchAheadStatusSymbol              = [char]::ConvertFromUtf32(0xf47c)
-$sl.GitSymbols.BranchBehindStatusSymbol             = [char]::ConvertFromUtf32(0xf47d)
+$sl.GitSymbols.BranchAheadStatusSymbol              = [char]::ConvertFromUtf32(0xf0a2)      # Octicons "chrevron-up"
+$sl.GitSymbols.BranchBehindStatusSymbol             = [char]::ConvertFromUtf32(0xf0a3)      # Octicons "chevron-down"
 
 #$sl.Colors.SessionInfoBackgroundColor       = [ConsoleColor]::DarkRed
 $sl.Colors.SessionInfoBackgroundColor       = [ConsoleColor]::DarkGreen
@@ -235,22 +235,4 @@ Set-PSReadlineOption -TokenKind number -BackgroundColor $MASTER_BACKGROUND
 Set-PSReadlineOption -TokenKind string -BackgroundColor $MASTER_BACKGROUND
 Set-PSReadlineOption -TokenKind operator -BackgroundColor $MASTER_BACKGROUND
 Set-PSReadlineOption -TokenKind member -BackgroundColor $MASTER_BACKGROUND
-
-
-<#
-Set-PSReadlineOption -TokenKind comment -ForegroundColor white
-Set-PSReadlineOption -TokenKind none -ForegroundColor white
-Set-PSReadlineOption -TokenKind command -ForegroundColor white
-Set-PSReadlineOption -TokenKind parameter -ForegroundColor white
-Set-PSReadlineOption -TokenKind variable -ForegroundColor white
-Set-PSReadlineOption -TokenKind type -ForegroundColor white
-Set-PSReadlineOption -TokenKind number -ForegroundColor white
-Set-PSReadlineOption -TokenKind string -ForegroundColor white
-Set-PSReadlineOption -TokenKind operator -ForegroundColor white
-Set-PSReadlineOption -TokenKind member -ForegroundColor white
-#>
-
-
-
-
 

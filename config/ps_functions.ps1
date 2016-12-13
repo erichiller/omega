@@ -10,10 +10,14 @@ function Show-Path {
 	param (
 	[string] $PathToPrint = $ENV:Path,
 	[switch] $Debug,
-	[switch] $System
+	[switch] $System,
+	[switch] $User
 	)
 	if ($System -eq $true) {
-		$PathToPrint = (Get-ItemProperty -Path "$($OMEGA_CONF.system_path_key)" -Name PATH).Path
+		$PathToPrint = (Get-ItemProperty -Path "$($OMEGA_CONF.system_environment_key)" -Name PATH).Path
+	}
+	if ($User -eq $true) {
+		$PathToPrint = (Get-ItemProperty -Path "$($OMEGA_CONF.user_environment_key)" -Name PATH).Path
 	}
 	if($Debug -eq $false){
 		echo ($PathToPrint).Replace(';',"`n")
@@ -60,6 +64,22 @@ function New-Shortcut {
 	$Shortcut.IconLocation = Join-Path $env:basedir "icons\omega_256.ico"
 
 	$Shortcut.Save()
+
+}
+
+<#
+.SYNOPSIS
+Register-Omega-Shortcut creates an entry for Omega in the App Paths registry folder to index omega in windows start search
+New-Shortcut must have been run prior.
+#>
+function Register-Omega-Shortcut {
+	$omegaShortcut = Join-Path $env:basedir "omega.lnk"
+	if(Test-Path $omegaShortcut ){
+		New-Item -Path $($OMEGA_CONF.app_paths_key + "\omega.exe") -Value $omegaShortcut
+	} else {
+		Write-Warning "The shortcut to launch omega does not yet exist, create it first with `New-Shortcut` `n checked in $omegaShortcut"
+	}
+	
 }
 
 <#
@@ -331,6 +351,8 @@ function opkg {
 		echo "================================================>PACKAGE========================>"
 		$Package
 		echo "================================================>END========================>"
+		# Check for existance of $ModulePath , if it does not exist , create the directory
+		if ( -not ( Test-Path $ModulePath ) ) { New-Item $ModulePath -type directory }
 		switch ( $Package.type ) {
 			"psmodule" {
 				switch ( $Package.installMethod ) {
@@ -348,8 +370,6 @@ function opkg {
 						break;
 					}
 				}
-				# Check for existance of $ModulePath , if it does not exist , create the directory
-				if ( -not ( Test-Path $ModulePath ) ) { New-Item $ModulePath -type directory }
 				# move to the new location
 				Set-Location ( Join-Path $ModulePath $Package.name )
 				# postInstall is not required in the manifest, but it is here, so create the array if it isn't set
@@ -486,8 +506,8 @@ function Update-SystemPath {
 		[ValidateScript({Test-Path -Path $_ -PathType Container})]
 		[String] $Directory
 	)
-	$OriginalPath = (Get-ItemProperty -Path "$($OMEGA_CONF.system_path_key)" -Name PATH).Path
-	Write-Debug "Checking Path at '$($OMEGA_CONF.system_path_key)' - currently set to `n$OriginalPath"
+	$OriginalPath = (Get-ItemProperty -Path "$($OMEGA_CONF.system_environment_key)" -Name PATH).Path
+	Write-Debug "Checking Path at '$($OMEGA_CONF.system_environment_key)' - currently set to `n$OriginalPath"
 	$Path = $OriginalPath
 	# Check to ensure that the Directory is not already on the System Path
 	if ($Path | Select-String -SimpleMatch $Directory)
