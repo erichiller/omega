@@ -4,6 +4,13 @@
  Helper Functions
 #>
 
+function ohelp {
+	### change this to user help system!!!
+	### md -> manpages /// xml help?
+
+	Get-Content ( Join-Path $OMEGA_CONF.help "omega.install.md" )
+}
+
 # display the Path, one directory per line
 # takes one input parameters, defaults to the env:Path
 function Show-Path { 
@@ -41,8 +48,12 @@ function New-Shortcut {
 	param(
 		[string]$path
 	)
-	if(!$string){ $path = $env:basedir }
-	echo "Shortcut Created"
+	Update-Config
+	if(!$env:basedir){
+		Write-Warning "`$env:BaseDir is not set. Ensure that profile.ps1 is run properly first. Exiting immeditately, no action taken."
+		return
+	}
+	if(!$path){ $path = $env:basedir }
 
 
 	$TargetFile = ( Join-Path ( Join-Path $env:basedir $OMEGA_CONF.sysdir ) "ConEmu\ConEmu64.exe" )
@@ -64,6 +75,7 @@ function New-Shortcut {
 	$Shortcut.IconLocation = Join-Path $env:basedir "icons\omega_256.ico"
 
 	$Shortcut.Save()
+	echo "Shortcut Created"
 
 }
 
@@ -167,6 +179,8 @@ function Debug-Variable {
  ######### package logic ##########
  ##################################>
 
+ function opkg-install { opkg -install $args }
+
 <#
 .SYNOPSIS
 opkg is the package management utility for omega
@@ -246,6 +260,55 @@ function opkg {
 			}
 			$object.$pN = @()
 		}
+	}
+
+	function mv {
+		param(
+		[Parameter(Mandatory=$True,Position=1,
+                       HelpMessage="Source/Origin - this is the file or folder/directory to copy")]
+		[ValidateScript({Test-Path -Path $_ -PathType Container})]
+		[Path] $Source,
+
+		[Parameter(Mandatory=$True,Position=2,
+                       HelpMessage="Destination - this is the folder/directory which the source will be placed")]
+		[Path] $Destination,
+
+		[Parameter(Mandatory=$False,
+                       HelpMessage="Flag to set whether a directory should be created for the Destination, defaults to yes. This is RECURSIVE.")]
+		[switch] $Create=[switch]::Present
+		
+		)
+
+		If ( $Create -and ( Test-Path -Path $Destination) ) {
+			New-Item $Destination -Type directory
+		}
+
+		# http://go.microsoft.com/fwlink/?LinkID=113350
+		# -Confirm 		Prompts you for confirmation before running the cmdlet.
+		# -Credential	Specifies a user account that has permission to perform this action. The default is the current user.
+		# -Destination	Specifies the path to the location where the items are being moved. 
+		#				The default is the current directory. 
+		#				Wildcards are permitted, but the result must specify a single location.
+		# 				To rename the item being moved, specify a new name in the value of the Destination parameter.
+		# -Exclude		Specifies, as a string array, an item or items that this cmdlet excludes from the operation. 
+		#				The value of this parameter qualifies the Path parameter. 
+		#				Enter a path element or pattern, such as *.txt. 
+		#				Wildcards are permitted.
+		# -Filter		Specifies a filter in the provider's format or language. 
+		#				The value of this parameter qualifies the Path parameter.
+		# 				The syntax of the filter, including the use of wildcards, depends on the provider. 
+		#				Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects, rather than having Windows PowerShell filter the objects after they are retrieved.
+		# -Force		Forces the command to run without asking for user confirmation.
+		# -Include		Specifies, as a string array, an item or items that this cmdlet moves in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as *.txt. Wildcards are permitted.
+		# -LiteralPath	Specifies the path to the current location of the items. Unlike the Path parameter, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell Windows PowerShell not to interpret any characters as escape sequences.
+		# -PassThru		Returns an object representing the item with which you are working. By default, this cmdlet does not generate any output.
+		# -Path
+		# -UseTransaction
+		# -WhatIf
+		# 
+
+		Move-Item -Path $Source -Destination $Destination
+
 	}
 
 	
@@ -397,9 +460,9 @@ function opkg {
 						Write-Debug "Destination: $outFile"
 						Write-Debug "Extension:'$([IO.Path]::GetExtension($filename))'"
 						
-						#Start-BitsTransfer -Source ( $Package.installParams.searchPath + $filename ) -Destination $outFile -Description "omega opkg install version $version of $($Package.installParams.searchPath)($filename)"
+						Start-BitsTransfer -Source ( $Package.installParams.searchPath + $filename ) -Destination $outFile -Description "omega opkg install version $version of $($Package.installParams.searchPath)($filename)"
 
-						$deploy = (Join-Path (Join-Path $Env:Basedir $OMEGA_CONF.sysdir)  $Package.name )
+						$deploy = ( Join-Path (Join-Path $Env:Basedir $OMEGA_CONF.sysdir) $Package.name )
 						Write-Debug "Deploy: $deploy"
 						Debug-Variable $OMEGA_CONF.compression_extensions
 						if( $OMEGA_CONF.compression_extensions -contains [IO.Path]::GetExtension($filename) ){

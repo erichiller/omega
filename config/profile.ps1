@@ -54,11 +54,23 @@ $global:UserModuleBasePath = $local:ModulePath
 
 
 
-
-
 #################################################
 ######        STEP #2: IMPORT MODULES       #####
 #################################################
+
+
+# WinPython portable distribution : https://github.com/winpython/winpython/releases
+try {
+	$PythonHome = (Join-Path $env:BaseDir "system\python27")
+	if ( Test-Path $PythonHome){
+		$env:PYTHONHOME = $PythonHome;
+	} else {
+		Write-Debug "python27 directory not found, PYTHONHOME not set."
+	}
+} catch {
+	Write-Warning "Missing python2.7 support."
+	$gitStatus = $false
+}
 
 try {
 	# test for git
@@ -67,6 +79,10 @@ try {
 	$gitStatus = $true
 	# if git is loaded, this means ssh is most likely available, lets check for KeeAgent's socket too and set if present
 	if ( Test-Path ( Join-Path $env:TEMP "KeeAgent.sock" ) ) { $env:SSH_AUTH_SOCK = Join-Path $env:TEMP "KeeAgent.sock" }
+	# For information on Git display variables, see:
+	# $env:ConEmuDir\system\psmodules\posh-git\GitPrompt.ps1
+	# posh-git change name of tab // remove annoying
+	$GitPromptSettings.EnableWindowTitle = "git:"
 } catch {
 	Write-Warning "Missing git support, install posh-git with 'Install-Module posh-git' and restart terminal (ConEmu,Omega)."
 	$gitStatus = $false
@@ -79,18 +95,13 @@ try {
 } catch {
 	Write-Warning "The GitStatusCachePoshClient module could not be found & imported, large directories may take significantly longer without it."
 }
-# For information on Git display variables, see:
-# $env:ConEmuDir\system\psmodules\posh-git\GitPrompt.ps1
-# posh-git change name of tab // remove annoying
-$GitPromptSettings.EnableWindowTitle = "git:"
-
 
 try {
-	Import-Module oh-my-posh
+	Import-Module oh-my-posh -ErrorAction Stop >$null
 	$global:ThemeSettings.MyThemesLocation = "$env:BaseDir\config\"
 	Set-Theme omega
 } catch {
-	Write-Warning "oh-my-posh module failed to load. Either not installed or there was an error."
+	Write-Warning "oh-my-posh module failed to load. Either not installed or there was an error. Modules styling will not be present."
 }
 
 try {
@@ -103,12 +114,6 @@ try {
 	Import-Module PSColor -ErrorAction Stop >$null
 } catch {
 	Write-Warning "PSColor module failed to load. Either not installed or there was an error. Directory and console coloring will be limited."
-}
-
-try {
-	Import-Module PoShKeePass -Force -ErrorAction Stop >$null
-} catch {
-	Write-Warning "PoShKeePass module failed to load. Either not installed or there was an error. Password commands and access will be unavailable."
 }
 
 ##  PSGnuwin32 ??
@@ -126,7 +131,8 @@ try {
 
 Set-Alias -Name "powershell" -Value "${env:SystemRoot}\system32\WindowsPowerShell\v1.0\powershell.exe" -Force
 
-Set-Alias -Name "Print-Path" -Value Print-Path
+Set-Alias -Name "Print-Path" -Value Show-Path
 
 
-New-Alias -Name "7z" -Value "${env:ProgramFiles}\7-zip\7z.exe"
+Set-Alias -Name "7z" -Value "${env:ProgramFiles}\7-zip\7z.exe"
+#New-Alias -Name "7z" -Value "${env:ProgramFiles}\7-zip\7z.exe"

@@ -11,7 +11,7 @@
                             "Update-GitStatusCache"
                         ],
         "state":  {
-                      "updateDate":  "2016-Dec-05 11:55",
+                      "updateDate":  "2016-Dec-28 06:17",
                       "installed":  true
                   }
     },
@@ -22,9 +22,12 @@
         "required":  true,
         "installMethod":  "save-package",
         "state":  {
-                      "updateDate":  "2016-Nov-20 18:22",
+                      "updateDate":  "2016-Dec-28 06:19",
                       "installed":  true
-                  }
+                  },
+        "postInstall":  [
+
+                        ]
     },
     {
         "type":  "psmodule",
@@ -33,9 +36,12 @@
         "required":  true,
         "installMethod":  "save-package",
         "state":  {
-                      "updateDate":  "2016-Dec-05 11:42",
+                      "updateDate":  "2016-Dec-28 06:12",
                       "installed":  true
-                  }
+                  },
+        "postInstall":  [
+
+                        ]
     },
     {
         "type":  "psmodule",
@@ -44,18 +50,7 @@
         "required":  true,
         "installMethod":  "save-package",
         "state":  {
-                      "updateDate":  "2016-Dec-05 11:47",
-                      "installed":  true
-                  }
-    },
-    {
-        "type":  "psmodule",
-        "name":  "PoShKeePass",
-        "brief":  "Provides access to and searching of keepass database",
-        "required":  true,
-        "installMethod":  "save-package",
-        "state":  {
-                      "updateDate":  "2016-Dec-05 11:52",
+                      "updateDate":  "2016-Dec-28 06:06",
                       "installed":  true
                   },
         "postInstall":  [
@@ -70,7 +65,7 @@
         "installMethod":  "git",
         "cloneURL":  "https://github.com/erichiller/pssudo",
         "state":  {
-                      "updateDate":  "2016-Dec-05 11:58",
+                      "updateDate":  "2016-Dec-28 06:19",
                       "installed":  true
                   },
         "postInstall":  [
@@ -90,7 +85,7 @@
                               "systempath":  true
                           },
         "state":  {
-                      "updateDate":  "2016-Dec-03 20:26",
+                      "updateDate":  "2017-Jan-15 13:19",
                       "installed":  true
                   },
         "postInstall":  "Write-OmegaConfig"
