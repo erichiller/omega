@@ -52,25 +52,22 @@ if( -not $env:PSModulePath.Contains($local:ModulePath) ){
 # load local psmodules
 $global:UserModuleBasePath = $local:ModulePath
 
+<#
+# if( Test-Path )
+# $env:GOPATH = Join-Path $env:USERPROFILE "dev"
+if( Test-Path $OMEGA_CONF['unixesq'] ){
+	if ( Test-Path ( Join-Path $OMEGA_CONF['unixesq'] "mingw64\bin" ) ) {
+		#has gcc.exe
+	}
+}
+
+#>
+
 
 
 #################################################
 ######        STEP #2: IMPORT MODULES       #####
 #################################################
-
-
-# WinPython portable distribution : https://github.com/winpython/winpython/releases
-try {
-	$PythonHome = (Join-Path $env:BaseDir "system\python27")
-	if ( Test-Path $PythonHome){
-		$env:PYTHONHOME = $PythonHome;
-	} else {
-		Write-Debug "python27 directory not found, PYTHONHOME not set."
-	}
-} catch {
-	Write-Warning "Missing python2.7 support."
-	$gitStatus = $false
-}
 
 try {
 	# test for git

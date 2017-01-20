@@ -105,14 +105,29 @@ let g:startify_fortune_use_unicode = 1
 " autocmd User Startified nnoremap <buffer> e :colorscheme edh<CR>:call startify#open_buffers(15)<CR>
 " autocmd BufNewFile * colorscheme edh
 
+" Ack
+" grep / file search within ViM
+" 
+let g:ack_autofold_results=1
+let g:ack_qhandler = "botright copen 30"
+if executable('ag')
+  let g:ackprg = 'ag --smart-case --silent --vimgrep'
+endif
+map <leader>f :AckWindow<space>
+map <leader>ff :Ack<space>
+map <leader>fff :Fkb<space>
+let $kb="C:\\Users\\ehiller\\Documents"
 
-" CtrlP
-" ( fuzzy file searching )
+command -nargs=* Fkb :lcd $kb | :Ack <args>
+function Fkb(term)
+    lcd $kb
+    Ack a:term
+endfunction
 
-let g:ctrlp_match_window = 'top,order:ttb,min:1,max:10,results:10'
-let g:ctrlp_cache_dir = $HOME.'/vimfiles/cache/ctrlp'                                                                     
-let g:ctrlp_extensions = ['line']
 
+" Path to Python 3.5 -- python35.dll is sought
+" set pythonthreedll=$BaseDir\system\python35\python35.dll
+let $PYTHONPATH = $BaseDir."\\system\\python35"
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -121,19 +136,21 @@ let g:ctrlp_extensions = ['line']
 "
 " http://vimdoc.sourceforge.net/htmldoc/options.html
 """""""""""""""""""""""""""""""""""""""""""""""""""""
-" the following is for preserving file and settings
-" see :help swap
-"""""""""""""""""""""""""""""""""""""""""""""""""""""
 " see available filetypes
 " :echo glob($VIMRUNTIME . '/syntax/*.vim')
 " :echo glob($VIMRUNTIME . '/ftplugin/*.vim')
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
 filetype plugin indent on
-set nocompatible
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+" the following is for preserving files and settings
+" see :help swap
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
 set directory=~/vimfiles/swap/
 set updatecount=20									" save every <updatecount> number of characters
 set updatetime=2000									" save every 2000ms (2s)
 
 " Setting some decent VIM settings for programming
+set nocompatible                " basic starting point for usability
 set vb t_vb=                    " remove the flash and the beep
 set ruler                       " show the cursor position all the time
 set backspace=indent,eol,start  " make that backspace key work the way it should
@@ -158,7 +175,8 @@ set shiftwidth=4				" Number of spaces to use for each step of (auto)indent.
 set number						" Show line numbers.
 set cursorline                  " Highlight the current line
 set history=50					" keep 50 lines of command line history
-set showcmd!					" don't display commands
+set wildmode=list:longest       " show suggestions in the command line for vim <Tab> triggered
+set showcmd					" don't display commands
 set hlsearch					" highlight search terms
 set showmatch                   " automatically show matching brackets. works like it does in bbedit.
 set incsearch					" do incremental searching
@@ -166,8 +184,8 @@ set smartcase                   " don't ignorecase if searched word starts with 
 set ignorecase					" ignore case / no case sensitivity when searching
 set gdefault                    " global regex substitutions
 " these two lines fix vim's regex implrementation so that it uses the standard pcre
-nnoremap / /\v                 
-vnoremap / /\v
+" nnoremap / /\v                 
+" vnoremap / /\v
 " this clears out the search results
 nnoremap <leader><space> :noh<cr>
 " set TAB key to execute parenthesis/bracket matching
@@ -175,7 +193,6 @@ nnoremap <tab> %
 vnoremap <tab> %
 
 
-set wildmode=list:longest       " show suggestions in the command line for vim <Tab> triggered
 
 
 set laststatus=2                " make the last line (status) always present - http://vimhelp.appspot.com/options.txt.html#%27laststatus%27
@@ -212,8 +229,9 @@ source $VIMRUNTIME/mswin.vim
 set guioptions-=T				" Remove the Toolbar
 
 " Auto-Save Session options (see vim-sessions-> https://github.com/xolox/vim-session )
-let g:session_autosave = 'yes'
-let g:session_autoload = 'yes'
+let g:session_verbose_messages = 0
+let g:session_autosave = 'no'
+let g:session_autoload = 'no' " no=ask the user if they want to load the session if no file is provided
 let g:session_autosave_periodic = 1
 set sessionoptions+=resize,tabpages,winpos,winsize
 " no need to restore help windows!
@@ -259,9 +277,10 @@ if has("autocmd")
 endif
 
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
 " nerd-comments
 " https://github.com/scrooloose/nerdcommenter/blob/master/doc/NERD_commenter.txt
-" 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:NERDCommentEmptyLines = 1
 let g:NERDMenuMode = 1
 let g:NERDSpaceDelims = 1
@@ -271,13 +290,13 @@ let g:NERDSpaceDelims = 1
 " ( undo tree visualization )
 " https://github.com/simnalamburt/vim-mundo
 """""""""""""""""""""""""""""""""""""""""""""""""""""
-" Path to Python 2.7 -- python27.dll is sought
-set pythondll=$PythonHome\python27.dll
 " allows for Ctrl-U in Insert Mode
 imap <C-U> <Esc>:MundoToggle<CR>
 " Allows for usage in normal mode (the mode in which you can do `:....`)
 nmap <C-U> :MundoToggle<CR>
 let g:mundo_preview_bottom = 1
+" use python3
+let g:mundo_prefer_python3 = 1
 " let g:mundo_help = 1
 let g:mundo_close_on_revert = 1
 
@@ -297,7 +316,6 @@ fun! SearchHighlight()
     silent! call matchdelete(b:ring)
     let b:ring = matchadd('ErrorMsg', '\c\%#' . @/, 101)
 endfun
-
 fun! SearchNext()
     try
         execute 'normal! ' . 'Nn'[v:searchforward]
@@ -306,7 +324,6 @@ fun! SearchNext()
     endtry
     call SearchHighlight()
 endfun
-
 fun! SearchPrev()
     try
         execute 'normal! ' . 'nN'[v:searchforward]
@@ -318,7 +335,6 @@ endfun
 " Highlight entry
 nnoremap <silent> n :call SearchNext()<CR>
 nnoremap <silent> N :call SearchPrev()<CR>
-
 " Use <C-L> to clear some highlighting
 nnoremap <silent> <C-L> :silent! call matchdelete(b:ring)<CR>:nohlsearch<CR>:set nolist nospell<CR><C-L>
 """""""""""""""""""""""" END /// HIGHLIGHT CURRENT SEARCH RESULT """"""""""""""""""""""""
@@ -337,7 +353,22 @@ if has("autocmd")
 
     " the initial startup (blank) file and 
     " any files without extensions and that are unable to have a filetype detected should be set as markdown
-    autocmd VimEnter,BufNewFile * if empty(expand("%:e")) && !did_filetype() | set filetype=markdown | endif
+    " autocmd BufAdd * if empty(expand("%:e")) && !did_filetype() | set filetype=markdown | endif
+    autocmd BufAdd * if empty(expand("%:e")) && !did_filetype() | set filetype=markdown | endif
+    
+    " autocmd filetypedetect BufRead,BufNewFile * echomsg "ftdetect test"
+    " if @% == "" | echo "mark2-visible" | echomsg "mark2" | endif
+    " autocmd BufAdd * echomsg "ftdetect BufAdd"
+    " autocmd BufEnter * echomsg "ftdetect BufEnter"
+    " autocmd BufWinEnter * echomsg "ftdetect BufWinEnter"
+
+
+    autocmd  FocusLost  *.txt   :    if &modified && g:autosave_on_focus_change
+    autocmd  FocusLost  *.txt   :    write
+    autocmd  FocusLost  *.txt   :    echo "Autosaved file while you were absent" 
+    autocmd  FocusLost  *.txt   :    endif
+
+
     augroup markdown
         autocmd!
         " set .txt and .md as markdown
@@ -350,6 +381,8 @@ if has("autocmd")
         autocmd FileType markdown setlocal nonumber
 
         autocmd FileType markdown colorscheme edh
+        " this is a catch all - all files that are not excepted (ie. markdown) will load peaksea
+        autocmd BufRead * colorscheme peaksea
 
 
         """""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -400,6 +433,13 @@ if has("autocmd")
 endif " has("autocmd")
 
 
-
-
+" 
+" Reference & Notes
+" 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Upon installing a new plugin, be sure to install it's help as well with
+" :helptags ALL
+" 
+" 
+" 
 

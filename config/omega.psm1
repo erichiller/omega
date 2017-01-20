@@ -224,6 +224,7 @@ Set-PSReadlineOption -TokenKind Command -ForegroundColor DarkBlue
 Set-PSReadlineOption -TokenKind Parameter -ForegroundColor Yellow
 #>
 
+Set-PSReadlineKeyHandler -Key Tab -Function Complete
 
 Set-PSReadlineOption -TokenKind comment -BackgroundColor $MASTER_BACKGROUND
 Set-PSReadlineOption -TokenKind none -BackgroundColor $MASTER_BACKGROUND
