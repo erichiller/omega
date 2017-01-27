@@ -34,3 +34,27 @@ Default load locations
 ## Console Status State
 
 Can expore the snap-ins, and aliases present with [console-export](https://technet.microsoft.com/en-us/library/hh849706.aspx)
+
+## Alias commands
+
+See properties of an alias; readonly can not be changed with a simple `Set-Alias <alias> <command>` nor removed with `Remote-Item alias:<alias>`
+
+```powershell
+(get-alias curl).Options
+```
+
+But you can do:
+
+```powershell
+Set-Alias -Name <alias> -Value <command> -Force -Option AllScope
+```
+
+For very detailed information on aliases present:
+
+```powershell
+[Management.Automation.Runspaces.InitialSessionState].getproperty(
+        "BuiltInAliases", [reflection.bindingflags]"NonPublic,Static").getvalue(
+             $null, @()) | format-table -auto
+```
+
+[source](http://stackoverflow.com/questions/2770526/where-are-the-default-aliases-defined-in-powershell)

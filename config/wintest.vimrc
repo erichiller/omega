@@ -278,6 +278,19 @@ endif
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""
+" vim-go
+" git clone https://github.com/fatih/vim-go
+" Once installed, within vim run
+" :GoUpdateBinaries
+let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_types = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_build_constraints = 1
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
 " nerd-comments
 " https://github.com/scrooloose/nerdcommenter/blob/master/doc/NERD_commenter.txt
 """""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -375,7 +388,7 @@ if has("autocmd")
         autocmd BufNewFile,BufFilePre,BufRead *.md,*.txt set filetype=markdown
         
         autocmd FileType markdown setlocal wrap linebreak nolist
-        autocmd FileType markdown setlocal showbreak=…
+        " autocmd FileType markdown setlocal showbreak=…
         " autocmd FileType markdown setlocal showbreak=...
 
         autocmd FileType markdown setlocal nonumber

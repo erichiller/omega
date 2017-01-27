@@ -52,18 +52,6 @@ if( -not $env:PSModulePath.Contains($local:ModulePath) ){
 # load local psmodules
 $global:UserModuleBasePath = $local:ModulePath
 
-<#
-# if( Test-Path )
-# $env:GOPATH = Join-Path $env:USERPROFILE "dev"
-if( Test-Path $OMEGA_CONF['unixesq'] ){
-	if ( Test-Path ( Join-Path $OMEGA_CONF['unixesq'] "mingw64\bin" ) ) {
-		#has gcc.exe
-	}
-}
-
-#>
-
-
 
 #################################################
 ######        STEP #2: IMPORT MODULES       #####
@@ -113,7 +101,45 @@ try {
 	Write-Warning "PSColor module failed to load. Either not installed or there was an error. Directory and console coloring will be limited."
 }
 
+try {
+	# https://github.com/samneirinck/posh-docker
+	Import-Module posh-docker
+} catch {
+	Write-Warning "Posh-Docker module failed to load. Either not installed or there was an error. Docker autocomplete commands will not function."
+	Write-Warning "It can be installed in an admin console with:"
+	Write-Warning "Install-Module -Scope CurrentUser posh-docker -Force"
+}
+
+# go is going to have to be a module too
+try {
+	$goPath = Resolve-Path $OMEGA_CONF.gopath
+	if( ( Test-Path $goPath ) `
+		-and ( Test-Path ( Join-Path $goPath "bin" ) ) `
+		-and ( Test-Path ( Join-Path $goPath "pkg" ) ) `
+		-and ( Test-Path ( Join-Path $goPath "src" ) ) `
+	){
+		$env:GOPATH = $goPath
+		Add-DirToPath ( Join-Path $goPath "bin" )
+	} else {
+		Write-Warning "$goPath is not present"
+	}
+
+	# get msys2 , msys64 here: https://sourceforge.net/projects/msys2/files/Base/x86_64/
+	$unixesq = Join-Path $env:BaseDir $OMEGA_CONF.unixesq
+	if( ( Test-Path $unixesq ) `
+		-and ( Test-Path ( Join-Path $unixesq "mingw64\bin" ) ) `
+		-and ( Test-Path ( Join-Path $unixesq "mingw64\bin\gcc.exe" ) ) `
+	){
+
+	}
+} catch {
+	Write-Warning "GO not found. Either not installed or there was an error. Directory and console coloring will be limited."
+}
+
 ##  PSGnuwin32 ??
+
+## check for psreadline 1.2 with get-module psreadline
+## else install with ``` powershell -noprofile -command "Install-Module PSReadline -Force" ```
 
 
 ###########################################################################################################################################
@@ -130,6 +156,15 @@ Set-Alias -Name "powershell" -Value "${env:SystemRoot}\system32\WindowsPowerShel
 
 Set-Alias -Name "Print-Path" -Value Show-Path
 
-
 Set-Alias -Name "7z" -Value "${env:ProgramFiles}\7-zip\7z.exe"
-#New-Alias -Name "7z" -Value "${env:ProgramFiles}\7-zip\7z.exe"
+
+# where whereis which
+Set-Alias -Name where -Value "${env:windir}\System32\where.exe" -Force -Option AllScope
+Set-Alias -Name "whereis" -Value "${env:windir}\System32\where.exe"
+Set-Alias -Name "which" -Value "${env:windir}\System32\where.exe"
+
+# new mv
+Remove-Item alias:mv
+
+# less is more
+Set-Alias -Name "less" -Value "${env:windir}\System32\more.com"

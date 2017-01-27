@@ -94,46 +94,11 @@ function Register-Omega-Shortcut {
 	
 }
 
-<#
-.SYNOPSIS
-get-pass is a helper function for PoSh-KeePass
-.DESCRIPTION
-Allows for quick searching through results and displays. 
-The default behavior is to list out the entries, but not display the password.
-Use the `-showPass` flag in order to display the Password
-.PARAMETER showPass
-Flag which will 
-#>
-function get-pass {
-	param(
-		[string]$searchString,
-		[switch]$showPass,
-		[switch]$copyPass
-		)
- 
-	if ($showPass) { 
-		Get-KeePassEntry -DatabaseProfileName $OMEGA_CONF.packages.keepass.profile -AsPlainText | Select-Object -Property Title,UserName,Password,FullPath,Notes | Where { $_.Title , $_.Username , $_.Notes -like "*${searchString}*"} | Tee-Object -Variable KeePassEntry | Format-Table
-	} else {
-		#Get-KeePassEntry -DatabaseProfileName $$OMEGA_CONF.packages.keepass.profile -AsPlainText | Select-Object -Property Title,UserName,FullPath,Notes | Where {$_ -like "*${searchString}*"} | Format-Table | $KeePassEntry = 
-		Get-KeePassEntry -DatabaseProfileName $$OMEGA_CONF.packages.keepass.profile -AsPlainText | Select-Object -Property Title,UserName,FullPath,Notes | Where { $_.Title , $_.Username , $_.Notes -like "*${searchString}*"} | Tee-Object -Variable KeePassEntry | Format-Table
 
-	}
-	if($copyPass){
-		Get-KeePassEntry -DatabaseProfileName $$OMEGA_CONF.packages.keepass.profile -AsPlainText | Select-Object -Property Title,UserName,Password,FullPath,Notes | Where { $_.Title , $_.Username , $_.Notes -like "*${searchString}*"} | Tee-Object -Variable KeePassEntry | Select -ExpandProperty "Password"
-		if ( $KeePassEntry.pass.count -eq 1 ){
-			$KeePassEntry.pass | Set-Clipboard
-		} else {
-			echo "Clipboard not set as there was more than one result."
-		}
-	}
-	#return $KeePassEntry
-	return $KeePassEntry[0].Title
-}
 
 <#
  Utility Functions
 #>
-
 
 
 function checkGit($Path) {
@@ -174,6 +139,71 @@ function Debug-Variable {
 		"Debug-Variable`n----START-VALUE-PRINT----`n$( $var | Format-Table -AutoSize -Wrap | Out-String )----END-VALUE-PRINT----" 
 	) | Write-Debug
 }
+
+function mv {
+	param(
+	[Parameter(Mandatory=$True,Position=1,
+					HelpMessage="Source/Origin - this is the file or folder/directory to copy")]
+	[Alias("src","s")]
+	[String] $Source,
+
+	[Parameter(Mandatory=$True,Position=2,
+					HelpMessage="Destination - this is the folder/directory which the source will be placed")]
+	[Alias("dest","d")]
+	[String] $Destination,
+
+	[Parameter(Mandatory=$False,
+					HelpMessage="Flag to set whether a directory should be created for the Destination, defaults to yes. This is RECURSIVE.")]
+	[switch] $Create
+	
+	)
+	Process
+	{
+
+	If ( -not ( Test-Path -Path $Source) ) {
+		Write-Warning "Source '$Source' does not exist"
+		return 1
+	}
+
+	
+	If ( $Destination.EndsWith("\") `
+	-and ( -not ( Test-Path -Path $Destination) ) ){
+		If ( $Create -eq $false ){
+			New-Item $Destination -Type directory -Confirm
+		}
+		If ( $Create -eq $true ){
+			New-Item $Destination -Type directory
+		}
+	}
+
+	# http://go.microsoft.com/fwlink/?LinkID=113350
+	# -Confirm 		Prompts you for confirmation before running the cmdlet.
+	# -Credential	Specifies a user account that has permission to perform this action. The default is the current user.
+	# -Destination	Specifies the path to the location where the items are being moved. 
+	#				The default is the current directory. 
+	#				Wildcards are permitted, but the result must specify a single location.
+	# 				To rename the item being moved, specify a new name in the value of the Destination parameter.
+	# -Exclude		Specifies, as a string array, an item or items that this cmdlet excludes from the operation. 
+	#				The value of this parameter qualifies the Path parameter. 
+	#				Enter a path element or pattern, such as *.txt. 
+	#				Wildcards are permitted.
+	# -Filter		Specifies a filter in the provider's format or language. 
+	#				The value of this parameter qualifies the Path parameter.
+	# 				The syntax of the filter, including the use of wildcards, depends on the provider. 
+	#				Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects, rather than having Windows PowerShell filter the objects after they are retrieved.
+	# -Force		Forces the command to run without asking for user confirmation.
+	# -Include		Specifies, as a string array, an item or items that this cmdlet moves in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as *.txt. Wildcards are permitted.
+	# -LiteralPath	Specifies the path to the current location of the items. Unlike the Path parameter, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell Windows PowerShell not to interpret any characters as escape sequences.
+	# -PassThru		Returns an object representing the item with which you are working. By default, this cmdlet does not generate any output.
+	# -Path
+	# -UseTransaction
+	# -WhatIf
+	# 
+
+	Move-Item -Path $Source -Destination $Destination
+	}
+}
+
 
 <##################################
  ######### package logic ##########
@@ -261,56 +291,6 @@ function opkg {
 			$object.$pN = @()
 		}
 	}
-
-	function mv {
-		param(
-		[Parameter(Mandatory=$True,Position=1,
-                       HelpMessage="Source/Origin - this is the file or folder/directory to copy")]
-		[ValidateScript({Test-Path -Path $_ -PathType Container})]
-		[Path] $Source,
-
-		[Parameter(Mandatory=$True,Position=2,
-                       HelpMessage="Destination - this is the folder/directory which the source will be placed")]
-		[Path] $Destination,
-
-		[Parameter(Mandatory=$False,
-                       HelpMessage="Flag to set whether a directory should be created for the Destination, defaults to yes. This is RECURSIVE.")]
-		[switch] $Create=[switch]::Present
-		
-		)
-
-		If ( $Create -and ( Test-Path -Path $Destination) ) {
-			New-Item $Destination -Type directory
-		}
-
-		# http://go.microsoft.com/fwlink/?LinkID=113350
-		# -Confirm 		Prompts you for confirmation before running the cmdlet.
-		# -Credential	Specifies a user account that has permission to perform this action. The default is the current user.
-		# -Destination	Specifies the path to the location where the items are being moved. 
-		#				The default is the current directory. 
-		#				Wildcards are permitted, but the result must specify a single location.
-		# 				To rename the item being moved, specify a new name in the value of the Destination parameter.
-		# -Exclude		Specifies, as a string array, an item or items that this cmdlet excludes from the operation. 
-		#				The value of this parameter qualifies the Path parameter. 
-		#				Enter a path element or pattern, such as *.txt. 
-		#				Wildcards are permitted.
-		# -Filter		Specifies a filter in the provider's format or language. 
-		#				The value of this parameter qualifies the Path parameter.
-		# 				The syntax of the filter, including the use of wildcards, depends on the provider. 
-		#				Filters are more efficient than other parameters, because the provider applies them when the cmdlet gets the objects, rather than having Windows PowerShell filter the objects after they are retrieved.
-		# -Force		Forces the command to run without asking for user confirmation.
-		# -Include		Specifies, as a string array, an item or items that this cmdlet moves in the operation. The value of this parameter qualifies the Path parameter. Enter a path element or pattern, such as *.txt. Wildcards are permitted.
-		# -LiteralPath	Specifies the path to the current location of the items. Unlike the Path parameter, the value of LiteralPath is used exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in single quotation marks. Single quotation marks tell Windows PowerShell not to interpret any characters as escape sequences.
-		# -PassThru		Returns an object representing the item with which you are working. By default, this cmdlet does not generate any output.
-		# -Path
-		# -UseTransaction
-		# -WhatIf
-		# 
-
-		Move-Item -Path $Source -Destination $Destination
-
-	}
-
 	
 	<##################################
 	######### symlink logic ##########
@@ -625,3 +605,159 @@ function Update-SystemPath {
 	Show-Path -Debug
 }
 
+Set-Alias -Name "f" -Value Search-FrequentDirectory
+<#
+.SYNOPSIS
+Search-FrequentDirectory is a helper function navigating frequently accessed directories
+.DESCRIPTION
+The use simply enters the directory name, or part of it, and the history is searched
+The most commonly cd 'd into directory containing the string is then cd'd into.
+.PARAMETER dirSearch
+directory string to search for
+.NOTES
+Additionall, a very similarly useful command in powershell is 
+#<command><tab>
+That is hash symbol, then type the command you would like to search your command history for, then press tab. A menucomplete of all your history containing that command will come up for your selection.
+#>
+function Search-FrequentDirectory {
+	[CmdletBinding()]
+	Param ()
+	DynamicParam {
+	#
+	# The "modules" param
+	#
+	$dirSearch = new-object -Type System.Collections.ObjectModel.Collection[System.Attribute]
+
+	# [parameter(mandatory=...,
+	#     ...
+	# )]
+	$dirSearchParamAttribute = new-object System.Management.Automation.ParameterAttribute
+	$dirSearchParamAttribute.Mandatory = $true
+	$dirSearchParamAttribute.Position = 1
+	$dirSearchParamAttribute.HelpMessage = "Enter one or more module names, separated by commas"
+	$dirSearch.Add($dirSearchParamAttribute)    
+
+	# [ValidateSet[(...)]
+	$dirPossibles = @()
+	
+	$historyFile = (Get-PSReadlineOption).HistorySavePath
+	# directory Seperating character for the os; \ (escaped to \\) for windows (as C:\Users\); / for linux (as in /var/www/);
+	# a catch all would be \\\/  ; but this invalidates the whitespace escape character that may be used mid-drectory.
+	$dirSep = "\\"
+	# Group[1] = Directory , Group[length-1] = lowest folder
+	$regex = "^[[:blank:]]*cd ([a-zA-Z\~:]+([$dirSep][^$dirSep]+)*[$dirSep]([^$dirSep]+)[$dirSep]?)$"
+	# original: ^[[:blank:]]*cd [a-zA-Z\~:\\\/]+([^\\\/]+[\\\/]?)*[\\\/]([^\\\/]+)[\/\\]?$
+	# test for historyFile existance
+	if( -not (Test-Path $historyFile )){ 
+		Write-Warning "File $historyFile not found, unable to load command history. Exiting."; 
+		return 1; 
+	}
+	$historyLines = Get-Content $historyFile
+	# create a hash table, format of ;;; [directory path] = [lowest directory]
+	$searchHistory = @{}
+	# create a hash table for the count (number of times the command has been run)
+	$searchCount = @{}
+	ForEach ( $line in $historyLines ) {
+		if( $line -match $regex ){
+			try {
+				# since the matches index can change, and a hashtable.count is not a valid way to find the index...
+				# I need this to figure out the highest integer index
+				$lowestDirectory = $matches[($matches.keys | sort -Descending | Select-Object -First 1)]
+				$fullPath = $matches[1]
+				if($searchHistory.keys -notcontains $matches[1]){
+					$searchHistory.Add($matches[1],$lowestDirectory)
+				}
+				$searchCount[$fullPath] = 1
+			} catch {
+				$searchCount[$fullPath]++
+			}
+		}
+	}
+	# this helps with hashtables
+	# https://www.simple-talk.com/sysadmin/powershell/powershell-one-liners-collections-hashtables-arrays-and-strings/
+    
+	$dirPossibles = ( $searchHistory.values | Select -Unique )
+
+	$modulesValidated_SetAttribute = New-Object -type System.Management.Automation.ValidateSetAttribute($dirPossibles)
+	$dirSearch.Add($modulesValidated_SetAttribute)
+
+	# Remaining boilerplate
+	$dirSearchDefinition = new-object -Type System.Management.Automation.RuntimeDefinedParameter("dirSearch", [String[]], $dirSearch)
+
+	$paramDictionary = new-object -Type System.Management.Automation.RuntimeDefinedParameterDictionary
+	$paramDictionary.Add("dirSearch", $dirSearchDefinition)
+	return $paramDictionary
+    }
+	process {
+		$dirSearch = $PsBoundParameters.dirSearch
+		Debug-Variable $searchHistory
+
+		Write-Debug "dirSearch=$dirSearch"
+		
+		#this is doing ___EQUAL___ /// or do I want to be doing a like dirSearch*
+		$filteredDirs = $searchHistory.GetEnumerator() | ?{ $_.Value -eq $dirSearch } 
+
+		# if there is a single match
+		if ( $filteredDirs.count -eq 1 ){
+			$testedPath =$ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($filteredDirs.name)
+			if( $testedPath | Test-Path ){
+				cd $testedPath
+			}
+		} else {
+			# there are multiple matches
+			# do a lookup for number of times it was cd'd into with the searchCount
+			Debug-Variable $searchCount
+
+			$searchCount.GetEnumerator() | Sort-Object -Property Value -Descending | ForEach-Object {
+				$countedDir = $_
+				$highestDir = ( $filteredDirs.GetEnumerator() | ?{$_.Name -contains $countedDir.Name} )
+				if ( $highestDir.count -eq 1 ){ 
+					$testedPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($highestDir.name) 
+					if( $testedPath | Test-Path ){
+						cd $testedPath
+					} else {
+						Write-Warning "Tried to cd to $($highestDir.name) (resolved to $testedPath), but it does not exist"
+					}
+				} else {
+					$highestDir.name
+				}
+			}
+		}
+
+		if( ( $testedPath ) `
+				-and ( -not ( $testedPath | Test-Path ) ) ){
+			
+
+			# could look at prior cd to determine location?
+			# if test path fails - scan all subdirectories of the current working directory, looking for a match
+		}
+
+
+
+
+	
+		#cd $searchHistory.GetEnumerator() | ?{ $_.Value -eq $dirSearch } | Sort-Object -Property Value -Descending | Select-Object -First 1
+		#$searchCount | Sort
+
+	<#
+$a | Select-Object -Unique
+( $filename | Select-String -Pattern $Package.installParams.versionPattern | % {"$($_.matches.groups[1])"} )
+
+	#>
+
+	# directories under current working directory
+	#$wd = Get-Location
+	#$directories = Get-ChildItem -Path $wd -Recurse -Directory -Name
+	}
+
+}
+
+# something like grep
+# not even close
+function grep {
+	param (
+		[Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+		[String] $InputString
+	)
+	echo $InputString | select * | Select-String -pattern "^.*$searchTerm.*$"
+}

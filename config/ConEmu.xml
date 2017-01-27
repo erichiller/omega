@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <key name="Software">
 	<key name="ConEmu">
-		<key name=".Vanilla" modified="2017-01-15 07:23:03" build="161206">
+		<key name=".Vanilla" modified="2017-01-25 15:34:18" build="170118">
 			<value name="StartType" type="hex" data="00"/>
 			<value name="CmdLine" type="string" data=""/>
 			<value name="StartTasksFile" type="string" data=""/>
@@ -146,11 +146,11 @@
 			<value name="Cascaded" type="hex" data="01"/>
 			<value name="IntegralSize" type="hex" data="01"/>
 			<value name="WindowMode" type="dword" data="0000051f"/>
-			<value name="ConWnd X" type="long" data="1687"/>
-			<value name="ConWnd Y" type="long" data="4"/>
-			<value name="LastMonitor" type="string" data="0,0,2880,1740"/>
+			<value name="ConWnd X" type="long" data="601"/>
+			<value name="ConWnd Y" type="long" data="405"/>
+			<value name="LastMonitor" type="string" data="0,0,1920,1160"/>
 			<value name="ConWnd Width" type="dword" data="010004a9"/>
-			<value name="ConWnd Height" type="dword" data="0000002a"/>
+			<value name="ConWnd Height" type="dword" data="00000027"/>
 			<value name="16bit Height" type="ulong" data="0"/>
 			<value name="QuakeStyle" type="hex" data="00"/>
 			<value name="Restore2ActiveMon" type="hex" data="01"/>
@@ -393,7 +393,7 @@
 			<value name="Update.DownloadPath" type="string" data="%TEMP%\ConEmu"/>
 			<value name="Update.LeavePackages" type="hex" data="00"/>
 			<value name="Update.PostUpdateCmd" type="string" data="echo Last successful update&gt;ConEmuUpdate.info &amp;&amp; date /t&gt;&gt;ConEmuUpdate.info &amp;&amp; time /t&gt;&gt;ConEmuUpdate.info"/>
-			<key name="HotKeys" modified="2017-01-14 12:07:26" build="161206">
+			<key name="HotKeys" modified="2017-01-25 15:34:19" build="170118">
 				<value name="KeyMacroVersion" type="hex" data="02"/>
 				<value name="Multi.Modifier" type="dword" data="00000011"/>
 				<value name="Multi.ArrowsModifier" type="dword" data="0000005b"/>
@@ -414,7 +414,7 @@
 				<value name="Multi.NewConsolePopup2" type="dword" data="00000000"/>
 				<value name="Multi.NewAttach" type="dword" data="00000000"/>
 				<value name="Multi.NewSplitV" type="dword" data="00001153"/>
-				<value name="Multi.NewSplitH" type="dword" data="00000000"/>
+				<value name="Multi.NewSplitH" type="dword" data="00101227"/>
 				<value name="Multi.SplitMaximize" type="dword" data="00000000"/>
 				<value name="Multi.SplitSizeVU" type="dword" data="00000000"/>
 				<value name="Multi.SplitSizeVD" type="dword" data="00000000"/>
@@ -578,18 +578,27 @@
 				<value name="DndRKey" type="hex" data="00"/>
 				<value name="WndDragKey" type="dword" data="00121101"/>
 			</key>
-			<key name="Tasks" modified="2017-01-14 12:07:26" build="161206">
-				<value name="Count" type="long" data="3"/>
-				<key name="Task1" modified="2017-01-14 12:07:26" build="161206">
+			<key name="Tasks" modified="2017-01-25 15:34:19" build="170118">
+				<value name="Count" type="long" data="5"/>
+				<key name="Task1" modified="2017-01-25 15:34:19" build="170118">
 					<value name="Name" type="string" data="{PowerShell}"/>
-					<value name="Flags" type="dword" data="00000000"/>
-					<value name="Hotkey" type="dword" data="00001172"/>
+					<value name="Flags" type="dword" data="00000001"/>
+					<value name="Hotkey" type="dword" data="00001170"/>
 					<value name="GuiArgs" type="string" data="/icon &quot;%ConEmuDir%\icons\powershell_32.ico&quot;"/>
-					<value name="Cmd1" type="string" data="%basedir%/config/powershell.cmd"/>
+					<value name="Cmd1" type="string" data="@../../config/powershell.cmd"/>
 					<value name="Active" type="long" data="0"/>
 					<value name="Count" type="long" data="1"/>
 				</key>
-				<key name="Task2" modified="2017-01-14 12:07:26" build="161206">
+				<key name="Task2" modified="2017-01-25 15:34:19" build="170118">
+					<value name="Name" type="string" data="{Powershell_Admin}"/>
+					<value name="Flags" type="dword" data="00000000"/>
+					<value name="Hotkey" type="dword" data="00001171"/>
+					<value name="GuiArgs" type="string" data="/icon &quot;%ConEmuDir%\icons\powershell_32.ico&quot;"/>
+					<value name="Cmd1" type="string" data="*@../../config/powershell.cmd"/>
+					<value name="Active" type="long" data="0"/>
+					<value name="Count" type="long" data="1"/>
+				</key>
+				<key name="Task3" modified="2017-01-25 15:34:19" build="170118">
 					<value name="Name" type="string" data="{PowerShell_Here}"/>
 					<value name="Flags" type="dword" data="00000004"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
@@ -598,7 +607,7 @@
 					<value name="Active" type="long" data="0"/>
 					<value name="Count" type="long" data="1"/>
 				</key>
-				<key name="Task3" modified="2017-01-14 12:07:26" build="161206">
+				<key name="Task4" modified="2017-01-25 15:34:19" build="170118">
 					<value name="Name" type="string" data="{Group3}"/>
 					<value name="Flags" type="dword" data="00000004"/>
 					<value name="Hotkey" type="dword" data="80808072"/>
@@ -607,46 +616,19 @@
 					<value name="Active" type="long" data="0"/>
 					<value name="Count" type="long" data="1"/>
 				</key>
-				<key name="Task4" modified="2016-10-19 15:36:34" build="161009a">
-					<value name="Name" type="string" data="{Far}"/>
-					<value name="Flags" type="dword" data="00000000"/>
-					<value name="Hotkey" type="dword" data="00001173"/>
-					<value name="GuiArgs" type="string" data="/icon &quot;%ConEmuDir%\system\farmanager\far.exe&quot;"/>
-					<value name="Cmd1" type="string" data="&quot;&quot;%ConEmuDir%\system\farmanager/far.exe&quot; -s &quot;%ConEmuDir%/config/farmanager&quot; &quot;%APPDATA%/farmanager&quot; &quot;%USERPROFILE%&quot; &quot;%USERPROFILE%&quot; -new_console:t:&quot;Far&quot;:d&quot;"/>
-					<value name="Active" type="long" data="0"/>
-					<value name="Count" type="long" data="1"/>
-				</key>
-				<key name="Task5" modified="2016-10-19 15:36:34" build="161009a">
-					<value name="Name" type="string" data="{PowerShell as Admin}"/>
+				<key name="Task5" modified="2017-01-25 15:41:20" build="170118">
+					<value name="Name" type="string" data="{Msys2}"/>
 					<value name="Flags" type="dword" data="00000000"/>
 					<value name="Hotkey" type="dword" data="00001174"/>
-					<value name="GuiArgs" type="string" data="/icon &quot;%ConEmuDir%\icons\powershell_32.ico&quot;"/>
-					<value name="Cmd1" type="string" data="*PowerShell -ExecutionPolicy Bypass -NoLogo -NoProfile -NoExit -Command &quot;Invoke-Expression '. ''%ConEmuDir%\scripts\profile.ps1'''&quot; -new_console:d:&quot;%USERPROFILE%&quot;"/>
-					<value name="Active" type="long" data="0"/>
-					<value name="Count" type="long" data="1"/>
-				</key>
-				<key name="Task6" modified="2016-10-19 15:36:34" build="161009a">
-					<value name="Name" type="string" data="{irssi}"/>
-					<value name="Flags" type="dword" data="00000000"/>
-					<value name="Hotkey" type="dword" data="00001175"/>
-					<value name="GuiArgs" type="string" data="/icon &quot;%ConEmuDir%\icons\irssi_32.ico&quot; /Dir %ConEmuDir%\system\irssi\"/>
-					<value name="Cmd1" type="string" data="irssi.bat -new_console:t:irssi"/>
-					<value name="Active" type="long" data="0"/>
-					<value name="Count" type="long" data="1"/>
-				</key>
-				<key name="Task7" modified="2016-10-19 15:36:34" build="161009a">
-					<value name="Name" type="string" data="{PowerShell_Here}"/>
-					<value name="Flags" type="dword" data="00000004"/>
-					<value name="Hotkey" type="dword" data="00000000"/>
-					<value name="GuiArgs" type="string" data="/icon &quot;%ConEmuDir%\icons\powershell_32.ico&quot;"/>
-					<value name="Cmd1" type="string" data="PowerShell -ExecutionPolicy Bypass -NoLogo -NoProfile -NoExit -Command &quot;Invoke-Expression '. ''%ConEmuDir%\scripts\profile.ps1'''&quot;"/>
+					<value name="GuiArgs" type="string" data="/icon &quot;%ConEmuDir%\icons\bash_32.ico&quot; /Dir %USERPROFILE%"/>
+					<value name="Cmd1" type="string" data="set CHERE_INVOKING=1 &amp; set MSYSTEM=MINGW64 &amp; &quot;%ConEmuDir%\..\msys64\usr\bin\conemu-msys2-64.exe&quot; &quot;%ConEmuDir%\..\msys64\usr\bin\bash.exe&quot; -i  -l"/>
 					<value name="Active" type="long" data="0"/>
 					<value name="Count" type="long" data="1"/>
 				</key>
 			</key>
-			<key name="Apps" modified="2017-01-14 12:07:26" build="161206">
+			<key name="Apps" modified="2017-01-25 15:41:20" build="170118">
 				<value name="Count" type="long" data="1"/>
-				<key name="App1" modified="2017-01-14 12:07:26" build="161206">
+				<key name="App1" modified="2017-01-25 15:41:20" build="170118">
 					<value name="AppNames" type="string" data="vim.exe"/>
 					<value name="Elevated" type="hex" data="00"/>
 					<value name="OverridePalette" type="hex" data="00"/>
@@ -657,7 +639,7 @@
 					<value name="ExtendFontBoldIdx" type="hex" data="00"/>
 					<value name="ExtendFontItalicIdx" type="hex" data="00"/>
 					<value name="OverrideCursor" type="hex" data="00"/>
-					<value name="CursorTypeActive" type="dword" data="00000000"/>
+					<value name="CursorTypeActive" type="dword" data="00010a00"/>
 					<value name="CursorTypeInactive" type="dword" data="00000000"/>
 					<value name="OverrideClipboard" type="hex" data="01"/>
 					<value name="ClipboardDetectLineEnd" type="hex" data="00"/>
@@ -671,9 +653,9 @@
 					<value name="ClipboardDeleteLeftWord" type="hex" data="00"/>
 				</key>
 			</key>
-			<key name="Colors" modified="2017-01-14 12:07:26" build="161206">
+			<key name="Colors" modified="2017-01-25 15:41:20" build="170118">
 				<value name="Count" type="long" data="2"/>
-				<key name="Palette1" modified="2017-01-14 12:07:26" build="161206">
+				<key name="Palette1" modified="2017-01-25 15:41:20" build="170118">
 					<value name="Name" type="string" data="#Attached:ConEmuC"/>
 					<value name="ExtendColors" type="hex" data="00"/>
 					<value name="ExtendColorIdx" type="hex" data="0e"/>
@@ -714,7 +696,7 @@
 					<value name="ColorTable30" type="dword" data="0000ffff"/>
 					<value name="ColorTable31" type="dword" data="00ffffff"/>
 				</key>
-				<key name="Palette2" modified="2017-01-14 12:07:26" build="161206">
+				<key name="Palette2" modified="2017-01-25 15:41:20" build="170118">
 					<value name="Name" type="string" data="Monokai"/>
 					<value name="ExtendColors" type="hex" data="00"/>
 					<value name="ExtendColorIdx" type="hex" data="0e"/>
@@ -805,7 +787,7 @@
 			<value name="JumpListAutoUpdate" type="hex" data="01"/>
 			<value name="CompressLongStrings" type="hex" data="01"/>
 			<value name="UseAltGrayPlus" type="hex" data="01"/>
-			<value name="MouseDragWindow" type="hex" data="01"/>
+			<value name="MouseDragWindow" type="hex" data="00"/>
 			<value name="StatusBar.Hide.CellI" type="hex" data="01"/>
 		</key>
 	</key>

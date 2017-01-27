@@ -1,5 +1,10 @@
 # PowerShell Scripting
 
+## Approved Verbs
+
+When writing programs, modules, etc... you are supposed to use a set of [approved verbs]
+
+[approved verbs]: https://msdn.microsoft.com/en-us/library/ms714428(v=vs.85).aspx
 
 ## Parameters
 
@@ -7,6 +12,11 @@
 
 Defined at the beggining of the function, in a `Param()` block these are listed in the form of `[TYPE]$NAME`:   
 - [switch]$switchname` would define a boolean flag of the form `-switchname` for the function
+
+### Dynamic Parameters
+
+<http://stackoverflow.com/questions/14844542/powershell-cmdlet-parameter-value-tab-completion>  
+<https://foxdeploy.com/2017/01/13/adding-tab-completion-to-your-powershell-functions/>
 
 ## Data Handling
 
