@@ -14,4 +14,4 @@
 @rem Spoof terminal environment for git color.
 @set TERM=cygwin
 
-@START ssh.exe %*
+@ssh.exe %*
