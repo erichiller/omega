@@ -621,7 +621,10 @@ That is hash symbol, then type the command you would like to search your command
 #>
 function Search-FrequentDirectory {
 	[CmdletBinding()]
-	Param ()
+	Param (
+		[Parameter(Mandatory=$false)]
+		[Switch] $delete
+	)
 	DynamicParam {
 	#
 	# The "modules" param
@@ -689,6 +692,14 @@ function Search-FrequentDirectory {
 	return $paramDictionary
     }
 	process {
+		function Set-LocationHelper($dir) {
+			if ( $delete ){
+				Clear-History -CommandLine $filteredDirs -Confirm
+			} else {
+				Set-Location $dir
+			}
+		}
+
 		$dirSearch = $PsBoundParameters.dirSearch
 		Debug-Variable $searchHistory
 
@@ -701,7 +712,7 @@ function Search-FrequentDirectory {
 		if ( $filteredDirs.count -eq 1 ){
 			$testedPath =$ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($filteredDirs.name)
 			if( $testedPath | Test-Path ){
-				cd $testedPath
+				Set-LocationHelper $testedPath
 			}
 		} else {
 			# there are multiple matches
@@ -714,7 +725,7 @@ function Search-FrequentDirectory {
 				if ( $highestDir.count -eq 1 ){ 
 					$testedPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($highestDir.name) 
 					if( $testedPath | Test-Path ){
-						cd $testedPath
+						Set-LocationHelper $testedPath
 					} else {
 						Write-Warning "Tried to cd to $($highestDir.name) (resolved to $testedPath), but it does not exist"
 					}
@@ -748,16 +759,19 @@ $a | Select-Object -Unique
 	# directories under current working directory
 	#$wd = Get-Location
 	#$directories = Get-ChildItem -Path $wd -Recurse -Directory -Name
-	}
+
+	
+
+	} <# End process {} #>
 
 }
 
 # something like grep
 # not even close
-function grep {
-	param (
-		[Parameter(Mandatory=$true, ValueFromPipeline=$true)]
-		[String] $InputString
-	)
-	echo $InputString | select * | Select-String -pattern "^.*$searchTerm.*$"
-}
+# function grep {
+# 	param (
+# 		[Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+# 		[String] $InputString
+# 	)
+# 	echo $InputString | select * | Select-String -pattern "^.*$searchTerm.*$"
+# }

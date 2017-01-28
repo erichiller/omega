@@ -8,6 +8,10 @@ As of PowerShell 5.x `Get-Clipboard` and `Set-Clipboard` commandlets are availab
 
 See here for an [excellent overview of Set-Clipboard](http://www.adminarsenal.com/powershell/set-clipboard/)
 
+## Strings
+
+[Great overview of functions and how to work with Strings](https://technet.microsoft.com/en-us/library/ee692804.aspx)
+
 ## Profiles
 
 Default load locations

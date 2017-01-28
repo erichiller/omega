@@ -168,3 +168,6 @@ Remove-Item alias:mv
 
 # less is more
 Set-Alias -Name "less" -Value "${env:windir}\System32\more.com"
+
+# grep
+Set-Alias -Name grep -Value "${env:basedir}\system\git\usr\bin\grep.exe"

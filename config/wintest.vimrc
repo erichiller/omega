@@ -282,12 +282,22 @@ endif
 " git clone https://github.com/fatih/vim-go
 " Once installed, within vim run
 " :GoUpdateBinaries
-let g:go_highlight_functions = 1
-let g:go_highlight_methods = 1
-let g:go_highlight_fields = 1
-let g:go_highlight_types = 1
-let g:go_highlight_operators = 1
-let g:go_highlight_build_constraints = 1
+if exists(':GoUpdateBinaries')
+    let g:go_highlight_functions = 1
+    let g:go_highlight_methods = 1
+    let g:go_highlight_fields = 1
+    let g:go_highlight_types = 1
+    let g:go_highlight_operators = 1
+    let g:go_highlight_build_constraints = 1
+    let g:go_auto_type_info = 0
+    " see possible mappings for vim-go with
+    " :help go-command
+    au FileType go nmap <leader>r <Plug>(go-run)
+    au FileType go nmap <leader>b <Plug>(go-build)
+    au FileType go nmap <leader>t <Plug>(go-test)
+
+endif
+
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""
