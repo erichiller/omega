@@ -4,7 +4,7 @@
     "confdir":  "\\config",
     "system_environment_key":  "Registry::HKLM\\System\\CurrentControlSet\\Control\\Session Manager\\Environment",
     "user_environment_key":  "Registry::HKEY_CURRENT_USER\\Environment",
-    "app_paths_key": "Registry::HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths",
+    "app_paths_key":  "Registry::HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths",
     "compression_extensions":  [
                                    ".7z",
                                    ".zip",
@@ -22,5 +22,7 @@
                       "verbose":  "SilentlyContinue",
                       "debug":  "Continue"
                   },
-    "path_additions":  "C:\\Users\\ehiller\\AppData\\Local\\omega\\system\\nodejs"
+    "path_additions":  "C:\\Users\\ehiller\\AppData\\Local\\omega\\system\\nodejs",
+    "gopath":   "~\\dev\\",
+    "unixesq":   "\\system\\msys64"
 }

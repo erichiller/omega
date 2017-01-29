@@ -224,6 +224,15 @@ Set-PSReadlineOption -TokenKind Command -ForegroundColor DarkBlue
 Set-PSReadlineOption -TokenKind Parameter -ForegroundColor Yellow
 #>
 
+# see possible options under "Tab Complete" here: 
+# https://github.com/lzybkr/PSReadLine/blob/master/PSReadLine/en-US/about_PSReadline.help.txt
+Set-PSReadlineKeyHandler -Key Tab -Function Complete
+# Note: Ctrl + Space already performs MenuComplete
+# TabCompleteNext , Complete , MenuComplete
+Set-PSReadlineKeyHandler -Key UpArrow -Function HistorySearchBackward
+Set-PSReadlineKeyHandler -Key DownArrow -Function HistorySearchForward
+
+
 
 Set-PSReadlineOption -TokenKind comment -BackgroundColor $MASTER_BACKGROUND
 Set-PSReadlineOption -TokenKind none -BackgroundColor $MASTER_BACKGROUND
@@ -236,3 +245,111 @@ Set-PSReadlineOption -TokenKind string -BackgroundColor $MASTER_BACKGROUND
 Set-PSReadlineOption -TokenKind operator -BackgroundColor $MASTER_BACKGROUND
 Set-PSReadlineOption -TokenKind member -BackgroundColor $MASTER_BACKGROUND
 
+
+
+
+
+
+
+
+#region Smart Insert/Delete
+
+# The next four key handlers are designed to make entering matched quotes
+# parens, and braces a nicer experience.  I'd like to include functions
+# in the module that do this, but this implementation still isn't as smart
+# as ReSharper, so I'm just providing it as a sample.
+
+Set-PSReadlineKeyHandler -Key '"',"'" `
+                         -BriefDescription SmartInsertQuote `
+                         -LongDescription "Insert paired quotes if not already on a quote" `
+                         -ScriptBlock {
+    param($key, $arg)
+
+    $line = $null
+    $cursor = $null
+    [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
+
+    $quoteNumber = Select-String -InputObject $line -Pattern $key.KeyChar -AllMatches
+    if ($quoteNumber.Matches.Count % 2 -eq 1) {
+        # Oneven amount of quotes, put just one quote
+        [Microsoft.PowerShell.PSConsoleReadline]::Insert($key.KeyChar)
+    }
+    elseif ($line[$cursor] -eq $key.KeyChar) {
+        # Just move the cursor
+        [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($cursor + 1)
+    }
+    else {
+        # Insert matching quotes, move cursor to be in between the quotes
+        [Microsoft.PowerShell.PSConsoleReadLine]::Insert("$($key.KeyChar)" * 2)
+        [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
+        [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($cursor - 1)
+    }
+}
+
+Set-PSReadlineKeyHandler -Key '(','{','[' `
+                         -BriefDescription InsertPairedBraces `
+                         -LongDescription "Insert matching braces" `
+                         -ScriptBlock {
+    param($key, $arg)
+
+    $closeChar = switch ($key.KeyChar)
+    {
+        <#case#> '(' { [char]')'; break }
+        <#case#> '{' { [char]'}'; break }
+        <#case#> '[' { [char]']'; break }
+    }
+
+    [Microsoft.PowerShell.PSConsoleReadLine]::Insert("$($key.KeyChar)$closeChar")
+    $line = $null
+    $cursor = $null
+    [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
+    [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($cursor - 1)        
+}
+
+Set-PSReadlineKeyHandler -Key ')',']','}' `
+                         -BriefDescription SmartCloseBraces `
+                         -LongDescription "Insert closing brace or skip" `
+                         -ScriptBlock {
+    param($key, $arg)
+
+    $line = $null
+    $cursor = $null
+    [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
+
+    if ($line[$cursor] -eq $key.KeyChar)
+    {
+        [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($cursor + 1)
+    }
+    else
+    {
+        [Microsoft.PowerShell.PSConsoleReadLine]::Insert("$($key.KeyChar)")
+    }
+}
+
+# Sometimes you want to get a property of invoke a member on what you've entered so far
+# but you need parens to do that.  This binding will help by putting parens around the current selection,
+# or if nothing is selected, the whole line.
+Set-PSReadlineKeyHandler -Key 'Alt+(' `
+                         -BriefDescription ParenthesizeSelection `
+                         -LongDescription "Put parenthesis around the selection or entire line and move the cursor to after the closing parenthesis" `
+                         -ScriptBlock {
+    param($key, $arg)
+
+    $selectionStart = $null
+    $selectionLength = $null
+    [Microsoft.PowerShell.PSConsoleReadLine]::GetSelectionState([ref]$selectionStart, [ref]$selectionLength)
+
+    $line = $null
+    $cursor = $null
+    [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
+    if ($selectionStart -ne -1)
+    {
+        [Microsoft.PowerShell.PSConsoleReadLine]::Replace($selectionStart, $selectionLength, '(' + $line.SubString($selectionStart, $selectionLength) + ')')
+        [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($selectionStart + $selectionLength + 2)
+    }
+    else
+    {
+        [Microsoft.PowerShell.PSConsoleReadLine]::Replace(0, $line.Length, '(' + $line + ')')
+        [Microsoft.PowerShell.PSConsoleReadLine]::EndOfLine()
+    }
+}

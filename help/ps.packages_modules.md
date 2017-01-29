@@ -1,5 +1,11 @@
 # PowerShell Package Management
 
+## Initialization
+
+As **Administrator** run `Install-Module nuget`
+
+From there normal `opkg` commands should work.
+
 ## Repositories
 
 - [Technet/ScriptCenter](http://gallery.technet.microsoft.com/scriptcenter)
