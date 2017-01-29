@@ -15,6 +15,9 @@
     for /f "delims=" %%i in ("%~dp0\..") do @set BaseDir=%%~fi
 )
 
+@if exist "%temp%\KeeAgent.sock" (
+    SET SSH_AUTH_SOCK=%temp%\KeeAgent.sock
+)
 @set "gitdir=%BaseDir%\system\git\"
 @if not EXIST %gitdir% (
     ERROR GIT NOT FOUND IN %BaseDir%

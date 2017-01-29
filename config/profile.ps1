@@ -128,5 +128,9 @@ Set-Alias -Name "powershell" -Value "${env:SystemRoot}\system32\WindowsPowerShel
 
 Set-Alias -Name "Print-Path" -Value Print-Path
 
-
 New-Alias -Name "7z" -Value "${env:ProgramFiles}\7-zip\7z.exe"
+
+
+# Ultimately this should be its own usr file
+function gh { Set-Location "${env:Home}\Dev\src\github.com\erichiller\$($args[0])" }
+function om { Set-Location ${env:Basedir} }
