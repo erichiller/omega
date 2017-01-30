@@ -85,6 +85,11 @@ function Write-Theme
     # Writes the postfix to the prompt
     Write-Prompt -Object $sl.PromptSymbols.SegmentForwardSymbol -BackgroundColor $host.UI.RawUI.BackgroundColor -ForegroundColor $lastColor
 
+    # Set ConEmu Tab Title (if in ConEmu)
+    if ( $env:ConEmuBaseDir ) {
+        & "$env:ConEmuBaseDir\ConEmuC.exe" "/GUIMACRO", 'Rename(0,@"'$(Get-ShortPath -dir $pwd)'")' > $null
+    }
+
     #Show-Glyphs
 }
 

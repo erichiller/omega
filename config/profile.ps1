@@ -103,7 +103,7 @@ try {
 
 try {
 	# https://github.com/samneirinck/posh-docker
-	Import-Module posh-docker
+	if(Get-Module posh-docker){ Import-Module posh-docker }
 } catch {
 	Write-Warning "Posh-Docker module failed to load. Either not installed or there was an error. Docker autocomplete commands will not function."
 	Write-Warning "It can be installed in an admin console with:"
@@ -165,9 +165,6 @@ Set-Alias -Name "which" -Value "${env:windir}\System32\where.exe"
 
 # new mv
 if (alias mv -ErrorAction SilentlyContinue) { Remove-Item alias:mv }
-
-
-New-Alias -Name "7z" -Value "${env:ProgramFiles}\7-zip\7z.exe"
 
 # Ultimately this should be its own usr file
 function gh { Set-Location "${env:Home}\Dev\src\github.com\erichiller\$($args[0])" }
