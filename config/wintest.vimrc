@@ -1,146 +1,29 @@
-
-
-
-" source $HOME\_vimrc
-
-" source $VIMRUNTIME\defaults.vim
-
-""""""""""""""""""""""""""""""""""""""
-"""""""""""" For ConEmu """"""""""""""
-""""""""""""""""""""""""""""""""""""""
-
-""""""""""""""""""""""""""""""""""""""
-""""""" For 256 colors in ConEmu """""
-""""""""""""""""""""""""""""""""""""""
-
-" if !has("gui_running")
-    " set term=xterm
-    " set t_Co=256
-    " let &t_AB="\e[48;5;%dm"
-    " let &t_AF="\e[38;5;%dm"
-    " colorscheme zenburn
-" endif
-
-""""""""""""""""""""""""""""""""""""""
-" let mouse wheel scroll file contents
-""""""""""""""""""""""""""""""""""""""
-if !has("gui_running")
-    " set term=xterm
-    set mouse=a
-    set nocompatible
-    inoremap <Esc>[62~ <C-X><C-E>
-    inoremap <Esc>[63~ <C-X><C-Y>
-    nnoremap <Esc>[62~ <C-E>
-    nnoremap <Esc>[63~ <C-Y>
-endif
-
-
-""""""""""""""""""""""""""""""""""""""
-" let mouse wheel scroll file contents
-""""""""""""""""""""""""""""""""""""""
-" if !has("gui_running")
-    " behave xterm
-    " set term=xterm
-    " set mouse=a
-    " set nocompatible
-    " inoremap <Esc>[62~ <C-X><C-E>
-    " inoremap <Esc>[63~ <C-X><C-Y>
-    " nnoremap <Esc>[62~ <C-E>
-    " nnoremap <Esc>[63~ <C-Y>
-    " map <MouseDown> <C-Y>
-    " map <S-MouseDown> <C-U>
-    " map <MouseUp> <C-E>
-    " map <S-MouseUp> <C-D>
-" map <ScrollWheelUp> <C-Y>
-" map <ScrollWheelDown> <C-E>
-
-
-    " :map <M-Esc>[62~ <ScrollWheelUp>
-    " :map <Esc>[62~ <ScrollWheelUp>
-    " inoremap <M-Esc>[62~ <ScrollWheelUp>
-    " nnoremap <M-Esc>[62~ <ScrollWheelUp>
-    " :map j <ScrollWheelUp>
-    " :map! <M-Esc>[62~ <ScrollWheelUp>
- 
-    " :map <M-Esc>[63~ <ScrollWheelDown>
-    " :map <Esc>[63~ <ScrollWheelDown>
-    " inoremap <M-Esc>[63~ <ScrollWheelDown>
-    " nnoremap <M-Esc>[63~ <ScrollWheelDown>
-    " :map h <ScrollWheelDown>
-    " :map! <M-Esc>[63~ <ScrollWheelDown>
- 
-    " :map <M-Esc>[64~ <S-ScrollWheelUp>
-    " :map! <M-Esc>[64~ <S-ScrollWheelUp>
-    " :map <M-Esc>[65~ <S-ScrollWheelDown>
-    " :map! <M-Esc>[65~ <S-ScrollWheelDown>
-
-
-
-    " echom "no gui, setting up scrolling"
-" endif
-
-" :noremap <RightMouse> :echom "hello mouse"
-
-set mousefocus " The window that the mouse pointer is on is automatically activated.
-set mousehide " Hide mouse when typing
-set showtabline=1
-set encoding=utf-8
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""
-" Startify
-" ( a clean and useful ViM startup screen )
-" https://github.com/mhinz/vim-startify/blob/master/doc/startify.txt
+""""""""""""""""" ERIC's ViM CONFIG """"""""""""""""" 
+"""""""""""""""""" 31 JANUARY 2016 """"""""""""""""""
 """""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:startify_commands = [
-        \ ['Search Knowledge Base' , ':CtrlP $HOME\Google\ Drive\Documents\Knowledge\ Base\'],
-        \ ['Vim Reference', 'h ref']
-        \ ]
-        " \ ':help reference',
-        " \ {'h': 'h ref'},
-        " \ {'m': ['My magical function', 'call Magic()']},
-        " \ ]
-let g:startify_fortune_use_unicode = 1
-" autocmd User Startified colorscheme peaksea
-" open new buffer mapped back to edh
-" autocmd User Startified nnoremap <buffer> e :colorscheme edh<CR>:call startify#open_buffers(15)<CR>
-" autocmd BufNewFile * colorscheme edh
-
-" Ack
-" grep / file search within ViM
-" 
-let g:ack_autofold_results=1
-let g:ack_qhandler = "botright copen 30"
-if executable('ag')
-  let g:ackprg = 'ag --smart-case --silent --vimgrep'
-endif
-map <leader>f :AckWindow<space>
-map <leader>ff :Ack<space>
-map <leader>fff :Fkb<space>
-let $kb="C:\\Users\\ehiller\\Documents"
-
-command -nargs=* Fkb :lcd $kb | :Ack <args>
-function Fkb(term)
-    lcd $kb
-    Ack a:term
-endfunction
-
+" http://vimdoc.sourceforge.net/htmldoc/options.html
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Path to Python 3.5 -- python35.dll is sought
 " set pythonthreedll=$BaseDir\system\python35\python35.dll
 let $PYTHONPATH = $BaseDir."\\system\\python35"
 
+""""""""""""""""" THEMES """"""""""""""""""""
+"set t_Co=256
+" colorscheme delek " best I found, other considerations:
+" darkblue
+" slate
+" murphy
+" desert
+" koehler
+" colorscheme zellner
+" from spf13:
+" 	- peaksea
+" 	- molokai
+" 	- Solarized
+colorscheme peaksea
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""
-"
-" START ERIC MODIFICATIONS """" AUGUST 30 2016 """"""
-"
-" http://vimdoc.sourceforge.net/htmldoc/options.html
-"""""""""""""""""""""""""""""""""""""""""""""""""""""
-" see available filetypes
-" :echo glob($VIMRUNTIME . '/syntax/*.vim')
-" :echo glob($VIMRUNTIME . '/ftplugin/*.vim')
-"""""""""""""""""""""""""""""""""""""""""""""""""""""
-filetype plugin indent on
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 " the following is for preserving files and settings
 " see :help swap
@@ -150,6 +33,8 @@ set updatecount=20									" save every <updatecount> number of characters
 set updatetime=2000									" save every 2000ms (2s)
 
 " Setting some decent VIM settings for programming
+filetype plugin indent on
+syntax on                       " turn syntax highlighting on by default
 set nocompatible                " basic starting point for usability
 set vb t_vb=                    " remove the flash and the beep
 set ruler                       " show the cursor position all the time
@@ -157,7 +42,6 @@ set backspace=indent,eol,start  " make that backspace key work the way it should
 set nocompatible                " vi compatible is LAME
 set background=dark             " Use colours that work well on a dark background (Console is usually black)
 set showmode                    " show the current mode
-syntax on                       " turn syntax highlighting on by default
 set wrapmargin=1                " space around frame for wrapping
 set textwidth=0                 " wrap based on the window, not a static value
 set scrolloff=5                 " number of screen lines to keep above and below the cursor
@@ -193,8 +77,6 @@ nnoremap <tab> %
 vnoremap <tab> %
 
 
-
-
 set laststatus=2                " make the last line (status) always present - http://vimhelp.appspot.com/options.txt.html#%27laststatus%27
 " Show EOL type and last modified timestamp, right after the filename
 set statusline=%<%F%h%m%r\ %y\ (%{strftime(\"%H:%M\ %d/%m/%Y\",getftime(expand(\"%:p\")))})%=%l,%c%V\ %P
@@ -202,22 +84,6 @@ set statusline=%<%F%h%m%r\ %y\ (%{strftime(\"%H:%M\ %d/%m/%Y\",getftime(expand(\
 
 " leader key ---- http://learnvimscriptthehardway.stevelosh.com/chapters/06.html
 " :let mapleader = "-"
-
-
-""""""""""""""""" THEMES """"""""""""""""""""
-"set t_Co=256
-" colorscheme delek " best I found, other considerations:
-" darkblue
-" slate
-" murphy
-" desert
-" koehler
-" colorscheme zellner
-" from spf13:
-" 	- peaksea
-" 	- molokai
-" 	- Solarized
-colorscheme peaksea
 
 " FONT == SEE ==> http://vimhelp.appspot.com/options.txt.html#%27guifont%27 
 set guifont=Courier:h9:cANSI:qANTIALIASED
@@ -238,6 +104,10 @@ set sessionoptions+=resize,tabpages,winpos,winsize
 set sessionoptions-=help
 
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""" neocomplete """""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+" https://github.com/Shougo/neocomplete.vim
 " for autocompletion / neocomplete
 set completeopt+=menu
 " set completeopt=menu
@@ -249,9 +119,12 @@ if !exists('g:neocomplete#force_omni_input_patterns')
     let g:neocomplete#force_omni_input_patterns = {}
 endif
 let g:neocomplete#force_omni_input_patterns.typescript = '[^. *\t]\.\w*\|\h\w*::'
+" let g:neocomplete#sources = {}
+" let g:neocomplete#sources._ = ['dictionary']
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""
-" typescript
+""""""""""""""""""" typescript """"""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
 " https://github.com/Quramy/tsuquyomi.git
 " using with neocomplete
 " requires vimproc
@@ -278,7 +151,8 @@ endif
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""
-" vim-go
+""""""""""""""""""""" vim-go """"""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
 " git clone https://github.com/fatih/vim-go
 " Once installed, within vim run
 " :GoUpdateBinaries
@@ -301,7 +175,8 @@ endif
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""
-" nerd-comments
+""""""""""""""""""" nerd-comments """""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
 " https://github.com/scrooloose/nerdcommenter/blob/master/doc/NERD_commenter.txt
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:NERDCommentEmptyLines = 1
@@ -309,7 +184,8 @@ let g:NERDMenuMode = 1
 let g:NERDSpaceDelims = 1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""
-" vim-mundo
+""""""""""""""""""""" vim-mundo """""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
 " ( undo tree visualization )
 " https://github.com/simnalamburt/vim-mundo
 """""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -330,7 +206,7 @@ let g:mundo_close_on_revert = 1
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""
-" START /// HIGHLIGHT CURRENT SEARCH RESULT
+"""""" START /// HIGHLIGHT CURRENT SEARCH RESULT """"
 " http://vi.stackexchange.com/questions/2761/set-cursor-colour-different-when-on-a-highlighted-word
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 " n to search forward
@@ -363,7 +239,8 @@ nnoremap <silent> <C-L> :silent! call matchdelete(b:ring)<CR>:nohlsearch<CR>:set
 """""""""""""""""""""""" END /// HIGHLIGHT CURRENT SEARCH RESULT """"""""""""""""""""""""
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""
-" vim-ps1
+""""""""""""""""""""" vim-ps1 """""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
 " powershell
 " https://github.com/pprovost/vim-ps1
 """""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -406,6 +283,10 @@ if has("autocmd")
         autocmd FileType markdown colorscheme edh
         " this is a catch all - all files that are not excepted (ie. markdown) will load peaksea
         autocmd BufRead * colorscheme peaksea
+
+        autocmd Filetype markdown setlocal spell
+
+        
 
 
         """""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -454,6 +335,87 @@ if has("autocmd")
 
       autocmd Syntax gitcommit setlocal textwidth=74
 endif " has("autocmd")
+
+""""""""""""""""""""""""""""""""""""""""""
+"""""""""""" For ConEmu """"""""""""""""""
+" for more information see ConEmu docs
+" http://conemu.github.io/en/VimXterm.html
+""""""""""""""""""""""""""""""""""""""""""
+if !has("gui_running")
+    
+    """"""""""""""""""""""""""""""""""""""
+    """"""" For 256 colors in ConEmu """""
+    """"""""""""""""""""""""""""""""""""""
+    " more on 256 color themes:
+    " http://vimdoc.sourceforge.net/htmldoc/syntax.html#highlight-ctermfg
+    " See the all 256 colors in ConEmu 
+    " cmd /c type "%ConEmuBaseDir%\Addons\AnsiColors256.ans"
+    " http://conemu.github.io/en/AnsiEscapeCodes.html
+    set term=xterm
+    set t_Co=256
+    let &t_AB="\e[48;5;%dm"
+    let &t_AF="\e[38;5;%dm"
+    """"""""""""""""""""""""""""""""""""""
+    "" mouse wheel scroll file contents ""
+    """"""""""""""""""""""""""""""""""""""
+    " issue with scrolling
+    " https://github.com/Maximus5/ConEmu/issues/1007
+    set mouse=a
+    set nocompatible
+    inoremap <Esc>[62~ <C-X><C-E>
+    inoremap <Esc>[63~ <C-X><C-Y>
+    nnoremap <Esc>[62~ <C-E>
+    nnoremap <Esc>[63~ <C-Y>
+
+    " this fixes backspace when in xterm
+    inoremap <Char-0x07F> <BS>
+    nnoremap <Char-0x07F> <BS>
+
+endif
+
+set mousefocus " The window that the mouse pointer is on is automatically activated.
+set mousehide " Hide mouse when typing
+set showtabline=1
+set encoding=utf-8
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Startify
+" ( a clean and useful ViM startup screen )
+" https://github.com/mhinz/vim-startify/blob/master/doc/startify.txt
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:startify_commands = [
+        \ ['Search Knowledge Base' , ':CtrlP $HOME\Google\ Drive\Documents\Knowledge\ Base\'],
+        \ ['Vim Reference', 'h ref']
+        \ ]
+        " \ ':help reference',
+        " \ {'h': 'h ref'},
+        " \ {'m': ['My magical function', 'call Magic()']},
+        " \ ]
+let g:startify_fortune_use_unicode = 1
+" autocmd User Startified colorscheme peaksea
+" open new buffer mapped back to edh
+" autocmd User Startified nnoremap <buffer> e :colorscheme edh<CR>:call startify#open_buffers(15)<CR>
+" autocmd BufNewFile * colorscheme edh
+
+" Ack
+" grep / file search within ViM
+" 
+let g:ack_autofold_results=1
+let g:ack_qhandler = "botright copen 30"
+if executable('ag')
+  let g:ackprg = 'ag --smart-case --silent --vimgrep'
+endif
+map <leader>f :AckWindow<space>
+map <leader>ff :Ack<space>
+map <leader>fff :Fkb<space>
+let $kb="C:\\Users\\ehiller\\Documents"
+
+command -nargs=* Fkb :lcd $kb | :Ack <args>
+function Fkb(term)
+    lcd $kb
+    Ack a:term
+endfunction
+
 
 
 " 

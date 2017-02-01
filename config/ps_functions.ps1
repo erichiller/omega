@@ -390,7 +390,7 @@ function opkg {
 		echo "================================================>PACKAGES========================>"
 		$Packages
 		echo "================================================>END========================>"
-		$Package = ($Packages | Where { $_.name -EQ $PackageName } )
+		$Package = ($Packages | Where-Object { $_.name -EQ $PackageName } )
 		echo "================================================>PACKAGE========================>"
 		$Package
 		echo "================================================>END========================>"
@@ -486,7 +486,10 @@ function opkg {
 						}
 						if ( $Package.installParams.systemPath ){
 							Write-Debug "Package $($Package.name) will be on the systemPath."
-							Update-SystemPath $deploy
+							if (Update-SystemPath $deploy){
+								Write-Warning "Installation Failed."
+								return
+							}
 							# save config
 							# postInstall is not required in the manifest, but it is here, so create the array if it isn't set
 							SafeObjectArray $Package "postInstall"
@@ -595,7 +598,7 @@ function Update-SystemPath {
 	# All Tests Passed, the trials are complete, you, noble directory, can be added (or kept) on the system's path
 	Write-Debug "All validity tests have passed, '$Directory' is now on '$Path'"
 	# Set the path
-	& setx PATH /m $Path
+	if( -not (& setx PATH /m $Path) ){ return $false }
 
 	if( -not $ENV:Path.Contains($testDir) ){
 		Write-Debug "$testDir is being added to the Environment Path as well as the System Path will only refresh for new windows"
@@ -603,9 +606,10 @@ function Update-SystemPath {
 	}
 
 	Show-Path -Debug
+	return $true
 }
 
-Set-Alias -Name "f" -Value Search-FrequentDirectory
+Set-Alias -Name "f" -Value Search-FrequentDirectory -ErrorAction Ignore
 <#
 .SYNOPSIS
 Search-FrequentDirectory is a helper function navigating frequently accessed directories
@@ -626,9 +630,6 @@ function Search-FrequentDirectory {
 		[Switch] $delete
 	)
 	DynamicParam {
-	#
-	# The "modules" param
-	#
 	$dirSearch = new-object -Type System.Collections.ObjectModel.Collection[System.Attribute]
 
 	# [parameter(mandatory=...,
@@ -689,9 +690,10 @@ function Search-FrequentDirectory {
 
 	$paramDictionary = new-object -Type System.Management.Automation.RuntimeDefinedParameterDictionary
 	$paramDictionary.Add("dirSearch", $dirSearchDefinition)
+
 	return $paramDictionary
     }
-	process {
+	begin {
 		function Set-LocationHelper($dir) {
 			if ( $delete ){
 				Clear-History -CommandLine $filteredDirs -Confirm
@@ -699,6 +701,8 @@ function Search-FrequentDirectory {
 				Set-Location $dir
 			}
 		}
+	}
+	process {
 
 		$dirSearch = $PsBoundParameters.dirSearch
 		Debug-Variable $searchHistory
@@ -766,12 +770,30 @@ $a | Select-Object -Unique
 
 }
 
-# something like grep
-# not even close
-# function grep {
-# 	param (
-# 		[Parameter(Mandatory=$true, ValueFromPipeline=$true)]
-# 		[String] $InputString
-# 	)
-# 	echo $InputString | select * | Select-String -pattern "^.*$searchTerm.*$"
-# }
+function Get-PrettyPath {
+    param (
+    [System.Management.Automation.PathInfo] $dir
+    )
+	if ( -not $dir ){ $dir = Get-Location }
+    $provider = (Get-Item $dir).PSProvider.Name
+    if($provider -eq 'FileSystem'){
+        $result = @()
+        $currentDir = Get-Item $dir.path
+        while( ($currentDir.Parent) -And ($currentDir.FullName -ne $HOME) -And ($result.Count -lt 2 ) ) {
+            $result = ,$currentDir.Name + $result
+            $currentDir = $currentDir.Parent
+        }
+        $shortPath =  $result -join $ThemeSettings.PromptSymbols.PathSeparator
+        if ($shortPath) {
+            return "$($sl.PromptSymbols.PathSeparator)$shortPath"
+        } else {
+            if ($dir.path -eq $HOME) {
+                return '~'
+            }
+            return "$($dir.Drive.Name):"
+        }
+    } else {
+        return $dir.path.Replace((Get-Drive -dir $dir), '')
+    }
+}
+

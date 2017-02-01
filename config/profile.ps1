@@ -159,7 +159,8 @@ Set-Alias -Name "Print-Path" -Value Show-Path
 Set-Alias -Name "7z" -Value "${env:ProgramFiles}\7-zip\7z.exe"
 
 # where whereis which
-Set-Alias -Name where -Value "${env:windir}\System32\where.exe" -Force -Option AllScope
+# probably a bad idea to reset where, it breaks a decent number of things.
+#Set-Alias -Name where -Value "${env:windir}\System32\where.exe" -Force -Option AllScope
 Set-Alias -Name "whereis" -Value "${env:windir}\System32\where.exe"
 Set-Alias -Name "which" -Value "${env:windir}\System32\where.exe"
 

@@ -62,3 +62,13 @@ For very detailed information on aliases present:
 ```
 
 [source](http://stackoverflow.com/questions/2770526/where-are-the-default-aliases-defined-in-powershell)
+
+## Web Download
+
+`Invoke-Webrequest` seems to rely upon Internet Explorer, so to bypass this requirement use `-UseBasicParsing`
+
+In order to use SSL/TLS connections, you must set SecurityProtocol before using `Invoke-Webrequest`
+
+```powershell
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+```

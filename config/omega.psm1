@@ -87,7 +87,7 @@ function Write-Theme
 
     # Set ConEmu Tab Title (if in ConEmu)
     if ( $env:ConEmuBaseDir ) {
-        & "$env:ConEmuBaseDir\ConEmuC.exe" "/GUIMACRO", 'Rename(0,@"'$(Get-ShortPath -dir $pwd)'")' > $null
+        & "$env:ConEmuBaseDir\ConEmuC.exe" "/GUIMACRO", 'Rename(0,@"'$(Get-PrettyPath -dir $pwd)'")' > $null
     }
 
     #Show-Glyphs
@@ -173,7 +173,7 @@ $sl.PromptSymbols.SegmentSeparatorForwardSymbol     = [char]::ConvertFromUtf32(0
 $sl.PromptSymbols.SegmentSeparatorBackwardSymbol    = [char]::ConvertFromUtf32(0xE0B3)
 
 $sl.GitSymbols.BranchSymbol                         = [char]::ConvertFromUtf32(0xf020)      # Octicons "git-branch"
-$sl.GitSymbols.BranchUntrackedSymbol                = [char]::ConvertFromUtf32(0x2A2F)
+$sl.GitSymbols.BranchUntrackedSymbol                = [char]::ConvertFromUtf32(0x2260)      # Not Equal to symbol
 $sl.GitSymbols.BranchIdenticalStatusToSymbol        = [char]::ConvertFromUtf32(0x2261)
 $sl.GitSymbols.BranchAheadStatusSymbol              = [char]::ConvertFromUtf32(0xf0a2)      # Octicons "chrevron-up"
 $sl.GitSymbols.BranchBehindStatusSymbol             = [char]::ConvertFromUtf32(0xf0a3)      # Octicons "chevron-down"
