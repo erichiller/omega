@@ -9,21 +9,6 @@
 " set pythonthreedll=$BaseDir\system\python35\python35.dll
 let $PYTHONPATH = $BaseDir."\\system\\python35"
 
-""""""""""""""""" THEMES """"""""""""""""""""
-"set t_Co=256
-" colorscheme delek " best I found, other considerations:
-" darkblue
-" slate
-" murphy
-" desert
-" koehler
-" colorscheme zellner
-" from spf13:
-" 	- peaksea
-" 	- molokai
-" 	- Solarized
-colorscheme peaksea
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 " the following is for preserving files and settings
 " see :help swap
@@ -33,6 +18,7 @@ set updatecount=20									" save every <updatecount> number of characters
 set updatetime=2000									" save every 2000ms (2s)
 
 " Setting some decent VIM settings for programming
+" read the current settings with :set <variable>?
 filetype plugin indent on
 syntax on                       " turn syntax highlighting on by default
 set nocompatible                " basic starting point for usability
@@ -40,7 +26,6 @@ set vb t_vb=                    " remove the flash and the beep
 set ruler                       " show the cursor position all the time
 set backspace=indent,eol,start  " make that backspace key work the way it should
 set nocompatible                " vi compatible is LAME
-set background=dark             " Use colours that work well on a dark background (Console is usually black)
 set showmode                    " show the current mode
 set wrapmargin=1                " space around frame for wrapping
 set textwidth=0                 " wrap based on the window, not a static value
@@ -66,6 +51,11 @@ set showmatch                   " automatically show matching brackets. works li
 set incsearch					" do incremental searching
 set smartcase                   " don't ignorecase if searched word starts with a capital letter, must be combined with ignorecase
 set ignorecase					" ignore case / no case sensitivity when searching
+
+set encoding=utf-8
+""""""" spell settings """"""""
+" set spelllang=en              " defaulted to english anyways
+""""""" For REGEX """"""""
 set gdefault                    " global regex substitutions
 " these two lines fix vim's regex implrementation so that it uses the standard pcre
 " nnoremap / /\v                 
@@ -76,6 +66,22 @@ nnoremap <leader><space> :noh<cr>
 nnoremap <tab> %
 vnoremap <tab> %
 
+
+""""""""""""""""" THEMES """"""""""""""""""""
+"set t_Co=256
+" colorscheme delek " best I found, other considerations:
+" darkblue
+" slate
+" murphy
+" desert
+" koehler
+" colorscheme zellner
+" from spf13:
+" 	- peaksea
+" 	- molokai
+" 	- Solarized
+colorscheme peaksea
+set background=dark             " Use colours that work well on a dark background (Console is usually black)
 
 set laststatus=2                " make the last line (status) always present - http://vimhelp.appspot.com/options.txt.html#%27laststatus%27
 " Show EOL type and last modified timestamp, right after the filename
@@ -109,6 +115,8 @@ set sessionoptions-=help
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 " https://github.com/Shougo/neocomplete.vim
 " for autocompletion / neocomplete
+" options can be seen here:
+" https://github.com/Shougo/neocomplete.vim/blob/master/doc/neocomplete.txt
 set completeopt+=menu
 " set completeopt=menu
 " Use neocomplete.
@@ -119,8 +127,24 @@ if !exists('g:neocomplete#force_omni_input_patterns')
     let g:neocomplete#force_omni_input_patterns = {}
 endif
 let g:neocomplete#force_omni_input_patterns.typescript = '[^. *\t]\.\w*\|\h\w*::'
-" let g:neocomplete#sources = {}
-" let g:neocomplete#sources._ = ['dictionary']
+let g:neocomplete#data_directory='~\vimfiles\cache\'
+" for spell autocomplete
+" get spellfiles from here: http://app.aspell.net/create
+if !exists('g:neocomplete#sources')
+  let g:neocomplete#sources = {}
+endif
+" for more information see ::
+" https://github.com/Shougo/neocomplete.vim/issues/548
+" set the dictionaries that filetypes can use can use.
+" comma separated ,"filetype" : "dictionary filepath"
+" for information on the spell file format required see:
+" Part#4 : Spell file format // *spell-file-format*
+" http://vimdoc.sourceforge.net/htmldoc/spell.html
+let g:neocomplete#sources#dictionary#dictionaries = {
+        \ "markdown" : '~/vimfiles/spell/SCOWL_worldlist_novariant.txt'
+        \ }
+" g:neocomplete#min_keyword_length = 4 " default is 4
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 """"""""""""""""""" typescript """"""""""""""""""""""
@@ -172,6 +196,14 @@ if exists(':GoUpdateBinaries')
 
 endif
 
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""" vim-ps1 """""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+" powershell
+" https://github.com/pprovost/vim-ps1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:ps1_nofold_blocks = 1
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -238,23 +270,17 @@ nnoremap <silent> N :call SearchPrev()<CR>
 nnoremap <silent> <C-L> :silent! call matchdelete(b:ring)<CR>:nohlsearch<CR>:set nolist nospell<CR><C-L>
 """""""""""""""""""""""" END /// HIGHLIGHT CURRENT SEARCH RESULT """"""""""""""""""""""""
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""
-""""""""""""""""""""" vim-ps1 """""""""""""""""""""""
-"""""""""""""""""""""""""""""""""""""""""""""""""""""
-" powershell
-" https://github.com/pprovost/vim-ps1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:ps1_nofold_blocks = 1
-
 
 "------------------------------------------------------------------------------
 " Only do this part when compiled with support for autocommands.
 if has("autocmd")
 
-    " the initial startup (blank) file and 
+    " the initial startup / blank / empty file and 
     " any files without extensions and that are unable to have a filetype detected should be set as markdown
     " autocmd BufAdd * if empty(expand("%:e")) && !did_filetype() | set filetype=markdown | endif
     autocmd BufAdd * if empty(expand("%:e")) && !did_filetype() | set filetype=markdown | endif
+    " this handles filenames entered, but without an extension
+    " autocmd BufNewFile * if empty(expand("%:e")) && !did_filetype() | set filetype=markdown | endif
     
     " autocmd filetypedetect BufRead,BufNewFile * echomsg "ftdetect test"
     " if @% == "" | echo "mark2-visible" | echomsg "mark2" | endif
@@ -262,17 +288,12 @@ if has("autocmd")
     " autocmd BufEnter * echomsg "ftdetect BufEnter"
     " autocmd BufWinEnter * echomsg "ftdetect BufWinEnter"
 
-
-    autocmd  FocusLost  *.txt   :    if &modified && g:autosave_on_focus_change
-    autocmd  FocusLost  *.txt   :    write
-    autocmd  FocusLost  *.txt   :    echo "Autosaved file while you were absent" 
-    autocmd  FocusLost  *.txt   :    endif
-
-
     augroup markdown
         autocmd!
-        " set .txt and .md as markdown
+
+        " set .txt and .md as markdown 
         autocmd BufNewFile,BufFilePre,BufRead *.md,*.txt set filetype=markdown
+
         
         autocmd FileType markdown setlocal wrap linebreak nolist
         " autocmd FileType markdown setlocal showbreak=…
@@ -281,13 +302,7 @@ if has("autocmd")
         autocmd FileType markdown setlocal nonumber
 
         autocmd FileType markdown colorscheme edh
-        " this is a catch all - all files that are not excepted (ie. markdown) will load peaksea
-        autocmd BufRead * colorscheme peaksea
-
         autocmd Filetype markdown setlocal spell
-
-        
-
 
         """""""""""""""""""""""""""""""""""""""""""""""""""""
         " vim-markdown
@@ -298,7 +313,6 @@ if has("autocmd")
         " front matter , ie, for Hugo
         " json support via vim-json - https://github.com/elzr/vim-json
         let g:vim_markdown_json_frontmatter = 1
-
         let g:vim_markdown_toml_frontmatter = 1
         " folding is un-wanted I think
         let g:vim_markdown_folding_disabled = 1
@@ -370,13 +384,13 @@ if !has("gui_running")
     " this fixes backspace when in xterm
     inoremap <Char-0x07F> <BS>
     nnoremap <Char-0x07F> <BS>
+    " may need map instead to fix backspace in the : command mode
 
 endif
 
 set mousefocus " The window that the mouse pointer is on is automatically activated.
 set mousehide " Hide mouse when typing
 set showtabline=1
-set encoding=utf-8
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 " Startify
@@ -384,7 +398,7 @@ set encoding=utf-8
 " https://github.com/mhinz/vim-startify/blob/master/doc/startify.txt
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:startify_commands = [
-        \ ['Search Knowledge Base' , ':CtrlP $HOME\Google\ Drive\Documents\Knowledge\ Base\'],
+        \ ['Search Knowledge Base' , ':Fkb'],
         \ ['Vim Reference', 'h ref']
         \ ]
         " \ ':help reference',
@@ -392,10 +406,6 @@ let g:startify_commands = [
         " \ {'m': ['My magical function', 'call Magic()']},
         " \ ]
 let g:startify_fortune_use_unicode = 1
-" autocmd User Startified colorscheme peaksea
-" open new buffer mapped back to edh
-" autocmd User Startified nnoremap <buffer> e :colorscheme edh<CR>:call startify#open_buffers(15)<CR>
-" autocmd BufNewFile * colorscheme edh
 
 " Ack
 " grep / file search within ViM
