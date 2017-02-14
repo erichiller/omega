@@ -5,18 +5,6 @@
 " http://vimdoc.sourceforge.net/htmldoc/options.html
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" Path to Python 3.5 -- python35.dll is sought
-" set pythonthreedll=$BaseDir\system\python35\python35.dll
-let $PYTHONPATH = $BaseDir."\\system\\python35"
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""
-" the following is for preserving files and settings
-" see :help swap
-"""""""""""""""""""""""""""""""""""""""""""""""""""""
-set directory=~/vimfiles/swap/
-set updatecount=20									" save every <updatecount> number of characters
-set updatetime=2000									" save every 2000ms (2s)
-
 " Setting some decent VIM settings for programming
 " read the current settings with :set <variable>?
 filetype plugin indent on
@@ -34,7 +22,31 @@ set ttyfast                     " force faster redraw
 set hidden!                     " I've set this explicitly even though it is default;
                                 " Buffer isunloaded when it is abandoned.
 
-" EDH ---- force tabs, not spaces ----
+" Path to Python 3.5 -- python35.dll is sought
+" set pythonthreedll=$BaseDir\system\python35\python35.dll
+" let $PYTHONPATH = $BaseDir."\\system\\python35"
+let $PYTHONPATH=$VIM."\\..\\system\\python35"
+" Path needs to be edited so that ViM can reach lua
+let $PATH.=";".$VIM."\\..\\..\\bin"
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+" the following is for preserving files and settings
+" see :help swap
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+set directory=~/.vim/swap/
+" make windows function much as *nix
+if has('win32') || has('win64')
+    set runtimepath=$HOME/.vim
+    set runtimepath+=$VIM/vimfiles
+    set runtimepath+=$VIMRUNTIME
+    set runtimepath+=$VIM/vimfiles/after
+    set runtimepath+=$HOME/.vim/after
+    set packpath=$HOME/.vim/
+endif
+set updatecount=20									" save every <updatecount> number of characters
+set updatetime=2000									" save every 2000ms (2s)
+
+"" EDH "" force tabs-not spaces "
 set autoindent					" set auto-indenting on for programming; filetype plugin should
 								" override this for smartindent / cindent depending on filetype
 								" see: http://vim.wikia.com/wiki/Indenting_source_code
@@ -45,12 +57,13 @@ set number						" Show line numbers.
 set cursorline                  " Highlight the current line
 set history=50					" keep 50 lines of command line history
 set wildmode=list:longest       " show suggestions in the command line for vim <Tab> triggered
-set showcmd					" don't display commands
+set showcmd					    " don't display commands
 set hlsearch					" highlight search terms
 set showmatch                   " automatically show matching brackets. works like it does in bbedit.
 set incsearch					" do incremental searching
 set smartcase                   " don't ignorecase if searched word starts with a capital letter, must be combined with ignorecase
 set ignorecase					" ignore case / no case sensitivity when searching
+set nohidden                    " don't allow buffers to stay open when I close the tab
 
 set encoding=utf-8
 """"""" spell settings """"""""
@@ -91,184 +104,26 @@ set statusline=%<%F%h%m%r\ %y\ (%{strftime(\"%H:%M\ %d/%m/%Y\",getftime(expand(\
 " leader key ---- http://learnvimscriptthehardway.stevelosh.com/chapters/06.html
 " :let mapleader = "-"
 
-" FONT == SEE ==> http://vimhelp.appspot.com/options.txt.html#%27guifont%27 
-set guifont=Courier:h9:cANSI:qANTIALIASED
+
 set confirm						" raise a dialog asking if you wish to save the current file(s).
 
 " set win32 defaults
 source $VIMRUNTIME/mswin.vim
 " modify guioptions // win32 default is ----| egmrLtT |----
-set guioptions-=T				" Remove the Toolbar
 
-" Auto-Save Session options (see vim-sessions-> https://github.com/xolox/vim-session )
-let g:session_verbose_messages = 0
-let g:session_autosave = 'no'
-let g:session_autoload = 'no' " no=ask the user if they want to load the session if no file is provided
-let g:session_autosave_periodic = 1
-set sessionoptions+=resize,tabpages,winpos,winsize
-" no need to restore help windows!
-set sessionoptions-=help
-
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""
-""""""""""""""""""" neocomplete """""""""""""""""""""
-"""""""""""""""""""""""""""""""""""""""""""""""""""""
-" https://github.com/Shougo/neocomplete.vim
-" for autocompletion / neocomplete
-" options can be seen here:
-" https://github.com/Shougo/neocomplete.vim/blob/master/doc/neocomplete.txt
-set completeopt+=menu
-" set completeopt=menu
-" Use neocomplete.
-let g:neocomplete#enable_at_startup = 1
-" Use smartcase.
-let g:neocomplete#enable_smart_case = 1
-if !exists('g:neocomplete#force_omni_input_patterns')
-    let g:neocomplete#force_omni_input_patterns = {}
+" <---- GUI Settings ----
+if has('gui_running')
+    set lines=40                " 40 lines of text instead of 24,
+    " FONT == SEE ==> http://vimhelp.appspot.com/options.txt.html#%27guifont%27 
+    set guifont=Courier:h9:cANSI:qANTIALIASED
+    
+    " GUI configurations, menu
+    set guioptions-=T           " remove the toolbar
+    :aunmenu Window.New
+    :amenu 70.301	Window.New\ Tab	:tabnew<CR>
 endif
-let g:neocomplete#force_omni_input_patterns.typescript = '[^. *\t]\.\w*\|\h\w*::'
-let g:neocomplete#data_directory='~\vimfiles\cache\'
-" for spell autocomplete
-" get spellfiles from here: http://app.aspell.net/create
-if !exists('g:neocomplete#sources')
-  let g:neocomplete#sources = {}
-endif
-" for more information see ::
-" https://github.com/Shougo/neocomplete.vim/issues/548
-" set the dictionaries that filetypes can use can use.
-" comma separated ,"filetype" : "dictionary filepath"
-" for information on the spell file format required see:
-" Part#4 : Spell file format // *spell-file-format*
-" http://vimdoc.sourceforge.net/htmldoc/spell.html
-let g:neocomplete#sources#dictionary#dictionaries = {
-        \ "markdown" : '~/vimfiles/spell/SCOWL_worldlist_novariant.txt'
-        \ }
-" g:neocomplete#min_keyword_length = 4 " default is 4
+" ---- end gui settings ---->
 
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""
-""""""""""""""""""" typescript """"""""""""""""""""""
-"""""""""""""""""""""""""""""""""""""""""""""""""""""
-" https://github.com/Quramy/tsuquyomi.git
-" using with neocomplete
-" requires vimproc
-" https://github.com/Shougo/vimproc.vim
-" clone the repo as a normal plugin; 
-" then get the binary windows x64 DLL from Releases and place in ./lib
-" can test with :echo vimproc#cmd#system("dir") --> should print out directory
-" requires typescript ; npm install -g typescript
-" typescript syntax is from https://github.com/leafgarland/typescript-vim.git
-let g:tsuquyomi_completion_detail = 1
-let g:tsuquyomi_completion_preview = 1
-let g:tsuquyomi_javascript_support = 1
-if has("autocmd")
-    augroup typescript
-        " allow reading of embedded Javascript HTML templates and Markdown within typescript
-        " https://github.com/Quramy/vim-js-pretty-template
-        autocmd FileType typescript JsPreTmpl markdown
-        autocmd FileType typescript setlocal completeopt+=menu,preview
-    augroup END
-    augroup javascript
-        autocmd FileType javascript JsPreTmpl html
-    augroup END
-endif
-
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""
-""""""""""""""""""""" vim-go """"""""""""""""""""""""
-"""""""""""""""""""""""""""""""""""""""""""""""""""""
-" git clone https://github.com/fatih/vim-go
-" Once installed, within vim run
-" :GoUpdateBinaries
-if exists(':GoUpdateBinaries')
-    let g:go_highlight_functions = 1
-    let g:go_highlight_methods = 1
-    let g:go_highlight_fields = 1
-    let g:go_highlight_types = 1
-    let g:go_highlight_operators = 1
-    let g:go_highlight_build_constraints = 1
-    let g:go_auto_type_info = 0
-    " see possible mappings for vim-go with
-    " :help go-command
-    au FileType go nmap <leader>r <Plug>(go-run)
-    au FileType go nmap <leader>b <Plug>(go-build)
-    au FileType go nmap <leader>t <Plug>(go-test)
-
-endif
-
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""
-""""""""""""""""""""" vim-ps1 """""""""""""""""""""""
-"""""""""""""""""""""""""""""""""""""""""""""""""""""
-" powershell
-" https://github.com/pprovost/vim-ps1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:ps1_nofold_blocks = 1
-
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""
-""""""""""""""""""" nerd-comments """""""""""""""""""
-"""""""""""""""""""""""""""""""""""""""""""""""""""""
-" https://github.com/scrooloose/nerdcommenter/blob/master/doc/NERD_commenter.txt
-"""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:NERDCommentEmptyLines = 1
-let g:NERDMenuMode = 1
-let g:NERDSpaceDelims = 1
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""
-""""""""""""""""""""" vim-mundo """""""""""""""""""""
-"""""""""""""""""""""""""""""""""""""""""""""""""""""
-" ( undo tree visualization )
-" https://github.com/simnalamburt/vim-mundo
-"""""""""""""""""""""""""""""""""""""""""""""""""""""
-" allows for Ctrl-U in Insert Mode
-imap <C-U> <Esc>:MundoToggle<CR>
-" Allows for usage in normal mode (the mode in which you can do `:....`)
-nmap <C-U> :MundoToggle<CR>
-let g:mundo_preview_bottom = 1
-" use python3
-let g:mundo_prefer_python3 = 1
-" let g:mundo_help = 1
-let g:mundo_close_on_revert = 1
-
-
-" GUI configurations, menu
-:aunmenu Window.New
-:amenu 70.301	Window.New\ Tab	:tabnew<CR>
-
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""
-"""""" START /// HIGHLIGHT CURRENT SEARCH RESULT """"
-" http://vi.stackexchange.com/questions/2761/set-cursor-colour-different-when-on-a-highlighted-word
-"""""""""""""""""""""""""""""""""""""""""""""""""""""
-" n to search forward
-" N to search backwards
-fun! SearchHighlight()
-    silent! call matchdelete(b:ring)
-    let b:ring = matchadd('ErrorMsg', '\c\%#' . @/, 101)
-endfun
-fun! SearchNext()
-    try
-        execute 'normal! ' . 'Nn'[v:searchforward]
-    catch /E385:/
-        echohl ErrorMsg | echo "E385: search hit BOTTOM without match for: " . @/ | echohl None
-    endtry
-    call SearchHighlight()
-endfun
-fun! SearchPrev()
-    try
-        execute 'normal! ' . 'nN'[v:searchforward]
-    catch /E384:/
-        echohl ErrorMsg | echo "E384: search hit TOP without match for: " . @/ | echohl None
-    endtry
-    call SearchHighlight()
-endfun
-" Highlight entry
-nnoremap <silent> n :call SearchNext()<CR>
-nnoremap <silent> N :call SearchPrev()<CR>
-" Use <C-L> to clear some highlighting
-nnoremap <silent> <C-L> :silent! call matchdelete(b:ring)<CR>:nohlsearch<CR>:set nolist nospell<CR><C-L>
-"""""""""""""""""""""""" END /// HIGHLIGHT CURRENT SEARCH RESULT """"""""""""""""""""""""
 
 
 "------------------------------------------------------------------------------
@@ -277,8 +132,9 @@ if has("autocmd")
 
     " the initial startup / blank / empty file and 
     " any files without extensions and that are unable to have a filetype detected should be set as markdown
+    " echomsg "has autocmd"
     " autocmd BufAdd * if empty(expand("%:e")) && !did_filetype() | set filetype=markdown | endif
-    autocmd BufAdd * if empty(expand("%:e")) && !did_filetype() | set filetype=markdown | endif
+    " autocmd BufAdd * if empty(expand("%:e")) && !did_filetype() | set filetype=markdown | endif
     " this handles filenames entered, but without an extension
     " autocmd BufNewFile * if empty(expand("%:e")) && !did_filetype() | set filetype=markdown | endif
     
@@ -287,6 +143,8 @@ if has("autocmd")
     " autocmd BufAdd * echomsg "ftdetect BufAdd"
     " autocmd BufEnter * echomsg "ftdetect BufEnter"
     " autocmd BufWinEnter * echomsg "ftdetect BufWinEnter"
+
+    autocmd BufWinEnter * if empty(expand("%:e")) && !did_filetype() | setfiletype markdown | endif
 
     augroup markdown
         autocmd!
@@ -385,12 +243,185 @@ if !has("gui_running")
     inoremap <Char-0x07F> <BS>
     nnoremap <Char-0x07F> <BS>
     " may need map instead to fix backspace in the : command mode
-
 endif
 
 set mousefocus " The window that the mouse pointer is on is automatically activated.
 set mousehide " Hide mouse when typing
 set showtabline=1
+
+
+" Auto-Save Session options (see vim-sessions-> https://github.com/xolox/vim-session )
+let g:session_verbose_messages = 0
+let g:session_autosave = 'no'
+let g:session_autoload = 'no' " no=ask the user if they want to load the session if no file is provided
+let g:session_autosave_periodic = 1
+set sessionoptions+=resize,tabpages,winpos,winsize
+" no need to restore help windows!
+set sessionoptions-=help
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""" neocomplete """""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+" https://github.com/Shougo/neocomplete.vim
+" for autocompletion / neocomplete
+" options can be seen here:
+" https://github.com/Shougo/neocomplete.vim/blob/master/doc/neocomplete.txt
+set completeopt+=menu
+" set completeopt=menu
+" Use neocomplete.
+let g:neocomplete#enable_at_startup = 1
+" Use smartcase.
+let g:neocomplete#enable_smart_case = 1
+if !exists('g:neocomplete#force_omni_input_patterns')
+    let g:neocomplete#force_omni_input_patterns = {}
+endif
+let g:neocomplete#force_omni_input_patterns.typescript = '[^. *\t]\.\w*\|\h\w*::'
+let g:neocomplete#data_directory='~\.vim\cache\neocomplete\'
+" for spell autocomplete
+" get spellfiles from here: http://app.aspell.net/create
+if !exists('g:neocomplete#sources')
+  let g:neocomplete#sources = {}
+endif
+" for more information see ::
+" https://github.com/Shougo/neocomplete.vim/issues/548
+" set the dictionaries that filetypes can use can use.
+" comma separated ,"filetype" : "dictionary filepath"
+" for information on the spell file format required see:
+" Part#4 : Spell file format // *spell-file-format*
+" http://vimdoc.sourceforge.net/htmldoc/spell.html
+let g:neocomplete#sources#dictionary#dictionaries = {
+        \ "markdown" : '~/.vim/spell/SCOWL_worldlist_novariant.txt'
+        \ }
+" g:neocomplete#min_keyword_length = 4 " default is 4
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""" typescript """"""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+" https://github.com/Quramy/tsuquyomi.git
+" using with neocomplete
+" requires vimproc
+" https://github.com/Shougo/vimproc.vim
+" clone the repo as a normal plugin; 
+" then get the binary windows x64 DLL from Releases and place in ./lib
+" can test with :echo vimproc#cmd#system("dir") --> should print out directory
+" requires typescript ; npm install -g typescript
+" typescript syntax is from https://github.com/leafgarland/typescript-vim.git
+let g:tsuquyomi_completion_detail = 1
+let g:tsuquyomi_completion_preview = 1
+let g:tsuquyomi_javascript_support = 1
+if has("autocmd")
+    augroup typescript
+        " allow reading of embedded Javascript HTML templates and Markdown within typescript
+        " https://github.com/Quramy/vim-js-pretty-template
+        autocmd FileType typescript JsPreTmpl markdown
+        autocmd FileType typescript setlocal completeopt+=menu,preview
+    augroup END
+    augroup javascript
+        autocmd FileType javascript JsPreTmpl html
+    augroup END
+endif
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""" vim-go """"""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+" git clone https://github.com/fatih/vim-go
+" Once installed, within vim run
+" :GoUpdateBinaries
+if exists(':GoUpdateBinaries')
+    let g:go_highlight_functions = 1
+    let g:go_highlight_methods = 1
+    let g:go_highlight_fields = 1
+    let g:go_highlight_types = 1
+    let g:go_highlight_operators = 1
+    let g:go_highlight_build_constraints = 1
+    let g:go_auto_type_info = 0
+    " see possible mappings for vim-go with
+    " :help go-command
+    au FileType go nmap <leader>r <Plug>(go-run)
+    au FileType go nmap <leader>b <Plug>(go-build)
+    au FileType go nmap <leader>t <Plug>(go-test)
+
+endif
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""" vim-ps1 """""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+" powershell
+" https://github.com/pprovost/vim-ps1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:ps1_nofold_blocks = 1
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""" nerd-comments """""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+" https://github.com/scrooloose/nerdcommenter/blob/master/doc/NERD_commenter.txt
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:NERDCommentEmptyLines = 1
+let g:NERDMenuMode = 1
+let g:NERDSpaceDelims = 1
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""" vim-mundo """""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+" ( undo tree visualization )
+" https://github.com/simnalamburt/vim-mundo
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+" allows for Ctrl-U in Insert Mode
+imap <C-U> <Esc>:MundoToggle<CR>
+" Allows for usage in normal mode (the mode in which you can do `:....`)
+nmap <C-U> :MundoToggle<CR>
+let g:mundo_preview_bottom = 1
+" use python3
+let g:mundo_prefer_python3 = 1
+" let g:mundo_help = 1
+let g:mundo_close_on_revert = 1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+""" these settings are ViM standard Undo settings """
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+set backup 						                    " backups are nice ...
+set undofile					                    " so it's persistent undo ...
+set undolevels=1000                                 " maximum number of changes that can be undone
+set undoreload=10000                                " maximum number lines to save for undo on a buffer reload
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""" START /// HIGHLIGHT CURRENT SEARCH RESULT """"
+" http://vi.stackexchange.com/questions/2761/set-cursor-colour-different-when-on-a-highlighted-word
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+" n to search forward
+" N to search backwards
+fun! SearchHighlight()
+    silent! call matchdelete(b:ring)
+    let b:ring = matchadd('ErrorMsg', '\c\%#' . @/, 101)
+endfun
+fun! SearchNext()
+    try
+        execute 'normal! ' . 'Nn'[v:searchforward]
+    catch /E385:/
+        echohl ErrorMsg | echo "E385: search hit BOTTOM without match for: " . @/ | echohl None
+    endtry
+    call SearchHighlight()
+endfun
+fun! SearchPrev()
+    try
+        execute 'normal! ' . 'nN'[v:searchforward]
+    catch /E384:/
+        echohl ErrorMsg | echo "E384: search hit TOP without match for: " . @/ | echohl None
+    endtry
+    call SearchHighlight()
+endfun
+" Highlight entry
+nnoremap <silent> n :call SearchNext()<CR>
+nnoremap <silent> N :call SearchPrev()<CR>
+" Use <C-L> to clear some highlighting
+nnoremap <silent> <C-L> :silent! call matchdelete(b:ring)<CR>:nohlsearch<CR>:set nolist nospell<CR><C-L>
+"""""""""""""""""""""""" END /// HIGHLIGHT CURRENT SEARCH RESULT """"""""""""""""""""""""
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 " Startify
@@ -405,7 +436,9 @@ let g:startify_commands = [
         " \ {'h': 'h ref'},
         " \ {'m': ['My magical function', 'call Magic()']},
         " \ ]
-let g:startify_fortune_use_unicode = 1
+let g:startify_fortune_use_unicode = 0
+let g:startify_disable_at_vimenter = 0
+
 
 " Ack
 " grep / file search within ViM
@@ -437,4 +470,17 @@ endfunction
 " 
 " 
 " 
-
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+" " Bug list " "
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+" - colors in GVIM/startify
+" [*] lua dll
+" - undo directory?
+" - VIMINIT
+" - lua dll // filepath // C:\Users\ehiller\AppData\Local\omega\bin
+" - sessions NOT in ~/vimfiles/sessions
+" 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+" " Improvement list " "
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+" - undo in gui menu

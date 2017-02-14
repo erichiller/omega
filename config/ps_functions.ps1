@@ -154,7 +154,8 @@ function mv {
 
 	[Parameter(Mandatory=$False,
 					HelpMessage="Flag to set whether a directory should be created for the Destination, defaults to yes. This is RECURSIVE.")]
-	[switch] $Create
+	[switch] $Create,
+	[switch] $Force
 	
 	)
 	Process
@@ -200,7 +201,7 @@ function mv {
 	# -WhatIf
 	# 
 
-	Move-Item -Path $Source -Destination $Destination
+	Move-Item -Path $Source -Destination $Destination (&{If($Force) {"-Force"}})
 	}
 }
 
@@ -705,7 +706,7 @@ function Search-FrequentDirectory {
 	process {
 
 		$dirSearch = $PsBoundParameters.dirSearch
-		Debug-Variable $searchHistory
+		Debug-Variable $searchHistory "f/searchHistory"
 
 		Write-Debug "dirSearch=$dirSearch"
 		
@@ -741,6 +742,7 @@ function Search-FrequentDirectory {
 
 		if( ( $testedPath ) `
 				-and ( -not ( $testedPath | Test-Path ) ) ){
+			Write-Information "Could not find test string, possibly not an absolute path, Attempting to Locate"
 			
 
 			# could look at prior cd to determine location?
