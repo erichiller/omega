@@ -650,7 +650,7 @@ function Search-FrequentDirectory {
 	# a catch all would be \\\/  ; but this invalidates the whitespace escape character that may be used mid-drectory.
 	$dirSep = "\\"
 	# Group[1] = Directory , Group[length-1] = lowest folder
-	$regex = "^[[:blank:]]*cd ([a-zA-Z\~:]+([$dirSep][^$dirSep]+)*[$dirSep]([^$dirSep]+)[$dirSep]?)$"
+	$regex = "^[[:blank:]]*cd ([a-zA-Z\.\~:]+([$dirSep][^$dirSep]+)*[$dirSep]([^$dirSep]+)[$dirSep]?)$"
 	# original: ^[[:blank:]]*cd [a-zA-Z\~:\\\/]+([^\\\/]+[\\\/]?)*[\\\/]([^\\\/]+)[\/\\]?$
 	# test for historyFile existance
 	if( -not (Test-Path $historyFile )){ 
