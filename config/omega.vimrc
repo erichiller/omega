@@ -33,15 +33,18 @@ let $PATH.=";".$VIM."\\..\\..\\bin"
 " the following is for preserving files and settings
 " see :help swap
 """""""""""""""""""""""""""""""""""""""""""""""""""""
-set directory=~/.vim/swap/
+set directory=$TEMP/vimfiles/swap/
 " make windows function much as *nix
 if has('win32') || has('win64')
-    set runtimepath=$HOME/.vim
+    set runtimepath=$VIM/../vimfiles
     set runtimepath+=$VIM/vimfiles
     set runtimepath+=$VIMRUNTIME
     set runtimepath+=$VIM/vimfiles/after
-    set runtimepath+=$HOME/.vim/after
-    set packpath=$HOME/.vim/
+    set runtimepath+=$VIM/../vimfiles/after
+    set packpath=$VIM/../vimfiles
+    " http://vimdoc.sourceforge.net/htmldoc/options.html#'viminfo'
+    set viminfo+=n$TEMP/vimfiles/viminfo
+    set undodir=$TEMP/vimfiles/undo
 endif
 set updatecount=20									" save every <updatecount> number of characters
 set updatetime=2000									" save every 2000ms (2s)
@@ -53,7 +56,6 @@ set autoindent					" set auto-indenting on for programming; filetype plugin shou
 set noexpandtab                 " don't turn tabs into spaces
 set tabstop=4					" EDH - standard 4 space=tab
 set shiftwidth=4				" Number of spaces to use for each step of (auto)indent.
-set number						" Show line numbers.
 set cursorline                  " Highlight the current line
 set history=50					" keep 50 lines of command line history
 set wildmode=list:longest       " show suggestions in the command line for vim <Tab> triggered
@@ -93,11 +95,9 @@ vnoremap <tab> %
 " 	- peaksea
 " 	- molokai
 " 	- Solarized
-colorscheme peaksea
-set background=dark             " Use colours that work well on a dark background (Console is usually black)
 
-set laststatus=2                " make the last line (status) always present - http://vimhelp.appspot.com/options.txt.html#%27laststatus%27
 " Show EOL type and last modified timestamp, right after the filename
+" see statusline " http://vimdoc.sourceforge.net/htmldoc/options.html#'statusline'
 set statusline=%<%F%h%m%r\ %y\ (%{strftime(\"%H:%M\ %d/%m/%Y\",getftime(expand(\"%:p\")))})%=%l,%c%V\ %P
 
 
@@ -113,9 +113,10 @@ source $VIMRUNTIME/mswin.vim
 
 " <---- GUI Settings ----
 if has('gui_running')
-    set lines=40                " 40 lines of text instead of 24,
+    set lines=42                " 40 lines of text instead of 24,
     " FONT == SEE ==> http://vimhelp.appspot.com/options.txt.html#%27guifont%27 
-    set guifont=Courier:h9:cANSI:qANTIALIASED
+    " set guifont=Courier:h9:cANSI:qANTIALIASED
+    set guifont=Courier\ New:h10:cANSI:qPROOF,Consolas:h12:cANSI:qDEFAULT
     
     " GUI configurations, menu
     set guioptions-=T           " remove the toolbar
@@ -157,10 +158,11 @@ if has("autocmd")
         " autocmd FileType markdown setlocal showbreak=…
         " autocmd FileType markdown setlocal showbreak=...
 
-        autocmd FileType markdown setlocal nonumber
+        " autocmd FileType markdown setlocal nonumber
+        " autocmd FileType markdown setlocal laststatus=0 " do not show a status line=0, 2= always
 
-        autocmd FileType markdown colorscheme edh
-        autocmd Filetype markdown setlocal spell
+        " these are local-only modifications to markdown type buffers
+        autocmd FileType markdown setlocal linespace=2 " DOES LINESPACE APPLY TO CTERM????? UNKNOWN????
 
         """""""""""""""""""""""""""""""""""""""""""""""""""""
         " vim-markdown
@@ -208,13 +210,37 @@ if has("autocmd")
       autocmd Syntax gitcommit setlocal textwidth=74
 endif " has("autocmd")
 
+
+" map CTRL+SPACE in _normal_ and _insert_ modes to bring the spell popup up
+inoremap <C-SPACE> <C-X><C-S>
+noremap <C-SPACE> <C-X><C-S>
+
+fun! NewFileSetup()
+    set background=dark             " Use colours that work well on a dark background (Console is usually black)
+    " these are placeholders after markdown
+    if &ft =~ 'markdown\|filetype2\|filetype3'
+        setlocal nonumber
+        setlocal laststatus=0
+        colorscheme edh
+        setlocal spell
+        return
+    endif
+    colorscheme peaksea
+    setlocal number                 " turn on line numbers
+    " make the last line (status) always present
+    " http://vimhelp.appspot.com/options.txt.html#%27laststatus%27
+    set laststatus=2                
+    
+endfun
+
+autocmd BufWinEnter * call NewFileSetup()
+
 """"""""""""""""""""""""""""""""""""""""""
 """""""""""" For ConEmu """"""""""""""""""
 " for more information see ConEmu docs
 " http://conemu.github.io/en/VimXterm.html
 """"""""""""""""""""""""""""""""""""""""""
 if !has("gui_running")
-    
     """"""""""""""""""""""""""""""""""""""
     """"""" For 256 colors in ConEmu """""
     """"""""""""""""""""""""""""""""""""""
@@ -250,16 +276,6 @@ set mousehide " Hide mouse when typing
 set showtabline=1
 
 
-" Auto-Save Session options (see vim-sessions-> https://github.com/xolox/vim-session )
-let g:session_verbose_messages = 0
-let g:session_autosave = 'no'
-let g:session_autoload = 'no' " no=ask the user if they want to load the session if no file is provided
-let g:session_autosave_periodic = 1
-set sessionoptions+=resize,tabpages,winpos,winsize
-" no need to restore help windows!
-set sessionoptions-=help
-
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 """"""""""""""""""" neocomplete """""""""""""""""""""
 """""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -277,23 +293,12 @@ if !exists('g:neocomplete#force_omni_input_patterns')
     let g:neocomplete#force_omni_input_patterns = {}
 endif
 let g:neocomplete#force_omni_input_patterns.typescript = '[^. *\t]\.\w*\|\h\w*::'
-let g:neocomplete#data_directory='~\.vim\cache\neocomplete\'
-" for spell autocomplete
-" get spellfiles from here: http://app.aspell.net/create
+let g:neocomplete#data_directory='$TEMP\vimfiles\cache\neocomplete\'
+" cache max filesize normally 500,000 ; but the dictionary file is ~1,300,000; times 10
+let g:neocomplete#sources#buffer#cache_limit_size=5000000
 if !exists('g:neocomplete#sources')
   let g:neocomplete#sources = {}
 endif
-" for more information see ::
-" https://github.com/Shougo/neocomplete.vim/issues/548
-" set the dictionaries that filetypes can use can use.
-" comma separated ,"filetype" : "dictionary filepath"
-" for information on the spell file format required see:
-" Part#4 : Spell file format // *spell-file-format*
-" http://vimdoc.sourceforge.net/htmldoc/spell.html
-let g:neocomplete#sources#dictionary#dictionaries = {
-        \ "markdown" : '~/.vim/spell/SCOWL_worldlist_novariant.txt'
-        \ }
-" g:neocomplete#min_keyword_length = 4 " default is 4
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -343,7 +348,6 @@ if exists(':GoUpdateBinaries')
     au FileType go nmap <leader>r <Plug>(go-run)
     au FileType go nmap <leader>b <Plug>(go-build)
     au FileType go nmap <leader>t <Plug>(go-test)
-
 endif
 
 
@@ -364,6 +368,9 @@ let g:ps1_nofold_blocks = 1
 let g:NERDCommentEmptyLines = 1
 let g:NERDMenuMode = 1
 let g:NERDSpaceDelims = 1
+let g:NERDCreateDefaultMappings = 0
+" CTRL+/ now comments the current line
+map <C-/> <plug>NERDCommenterToggle
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 """"""""""""""""""""" vim-mundo """""""""""""""""""""
@@ -438,6 +445,34 @@ let g:startify_commands = [
         " \ ]
 let g:startify_fortune_use_unicode = 0
 let g:startify_disable_at_vimenter = 0
+"""""""""""" for sessions """"""""""""
+" The directory to save/load sessions to/from.
+let g:startify_session_dir='$TEMP/vimfiles/sessions'
+" Automatically update sessions
+" let g:startify_session_persistence = 1
+
+
+" Auto-Save Session options (see vim-sessions-> https://github.com/xolox/vim-session )
+let g:session_verbose_messages=1
+" If it's gvim -> prompt to save at close, else (console) do not save session
+if has("gui_running") | let g:session_autosave = "prompt" | else | let g:session_autosave = "no" | endif
+let g:session_autoload = 'no' " no=ask the user if they want to load the session if no file is provided
+let g:session_autosave_periodic=1
+let g:session_directory='$TEMP/vimfiles/sessions'
+let g:session_autosave_silent=1
+" could :: below :: to save paths of session
+" xolox#session#path_to_name()
+" xolox#session#name_to_path()
+"""""""""""" for sessions """"""""""""
+" see: http://vimdoc.sourceforge.net/htmldoc/options.html#'sessionoptions'
+set sessionoptions+=globals,localoptions,resize,tabpages,winpos,winsize
+" no need to restore help windows!
+set sessionoptions-=help
+" set the default session name based on date
+" timestamp options: http://vim.wikia.com/wiki/Insert_current_date_or_time
+let g:session_default_name=strftime('%Y-%m-%d_%H%M-%S')
+
+
 
 
 " Ack
@@ -451,7 +486,7 @@ endif
 map <leader>f :AckWindow<space>
 map <leader>ff :Ack<space>
 map <leader>fff :Fkb<space>
-let $kb="C:\\Users\\ehiller\\Documents"
+let $kb="$HOME\\Documents"
 
 command -nargs=* Fkb :lcd $kb | :Ack <args>
 function Fkb(term)
@@ -473,14 +508,20 @@ endfunction
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 " " Bug list " "
 """""""""""""""""""""""""""""""""""""""""""""""""""""
-" - colors in GVIM/startify
+" [*] colors in GVIM/startify
 " [*] lua dll
-" - undo directory?
-" - VIMINIT
-" - lua dll // filepath // C:\Users\ehiller\AppData\Local\omega\bin
-" - sessions NOT in ~/vimfiles/sessions
+" [*] undo directory?
+" [*] VIMINIT
+" [*] lua dll // filepath // C:\Users\ehiller\AppData\Local\omega\bin
+" [*] sessions NOT in ~/vimfiles/sessions
+" [*] sessions prompt for save on close in gui; never in console
+" [*] spell only on <CTRL+SPACE> in markdown, normal autocomplete otherwise
+" [*] commenter setup to standard (for me) <CTRL+/>
 " 
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 " " Improvement list " "
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 " - undo in gui menu
+" - vim-jsx
+" - vim-fugitive
+" - 

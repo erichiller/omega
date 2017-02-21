@@ -136,6 +136,13 @@ try {
 	Write-Warning "GO not found. Either not installed or there was an error. Directory and console coloring will be limited."
 }
 
+# Set config for ViM
+if ( Test-Path $env:BaseDir/system/vim/vim.exe ) {
+	$env:VIMINIT='source $VIM/../../config/omega.vimrc'
+	Set-Alias -Name "vim" -Value "${env:BaseDir}\system\vim\vim.exe"
+}
+
+
 ##  PSGnuwin32 ??
 
 ## check for psreadline 1.2 with get-module psreadline
