@@ -23,8 +23,6 @@ set hidden!                     " I've set this explicitly even though it is def
                                 " Buffer isunloaded when it is abandoned.
 
 " Path to Python 3.5 -- python35.dll is sought
-" set pythonthreedll=$BaseDir\system\python35\python35.dll
-" let $PYTHONPATH = $BaseDir."\\system\\python35"
 let $PYTHONPATH=$VIM."\\..\\system\\python35"
 " Path needs to be edited so that ViM can reach lua
 let $PATH.=";".$VIM."\\..\\..\\bin"
@@ -66,6 +64,7 @@ set incsearch					" do incremental searching
 set smartcase                   " don't ignorecase if searched word starts with a capital letter, must be combined with ignorecase
 set ignorecase					" ignore case / no case sensitivity when searching
 set nohidden                    " don't allow buffers to stay open when I close the tab
+set autoread                    " read in filechanges when they are made by an external program
 
 set encoding=utf-8
 """"""" spell settings """"""""
@@ -73,13 +72,13 @@ set encoding=utf-8
 """"""" For REGEX """"""""
 set gdefault                    " global regex substitutions
 " these two lines fix vim's regex implrementation so that it uses the standard pcre
-" nnoremap / /\v                 
-" vnoremap / /\v
 " this clears out the search results
 nnoremap <leader><space> :noh<cr>
 " set TAB key to execute parenthesis/bracket matching
 nnoremap <tab> %
 vnoremap <tab> %
+
+set listchars=tab:>.,trail:.,extends:#,nbsp:. " Highlight problematic whitespace
 
 
 """"""""""""""""" THEMES """"""""""""""""""""
@@ -98,12 +97,14 @@ vnoremap <tab> %
 
 " Show EOL type and last modified timestamp, right after the filename
 " see statusline " http://vimdoc.sourceforge.net/htmldoc/options.html#'statusline'
-set statusline=%<%F%h%m%r\ %y\ (%{strftime(\"%H:%M\ %d/%m/%Y\",getftime(expand(\"%:p\")))})%=%l,%c%V\ %P
+" %c is the byte line number
+" %V is the 'virtual line number' meaning multi-byte characters could only be +1 V but >1 c /or/ a tab would be >1 v but c=1
+set statusline=%{fugitive#statusline()}%<%F%h%m%r\ %y\ (%{strftime(\"%H:%M\ %d/%m/%Y\",getftime(expand(\"%:p\")))})%=[0x%B(%b)]\ C%v\ L%l\|%L\ %p%%
+
 
 
 " leader key ---- http://learnvimscriptthehardway.stevelosh.com/chapters/06.html
 " :let mapleader = "-"
-
 
 set confirm						" raise a dialog asking if you wish to save the current file(s).
 
@@ -118,10 +119,52 @@ if has('gui_running')
     " set guifont=Courier:h9:cANSI:qANTIALIASED
     set guifont=Courier\ New:h10:cANSI:qPROOF,Consolas:h12:cANSI:qDEFAULT
     
-    " GUI configurations, menu
+    " GUI configurations, see guioptions
+    " http://vimdoc.sourceforge.net/htmldoc/options.html#'guioptions'
     set guioptions-=T           " remove the toolbar
-    :aunmenu Window.New
-    :amenu 70.301	Window.New\ Tab	:tabnew<CR>
+    set guioptions-=t           " remove the tearoff
+
+    " only show a brief filename for the tab title
+    set guitablabel=%F
+
+
+    an 10.310.100 &File.Open\ File.New\ Tab	:browse tabnew<CR>
+    an 10.310.120 &File.Open\ File.&OverWrite\ Window  :browse confirm e<CR>
+    an 10.310.140 &File.Open\ File.Sp&lit\ Window	:browse sp<CR>
+
+    an 10.325 &File.&New\ Tab<Tab>			:tabnew<CR>
+
+    aunmenu File.Open\.\.\.
+    " remove Open Tab, rename
+    aunmenu File.Open\ Tab\.\.\.
+    " rename split
+    aunmenu File.Split-Open\.\.\.
+    " rename new, it should also do a new TAB
+    aunmenu File.New
+    aunmenu File.Close
+
+    " add SPLIT HORIZONTAL add SPLIT VERTICAL
+    aunmenu Window
+    menu 10.327 &File.---Window---	:
+    an 10.328 &File.S&plit\ Horizontally		<C-W>s
+    an 10.329 &File.Split\ &Vertically	<C-W>v
+
+    an 10.630 &File.Exit\ without\ Session  :let g:session_autosave='no'<CR>:qa<CR>
+
+    amenu 20.312    &Edit.Toggle\ history   <Esc>:MundoToggle<CR>
+    amenu 20.362   &Edit.Toggle\ Comment   <plug>NERDCommenterToggle
+
+    :an <silent> 10.330 &File.&Close\ Window<Tab>Selected
+	\ :if winheight(2) < 0 && tabpagewinnr(2) == 0 <Bar>
+	\   confirm enew <Bar>
+	\ else <Bar>
+	\   confirm close <Bar>
+	\ endif<CR>
+
+
+    amenu 30.20 &Tools.Silver\ Search   :Fkb<space>
+    amenu 30.40 &Tools.------	:
+
 endif
 " ---- end gui settings ---->
 
@@ -130,20 +173,6 @@ endif
 "------------------------------------------------------------------------------
 " Only do this part when compiled with support for autocommands.
 if has("autocmd")
-
-    " the initial startup / blank / empty file and 
-    " any files without extensions and that are unable to have a filetype detected should be set as markdown
-    " echomsg "has autocmd"
-    " autocmd BufAdd * if empty(expand("%:e")) && !did_filetype() | set filetype=markdown | endif
-    " autocmd BufAdd * if empty(expand("%:e")) && !did_filetype() | set filetype=markdown | endif
-    " this handles filenames entered, but without an extension
-    " autocmd BufNewFile * if empty(expand("%:e")) && !did_filetype() | set filetype=markdown | endif
-    
-    " autocmd filetypedetect BufRead,BufNewFile * echomsg "ftdetect test"
-    " if @% == "" | echo "mark2-visible" | echomsg "mark2" | endif
-    " autocmd BufAdd * echomsg "ftdetect BufAdd"
-    " autocmd BufEnter * echomsg "ftdetect BufEnter"
-    " autocmd BufWinEnter * echomsg "ftdetect BufWinEnter"
 
     autocmd BufWinEnter * if empty(expand("%:e")) && !did_filetype() | setfiletype markdown | endif
 
@@ -155,12 +184,6 @@ if has("autocmd")
 
         
         autocmd FileType markdown setlocal wrap linebreak nolist
-        " autocmd FileType markdown setlocal showbreak=…
-        " autocmd FileType markdown setlocal showbreak=...
-
-        " autocmd FileType markdown setlocal nonumber
-        " autocmd FileType markdown setlocal laststatus=0 " do not show a status line=0, 2= always
-
         " these are local-only modifications to markdown type buffers
         autocmd FileType markdown setlocal linespace=2 " DOES LINESPACE APPLY TO CTERM????? UNKNOWN????
 
@@ -178,11 +201,6 @@ if has("autocmd")
         let g:vim_markdown_folding_disabled = 1
         let g:vim_markdown_toc_autofit = 1
         let g:vim_markdown_fenced_languages = ['ps=ps1,powershell=ps1']
-        " autocmd FileType markdown map <C-M> <Nop>
-        " autocmd FileType markdown map! <C-M> <Nop>
-        " autocmd FileType markdown map <Return> <CR>
-        " autocmd FileType markdown map <C-O> <Nop>
-        " autocmd FileType markdown map! <C-O> <Nop>
         autocmd FileType markdown nmap ff :TableFormat<CR>
         autocmd FileType markdown nmap tt :Toc<CR>
     augroup END
@@ -210,11 +228,11 @@ if has("autocmd")
       autocmd Syntax gitcommit setlocal textwidth=74
 endif " has("autocmd")
 
-
 " map CTRL+SPACE in _normal_ and _insert_ modes to bring the spell popup up
 inoremap <C-SPACE> <C-X><C-S>
 noremap <C-SPACE> <C-X><C-S>
 
+" setup a new file with filetype specific values
 fun! NewFileSetup()
     set background=dark             " Use colours that work well on a dark background (Console is usually black)
     " these are placeholders after markdown
@@ -223,6 +241,9 @@ fun! NewFileSetup()
         setlocal laststatus=0
         colorscheme edh
         setlocal spell
+        
+        amenu 30.30 &Tools.Format\ Table    :TableFormat<CR>
+        amenu 30.31 &Tools.Table\ of\ Contents    :Toc<CR>
         return
     endif
     colorscheme peaksea
@@ -230,7 +251,6 @@ fun! NewFileSetup()
     " make the last line (status) always present
     " http://vimhelp.appspot.com/options.txt.html#%27laststatus%27
     set laststatus=2                
-    
 endfun
 
 autocmd BufWinEnter * call NewFileSetup()
@@ -329,6 +349,7 @@ if has("autocmd")
 endif
 
 
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 """"""""""""""""""""" vim-go """"""""""""""""""""""""
 """""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -366,7 +387,7 @@ let g:ps1_nofold_blocks = 1
 " https://github.com/scrooloose/nerdcommenter/blob/master/doc/NERD_commenter.txt
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:NERDCommentEmptyLines = 1
-let g:NERDMenuMode = 1
+let g:NERDMenuMode = 0
 let g:NERDSpaceDelims = 1
 let g:NERDCreateDefaultMappings = 0
 " CTRL+/ now comments the current line
@@ -394,7 +415,6 @@ set backup 						                    " backups are nice ...
 set undofile					                    " so it's persistent undo ...
 set undolevels=1000                                 " maximum number of changes that can be undone
 set undoreload=10000                                " maximum number lines to save for undo on a buffer reload
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 """""" START /// HIGHLIGHT CURRENT SEARCH RESULT """"
@@ -500,9 +520,20 @@ endfunction
 " Reference & Notes
 " 
 """""""""""""""""""""""""""""""""""""""""""""""""""""
+" ### UPDATE HELP TAGS ###
 " Upon installing a new plugin, be sure to install it's help as well with
 " :helptags ALL
 " 
+" ### Shortcut for GVIM in Start Menu ###
+" `C:\Users\ehiller\AppData\Local\omega\system\vim\gvim.exe -u %LocalAppData%\omega\config\omega.vimrc`
+" 
+" * Locate into `$basedir\system\vimpack\`
+"   - `pack`
+"   - `spell` (removed)
+" * Locate into `$env:temp\vimfiles\`
+"   - `sessions`
+"   - `cache`
+"   - `swap`
 " 
 " 
 """""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -511,7 +542,7 @@ endfunction
 " [*] colors in GVIM/startify
 " [*] lua dll
 " [*] undo directory?
-" [*] VIMINIT
+" [*] VIMINIT ; removed need for `vim.cmd`. VIMINIT set in profile.ps1 <http://vimdoc.sourceforge.net/htmldoc/starting.html#VIMINIT>
 " [*] lua dll // filepath // C:\Users\ehiller\AppData\Local\omega\bin
 " [*] sessions NOT in ~/vimfiles/sessions
 " [*] sessions prompt for save on close in gui; never in console
@@ -521,7 +552,22 @@ endfunction
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 " " Improvement list " "
 """""""""""""""""""""""""""""""""""""""""""""""""""""
-" - undo in gui menu
+" [*] undo in gui menu
 " - vim-jsx
 " - vim-fugitive
-" - 
+
+" ??? Considerations ???
+" --> use spaces, not tabs (maybe)
+"       http://vimdoc.sourceforge.net/htmldoc/options.html#'expandtab'
+" # review GLOBAL (set) vs. LOCAL (setlocal) options
+"       [setlocal](http://vimdoc.sourceforge.net/htmldoc/options.html#local-options)
+"       [options/set](http://vimdoc.sourceforge.net/htmldoc/options.html#options)
+" 
+" 
+
+
+
+" # Create packages
+" 1. ViM
+" 2. vimpack
+" 3. vimdict? / vimspell?
