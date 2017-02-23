@@ -13,7 +13,6 @@ set nocompatible                " basic starting point for usability
 set vb t_vb=                    " remove the flash and the beep
 set ruler                       " show the cursor position all the time
 set backspace=indent,eol,start  " make that backspace key work the way it should
-set nocompatible                " vi compatible is LAME
 set showmode                    " show the current mode
 set wrapmargin=1                " space around frame for wrapping
 set textwidth=0                 " wrap based on the window, not a static value
@@ -279,7 +278,6 @@ if !has("gui_running")
     " issue with scrolling
     " https://github.com/Maximus5/ConEmu/issues/1007
     set mouse=a
-    set nocompatible
     inoremap <Esc>[62~ <C-X><C-E>
     inoremap <Esc>[63~ <C-X><C-Y>
     nnoremap <Esc>[62~ <C-E>
@@ -467,7 +465,7 @@ let g:startify_fortune_use_unicode = 0
 let g:startify_disable_at_vimenter = 0
 """""""""""" for sessions """"""""""""
 " The directory to save/load sessions to/from.
-let g:startify_session_dir='$TEMP/vimfiles/sessions'
+let g:startify_session_dir=$TEMP.'\vimfiles\sessions'
 " Automatically update sessions
 " let g:startify_session_persistence = 1
 
@@ -478,7 +476,7 @@ let g:session_verbose_messages=1
 if has("gui_running") | let g:session_autosave = "prompt" | else | let g:session_autosave = "no" | endif
 let g:session_autoload = 'no' " no=ask the user if they want to load the session if no file is provided
 let g:session_autosave_periodic=1
-let g:session_directory='$TEMP/vimfiles/sessions'
+let g:session_directory=$TEMP.'\vimfiles\sessions'
 let g:session_autosave_silent=1
 " could :: below :: to save paths of session
 " xolox#session#path_to_name()
