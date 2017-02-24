@@ -18,8 +18,6 @@ set wrapmargin=1                " space around frame for wrapping
 set textwidth=0                 " wrap based on the window, not a static value
 set scrolloff=5                 " number of screen lines to keep above and below the cursor
 set ttyfast                     " force faster redraw
-set hidden!                     " I've set this explicitly even though it is default;
-                                " Buffer isunloaded when it is abandoned.
 
 " Path to Python 3.5 -- python35.dll is sought
 let $PYTHONPATH=$VIM."\\..\\system\\python35"
@@ -62,7 +60,6 @@ set showmatch                   " automatically show matching brackets. works li
 set incsearch					" do incremental searching
 set smartcase                   " don't ignorecase if searched word starts with a capital letter, must be combined with ignorecase
 set ignorecase					" ignore case / no case sensitivity when searching
-set nohidden                    " don't allow buffers to stay open when I close the tab
 set autoread                    " read in filechanges when they are made by an external program
 
 set encoding=utf-8
@@ -82,6 +79,9 @@ set listchars=tab:>.,trail:.,extends:#,nbsp:. " Highlight problematic whitespace
 " browsedir // http://vimhelp.appspot.com/options.txt.html#%27browsedir%27
 set browsedir=buffer            " when opening a new file using the file browse dialog, what should the open folder be?
                                 " last , buffer , current , or {path}
+set nohidden                    " I've set this explicitly even though it is default;
+                                " Buffer isunloaded when it is abandoned.
+
 
 """"""""""""""""" THEMES """"""""""""""""""""
 "set t_Co=256
