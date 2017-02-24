@@ -178,8 +178,8 @@ if (alias mv -ErrorAction SilentlyContinue) { Remove-Item alias:mv }
 function gh { Set-Location "${env:Home}\Dev\src\github.com\erichiller\$($args[0])" }
 function om { Set-Location ${env:Basedir} }
 
-# less is more
-Set-Alias -Name "less" -Value "${env:windir}\System32\more.com"
+# less
+Set-Alias -Name "less" -Value "${env:basedir}\system\git\usr\bin\less.exe"
 
 # grep
 Set-Alias -Name grep -Value "${env:basedir}\system\git\usr\bin\grep.exe"

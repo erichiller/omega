@@ -79,6 +79,9 @@ vnoremap <tab> %
 
 set listchars=tab:>.,trail:.,extends:#,nbsp:. " Highlight problematic whitespace
 
+" browsedir // http://vimhelp.appspot.com/options.txt.html#%27browsedir%27
+set browsedir=buffer            " when opening a new file using the file browse dialog, what should the open folder be?
+                                " last , buffer , current , or {path}
 
 """"""""""""""""" THEMES """"""""""""""""""""
 "set t_Co=256
