@@ -112,16 +112,33 @@ try {
 
 # go is going to have to be a module too
 try {
-	$goPath = Resolve-Path $OMEGA_CONF.gopath
-	if( ( Test-Path $goPath ) `
-		-and ( Test-Path ( Join-Path $goPath "bin" ) ) `
-		-and ( Test-Path ( Join-Path $goPath "pkg" ) ) `
-		-and ( Test-Path ( Join-Path $goPath "src" ) ) `
+	$env:GOPATH = Resolve-Path $OMEGA_CONF.gopath
+	if( ( Test-Path $env:GOPATH ) `
+		-and ( Test-Path ( Join-Path $env:GOPATH "bin" ) ) `
+		-and ( Test-Path ( Join-Path $env:GOPATH "pkg" ) ) `
+		-and ( Test-Path ( Join-Path $env:GOPATH "src" ) ) `
 	){
-		$env:GOPATH = $goPath
-		Add-DirToPath ( Join-Path $goPath "bin" )
+		Add-DirToPath ( Join-Path $env:GOPATH "bin" )
 	} else {
-		Write-Warning "$goPath is not present"
+		# if GOROOT wasn't found, remove the environment variable;
+		# this keeps the environment clean of garbage
+		Remove-Item Env:\GOPATH
+		Write-Warning "${$env:GOPATH} is not present"
+	}
+	$env:GOROOT = Join-Path $env:BaseDir "\system\go\"
+	if( ( Test-Path $env:GOROOT ) `
+		-and ( Test-Path ( Join-Path $env:GOROOT "bin" ) ) `
+		-and ( Test-Path ( Join-Path $env:GOROOT "pkg" ) ) `
+		-and ( Test-Path ( Join-Path $env:GOROOT "src" ) ) `
+		-and ( Test-Path ( Join-Path $env:GOROOT "misc" ) ) `
+		-and ( Test-Path ( Join-Path $env:GOROOT "lib" ) ) `
+	){
+		Add-DirToPath ( Join-Path $env:GOROOT "bin" )
+	} else {
+		# if GOROOT wasn't found, remove the environment variable;
+		# this keeps the environment clean of garbage
+		Remove-Item Env:\GOROOT
+		Write-Warning "${$env:GOROOT} is not present"
 	}
 
 	# get msys2 , msys64 here: https://sourceforge.net/projects/msys2/files/Base/x86_64/
