@@ -122,8 +122,8 @@ try {
 	} else {
 		# if GOROOT wasn't found, remove the environment variable;
 		# this keeps the environment clean of garbage
+		Write-Warning "${$env:GOPATH} (GOPATH) is not present"
 		Remove-Item Env:\GOPATH
-		Write-Warning "${$env:GOPATH} is not present"
 	}
 	$env:GOROOT = Join-Path $env:BaseDir "\system\go\"
 	if( ( Test-Path $env:GOROOT ) `
@@ -137,8 +137,8 @@ try {
 	} else {
 		# if GOROOT wasn't found, remove the environment variable;
 		# this keeps the environment clean of garbage
+		Write-Warning "${$env:GOROOT} (GOROOT) is not present"
 		Remove-Item Env:\GOROOT
-		Write-Warning "${$env:GOROOT} is not present"
 	}
 
 	# get msys2 , msys64 here: https://sourceforge.net/projects/msys2/files/Base/x86_64/
