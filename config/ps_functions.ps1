@@ -199,9 +199,12 @@ function mv {
 	# -Path
 	# -UseTransaction
 	# -WhatIf
-	# 
-
-	Move-Item -Path $Source -Destination $Destination (&{If($Force) {"-Force"}})
+	#
+    	If ($Force) {
+            Move-Item -Path "$Source" -Destination "$Destination" -Force
+		} else {
+            Move-Item -Path "$Source" -Destination "$Destination" -Force
+		}
 	}
 }
 
@@ -225,6 +228,13 @@ Lists the available Packages
 Lists the statuses of the packages, if a PackageName is present, it only shows the status of that name
 .PARAMETER PackageName
 Package name to be worked with
+.PARAMETER UpdateHardlinks
+Reads `\config\config.json` and applies
+.binlinks: [
+	"\\msys64\\mingw64\\bin\\gcc.exe"
+]
+linking the executable path beneath \system\
+To a hardlink within \bin\
 .LINK
 https://github.com/erichiller/omega
 #>

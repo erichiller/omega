@@ -12,6 +12,7 @@
                                    "gz",
                                    ".tar"
                                ],
+
     "packages":  {
                      "keepass":  {
                                      "profile":  "default"
@@ -28,3 +29,4 @@
     "gopath":  "~\\dev\\",
     "unixesq":  "\\system\\msys64"
 }
+

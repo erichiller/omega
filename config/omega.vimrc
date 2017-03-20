@@ -167,6 +167,8 @@ if has('gui_running')
     amenu 30.20 &Tools.Silver\ Search   :Fkb<space>
     amenu 30.40 &Tools.------	:
 
+    " au BufUnload * call <SID>BMRemove()
+
 endif
 " ---- end gui settings ---->
 
