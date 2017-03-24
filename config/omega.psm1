@@ -86,10 +86,8 @@ function Write-Theme
     Write-Prompt -Object $sl.PromptSymbols.SegmentForwardSymbol -BackgroundColor $host.UI.RawUI.BackgroundColor -ForegroundColor $lastColor
 
     # Set ConEmu Tab Title (if in ConEmu)
-    if ( $env:ConEmuBaseDir ) {
-        & "$env:ConEmuBaseDir\ConEmuC.exe" "/GUIMACRO", 'Rename(0,@"'$(Get-PrettyPath -dir $pwd)'")' > $null
-    }
-
+    $host.ui.RawUI.WindowTitle = $(Get-PrettyPath -dir $pwd)
+    
     #Show-Glyphs
 }
 
