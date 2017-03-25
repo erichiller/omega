@@ -26,10 +26,17 @@ Consists of a comment block **dedicated** to help-comments (no other comments in
 
 * SYNOPSIS
 * DESCRIPTION
-* PARAMETER (in the format `.PARAMETER <parameter name>` (multiple allowed))
+* PARAMETER (multiple allowed); singleline, format:
+    ```
+    .PARAMETER <parameter name>
+    ```
 * EXAMPLE
 * NOTES
-* LINK (multiple allowed)
+* LINK (multiple allowed); format:
+    ```
+    .LINK
+    <link>
+    ```
 * COMPONENT
 * ROLE (as in the user role required)
 * FUNCTIONALITY (intended use)

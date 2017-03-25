@@ -93,7 +93,65 @@ function Register-Omega-Shortcut {
 	}
 	
 }
+<#
+.SYNOPSIS
+PROFILE SETTINGS AND PUPLIC KEYS PUSH SCRIPT
+Script to push reusable user configuration to quickly setup new Linux machines.
+.DESCRIPTION
+The purpose of this script is to quickly provision a remote Linux host for personal use.
+Your settings (.bashrc and .vimrc) will be created from the locations specified in config.json
+Your public key(s) will be discovered from ssh-agent and uploaded to the remote hostname.
+Should any of the keys be already present on the remote host, that key will NOT be redundantly added.
+And operation will continue to process subsequent keys.
+.PARAMETER ConnectionString
+Please enter username@hostname that you would like your settings pushed to
+.LINK
+http://stackoverflow.com/questions/12522539/github-gist-editing-without-changing-url/14529686#14529686
+.NOTES
+Note: When saving configs in a gist:
+1) Ensure you link to the RAW file
+2) Edit the link, which normally hardlinks to a specific REVISION and thus won't reflect changes.
+    Normal/default, REVISION-specific format:
+      https://gist.github.com/[gist_user]/[gist_id]/raw/[revision_id]/[file_name]
+    But we want the latest version always, so edit it to the format:
+      https://gist.github.com/[gist_user]/[gist_id]/raw/[file_name]
+    that is, you simply remove the `[revision_id]` block
+********************************************************************************
+Author:                 Eric D Hiller
+Originally:             15 January 2016
+Updated for Powershell: 25 March 2017
+#>
+function Send-LinuxConfig {
+    param(
+        [Parameter(Mandatory = $True , Position = 1)]
+        [string] $ConnectionString
+    )
 
+
+    if ( -not ( Get-Command "ssh" -ErrorAction SilentlyContinue )) {
+		Write-Warning "ssh is not present on the path, please install before proceeding`n Operation can not proceed, exiting."
+	}
+
+    $(Invoke-WebRequest -UseBasicParsing $OMEGA_CONF.push_bashrc).Content | ssh $ConnectionString "sed $'s/\r//' > ~/.bashrc"
+    $(Invoke-WebRequest -UseBasicParsing $OMEGA_CONF.push_vimrc).Content | ssh $ConnectionString "sed $'s/\r//' > ~/.vimrc"
+
+	## Send key(s) , and skip if already present
+    # get keys from ssh-agent ; THAT MEANS THIS WORKS WITH keeagent (KeePass) !! _nice_
+    $keys = & ${env:basedir}\system\git\usr\bin\ssh-add.exe -L 
+	if( -not $keys ){
+        Write-Warning "No keys present in ssh-agent`n Operation can not proceed, exiting."
+    }
+    foreach ( $line in ( & ${env:basedir}\system\git\usr\bin\ssh-add.exe -L ) ) {
+        $sh = "cd ; umask 077 ; mkdir -p .ssh; touch .ssh/authorized_keys; grep '" + $line + "' "
+        $sh += `
+@"
+-F ~/.ssh/authorized_keys > /dev/null || sed $'s/\r//' >> .ssh/authorized_keys || exit 1 ; if type restorecon >/dev/null 2>&1 ; then restorecon -F .ssh .ssh/authorized_keys ; fi
+"@
+        Write-Output "Sending Key: $($($line.Split(" ")) | Select-Object -last 1)"
+        # do your thing
+        $line | ssh $ConnectionString $sh
+    }
+}
 
 
 <#
@@ -386,6 +444,10 @@ function opkg {
 				Write-Warning "!!ERROR!! the binary to be hardlinked does not exist, path:'$bin'"
 			}
 		}
+	}
+
+	if ( $Help ){
+        Get-Help $MyInvocation.MyCommand
 	}
 
 

@@ -29,8 +29,6 @@
 	- [tail like method in powershell](http://stackoverflow.com/questions/4426442/unix-tail-equivalent-command-in-windows-powershell)
 
 
-* `qq <searchterm>` (_go to frequent_) parses `get-history` and finds the directory in which searchterm is most often, goes to that directory 
-
 ```powershell
 5
 Get complete command history
