@@ -11,14 +11,18 @@ function ohelp {
 	Get-Content ( Join-Path $OMEGA_CONF.help "omega.install.md" )
 }
 
-# display the Path, one directory per line
-# takes one input parameters, defaults to the env:Path
+<#
+.Synopsis
+ display the Path, one directory per line
+ takes one input parameters, defaults to the env:Path
+#>
 function Show-Path { 
 	param (
 	[string] $PathToPrint = $ENV:Path,
 	[switch] $Debug,
 	[switch] $System,
-	[switch] $User
+	[switch] $User,
+        [switch] $Objects
 	)
 	if ($System -eq $true) {
 		$PathToPrint = (Get-ItemProperty -Path "$($OMEGA_CONF.system_environment_key)" -Name PATH).Path
@@ -26,11 +30,75 @@ function Show-Path {
 	if ($User -eq $true) {
 		$PathToPrint = (Get-ItemProperty -Path "$($OMEGA_CONF.user_environment_key)" -Name PATH).Path
 	}
-	if($Debug -eq $false){
-		echo ($PathToPrint).Replace(';',"`n")
+    if ( $Objects ) {
+		$obj = @()
+        foreach ( $dirAsStr in $PathToPrint.Split(";") ) {
+            if (Test-Path $dirAsStr) {
+				$obj += Get-Item -Path $dirAsStr
+			} else { Write-Warning "$dirAsStr DOES NOT EXIST! Not adding to new path." }
+		}
+		return $obj
+	} elseif($Debug -eq $false){
+		Write-Output ($PathToPrint).Replace(';',"`n")
 	} else {
 		Debug-Variable ($PathToPrint).Replace(';',"`n") "Show-Path"
 	}
+}
+
+<#
+.Description
+Read y/n from user to confirm _something_
+Returns $true / $false
+.Parameter dialog
+Optional dialog text before [y|n] to propmt user for input
+Else default will be displayed.
+#>
+function Enter-UserConfirm {
+    param (
+        [string] $dialog = "Do you want to continue?"
+	)
+    while ($choice -notmatch "[y|n]") {
+        Write-Host -NoNewline -ForegroundColor Cyan "$dialog (Y/N)"
+        $choice = Read-Host " "
+    }
+    if ( $choice.ToLower() -eq "y") {
+		return $true
+    }
+    return $false
+}
+<#
+.Synopsis
+Select matching directories from $env:Path and remove them from _THIS SESSION ONLY_
+.Parameter dir
+Accepts partials %like
+#>
+function Remove-DirFromPath($dir) {
+	$newPath = ""
+    ForEach ( $testDir in $(Show-Path -Objects) ) {
+
+		if ( $testdir -match $dir -and $(Enter-UserConfirm("Remove $testdir ?") === $false)) {
+            Write-Warning "removing $testdir"
+        }
+        else {
+			Write-Output "Re-adding $testdir"
+            $newPath += "$testdir;"
+        }
+	}
+
+	# remove trailing semi-colon
+    $newPath = $newPath.TrimEnd(";")
+	Write-Output "`n`nPath is now:`n$(Show-Path $newPath)"
+	Write-Debug "RAW Path String --->`n$newPath"
+	$env:Path = $newPath
+}
+function Add-DirToPath($dir) {
+    # ensure the directory exists
+    if (Test-Path -Path $dir ) {
+        # if it isn't already in the PATH, add it
+        if ( -not $env:Path.Contains($dir) ) {
+            $env:Path += ";" + $dir
+        }
+    }
 }
 
 function Show-Env { echo (Get-ChildItem Env:) }
@@ -170,20 +238,13 @@ function checkGit($Path) {
 	}
 }
 
-function Add-DirToPath($dir){
-	# ensure the directory exists
-	if (Test-Path -Path $dir ) {
-		# if it isn't already in the PATH, add it
-		if( -not $env:Path.Contains($dir) ){
-			$env:Path += ";" + $dir
-		}
-	}
-}
-#.DESCRIPTION
-# Print Variable value to debug
-# Adapted from
-#.Link
-# http://stackoverflow.com/questions/35624787/powershell-whats-the-best-way-to-display-variable-contents-via-write-debug
+<#
+.DESCRIPTION
+Print Variable value to debug
+Adapted from (see link)
+.Link
+http://stackoverflow.com/questions/35624787/powershell-whats-the-best-way-to-display-variable-contents-via-write-debug
+#>
 function Debug-Variable { 
 	param(
 	[Parameter(Mandatory=$True)] $var,
