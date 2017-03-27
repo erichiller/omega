@@ -101,7 +101,7 @@ function Add-DirToPath($dir) {
     }
 }
 
-function Show-Env { echo (Get-ChildItem Env:) }
+function Show-Env { Write-Output (Get-ChildItem Env:) }
 
 function Update-Config {
 	$global:OMEGA_CONF = ( Get-Content (Join-Path $PSScriptRoot "\config.json" ) | ConvertFrom-Json )

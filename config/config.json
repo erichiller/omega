@@ -26,7 +26,7 @@
         "C:\\Users\\ehiller\\AppData\\Local\\omega\\system\\nodejs"
     ],
     "gopath": "~\\dev\\",
-    "unixesq": "\\system\\msys64",
+    "unixesq": "\\system\\msys2",
     "push_bashrc": "https://gist.github.com/erichiller/ac3be5b4a562a61b255b0baccb3f2da8/raw/.bashrc",
     "push_vimrc": "https://gist.githubusercontent.com/erichiller/ac3be5b4a562a61b255b0baccb3f2da8/raw/.vimrc"
 }
