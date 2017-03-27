@@ -112,53 +112,136 @@ function Update-Environment {
 	. ${env:basedir}\$($OMEGA_CONF.confdir)\ps_functions.ps1
 }
 
+<#
+.DESCRIPTION
+New Shortcut is a core function to create a shortcut with arguments to a target
+.PARAMETER targetRelPath
+targetRelPath is the file that will be called when the shortcut is called. Typically an exe.
+.PARAMETER shortcutFile
+shortcutFile is where the resulting shortcut will be placed
+Defaults to C:\Users\ehiller\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\ + <baseName>
+#>
 function New-Shortcut {
-	param(
-		[string]$path
-	)
-	Update-Config
-	if(!$env:basedir){
-		Write-Warning "`$env:BaseDir is not set. Ensure that profile.ps1 is run properly first. Exiting immeditately, no action taken."
-		return
-	}
-	if(!$path){ $path = $env:basedir }
+    param(
+        [Parameter(Mandatory = $true)]
+        [string] $targetRelPath,
+        [Parameter(Mandatory = $true)]
+        [string] $shortcutFile,
+        [Parameter(Mandatory = $false)]
+        [string] $iconRelFile,
+        [Parameter(Mandatory = $false)]
+        [string]$arguments
+    )
 
+    Update-Config
+    if (!$env:basedir) {
+        Write-Warning "`$env:BaseDir is not set. Ensure that profile.ps1 is run properly first. Exiting immeditately, no action taken."
+        return
+    }
 
-	$TargetFile = ( Join-Path ( Join-Path $env:basedir $OMEGA_CONF.sysdir ) "ConEmu\ConEmu64.exe" )
-	$ShortcutFile = Join-Path $path "omega.lnk"
-	$WScriptShell = New-Object -ComObject WScript.Shell
-	$Shortcut = $WScriptShell.CreateShortcut( $ShortcutFile )
+    # if no shortcut file is specified, create a default on in the start menu folder
+    if ( -not $shortcutFile) {
+        Write-Debug $targetRelPath
+        # get targetName without extension (or Parent directory/ path)
+        $baseName = Split-Path -Path (Join-Path $env:basedir $targetRelPath) -Leaf -Resolve
+		Write-Debug $baseName
+        $positionDot = $baseName.LastIndexOf(".")
+        Write-Debug $positionDot
+        if ($positionDot -gt 0) {
+            $baseName = $baseName.substring(0, $positionDot)
+            Write-Debug $baseName
 
-	$Shortcut.TargetPath = $TargetFile
+        }
+        Write-Debug $baseName
+        $shortcutFile = Join-Path "${env:ALLUSERSPROFILE}\Microsoft\Windows\Start Menu\Programs\" $baseName
+    }
 
-	$Shortcut.Arguments =
-		'/LoadCfgFile "' + ( Join-Path ( Join-Path $Env:Basedir $OMEGA_CONF.confdir ) "ConEmu.xml" ) + '" ' + 
-		'/FontDir "' + ( Join-Path (Join-Path $Env:Basedir $OMEGA_CONF.sysdir) "fonts" ) + '" ' + 
-		'/Icon "' + ( Join-Path ( Join-Path $Env:Basedir "icons" ) "omega_256.ico" ) + '" /run "@..\..\config\powershell.cmd"'
+    if (-not $shortcutFile.EndsWith(".lnk")) {
+        $shortcutFile += ".lnk"
+    }
 
-	#$Shortcut.Arguments = '/LoadCfgFile "%HomePath%\AppData\Local\omega\config\ConEmu.xml" /FontDir "%HomePath%\AppData\Local\omega\system\nerd_hack_font" /Icon "%HomePath%\AppData\Local\omega\icons\omega_256.ico" /run "@%HomePath%\AppData\Local\omega\config\powershell.cmd"'
+    $WScriptShell = New-Object -ComObject WScript.Shell
+    $Shortcut = $WScriptShell.CreateShortcut( $shortcutFile )
 
-	$Shortcut.WorkingDirectory = "$env:HomePath"
+    $Shortcut.TargetPath = Join-Path $env:basedir $targetRelPath
 
-	$Shortcut.IconLocation = Join-Path $env:basedir "icons\omega_256.ico"
+    $Shortcut.Arguments = $arguments
+		
+    $Shortcut.WorkingDirectory = "$env:Home"
 
-	$Shortcut.Save()
-	echo "Shortcut Created"
+    $Shortcut.IconLocation = Join-Path $env:basedir $iconRelFile
 
+    $Shortcut.Save()
+    Write-Output "Shortcut Created at $shortcutFile"
+}
+
+function New-OmegaShortcut {
+
+    #$Shortcut.Arguments = '/LoadCfgFile "%HomePath%\AppData\Local\omega\config\ConEmu.xml" /FontDir "%HomePath%\AppData\Local\omega\system\nerd_hack_font" /Icon "%HomePath%\AppData\Local\omega\icons\omega_256.ico" /run "@%HomePath%\AppData\Local\omega\config\powershell.cmd"'
+    $arguments = `
+	'/LoadCfgFile "' + ( Join-Path ( Join-Path $Env:Basedir $OMEGA_CONF.confdir ) "ConEmu.xml" ) + '" ' + 
+    '/FontDir "' + ( Join-Path (Join-Path $Env:Basedir $OMEGA_CONF.sysdir) "fonts" ) + '" ' + 
+    '/Icon "' + ( Join-Path ( Join-Path $Env:Basedir "icons" ) "omega_256.ico" ) + '" /run "@..\..\config\powershell.cmd"'
+
+    $shortcutFile = Join-Path $env:basedir "omega.lnk"
+
+    $iconRelFile = "icons\omega_256.ico"
+
+    $targetRelPath = ( Join-Path $OMEGA_CONF.sysdir "ConEmu\ConEmu64.exe" )
+
+    New-Shortcut -targetRelPath $targetRelPath -iconRelFile $iconRelFile -shortcutFile $shortcutFile -arguments $arguments
 }
 
 <#
 .SYNOPSIS
 Register-Omega-Shortcut creates an entry for Omega in the App Paths registry folder to index omega in windows start search
 New-Shortcut must have been run prior.
+.PARAMETER appName 
+appName is the name of the application that will be indexed
+In the registry entry, .exe will be appended
+If no value is provided, it defaults to omega
+.PARAMETER targetPath
+this is the path RELATIVE TO BASEDIR where the shortcut or exe to be linked to / executed is located
 #>
-function Register-Omega-Shortcut {
-	$omegaShortcut = Join-Path $env:basedir "omega.lnk"
-	if(Test-Path $omegaShortcut ){
-		New-Item -Path $($OMEGA_CONF.app_paths_key + "\omega.exe") -Value $omegaShortcut
-	} else {
-		Write-Warning "The shortcut to launch omega does not yet exist, create it first with `New-Shortcut` `n checked in $omegaShortcut"
-	}
+function Register-App {
+
+    param(
+        # 
+        [string]$appName = "omega",
+        [string]$targetPath = "${env:basedir}omega.lnk"
+    )
+	
+    # add .exe suffix if not present asa the appPath requires it.
+    # .exe will not show up in the index
+    if (-not $appName.EndsWith(".exe")) {
+        $appName += ".exe"
+    }
+
+    # extract target of shortcut from the shortcut itself
+    # https://social.technet.microsoft.com/Forums/office/en-US/f0e20c30-834a-47f1-9a8c-8c719813f900/powershell-script-to-find-target-from-shortcuts-and-then-moverename-target-files?forum=winserverpowershell
+    #$targetRelPath = Get-Item (New-Object -ComObject Wscript.Shell).CreateShortcut($shortcutPath).TargetPath
+	
+    # MUST BE ADMIN; check, if not warn and exit
+    if ( Test-Admin -warn -not ) { return }
+	
+    #$shortcutPath = Join-Path $env:basedir $targetRelPath
+    # if targetRelPath is a shortcut use that . set $shortcut=
+    #     and set targetRelPath= the shortcut's target
+    # else set $create shortcut = from a new shortcut
+    # 
+    if (Test-Path $targetPath ) {
+        New-Item -Path $($OMEGA_CONF.app_paths_key + "\$appName") -Value $targetPath
+    }
+    else {
+        Write-Warning "The target to launch $appName does not yet exist"
+        if ($appName -eq "omega") { Write-Warning "Create it first with 'New-Shortcut'" }
+        Write-Warning "Checked in $targetPath"
+    }
+	
+    # C:\Users\ehiller\AppData\Local\omega\system\vim\gvim.exe -u %LocalAppData%\omega\config\omega.vimrc
+	
+    # shortcuts in:
+    # 	C:\Users\ehiller\AppData\Roaming\Microsoft\Windows\Start Menu\Programs
 	
 }
 <#
@@ -493,7 +576,7 @@ function opkg {
 			$bin =  Join-Path ( Join-Path $env:BaseDir system ) $bin 
 			if (Test-Path -Path $bin){
 				$binPath = Split-Path -Path $bin -Leaf -Resolve
-				$binPath = Join-Path (Join-Path $Env:Basedir $OMEGA_CONF.bindir)  $binPath
+				$binPath = Join-Path (Join-Path $Env:Basedir $OMEGA_CONF.bindir) $binPath
 				if (-not (Test-Path -Path $binPath)){
 					Write-Information "ADDING HARDLINK for $bin to $binPath"
 					#See help file
@@ -903,6 +986,23 @@ $a | Select-Object -Unique
 
 	} <# End process {} #>
 
+}
+
+<#
+.SYNOPSIS
+Returns true if the current session is an administrative priveleged one
+#>
+function Test-Admin {
+	Param(
+		[Switch] $warn=$false
+	)
+    If ( -not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')) {
+		if($warn){
+			Write-Warning "You must be an administrator in order to continue.`nPlease try again as administrator."
+		}
+		return $true
+	}
+	return $false
 }
 
 function Get-PrettyPath {

@@ -7,3 +7,26 @@ installDir("${env:TEMP}\vimfiles\swap")
 installDir("${env:TEMP}\vimfiles\undo")
 installDir("${env:TEMP}\vimfiles\cache\neocomplete")
 installDir("${env:TEMP}\vimfiles\sessions")
+
+New-Shortcut -targetRelPath "system/vim/gvim.exe" -arguments "-u %LocalAppData%\omega\config\omega.vimrc" -iconRelDir "config\pkg\vim\vim.ico"
+Register-App vim "${env:ALLUSERSPROFILE}\Microsoft\Windows\Start Menu\Programs\gvim.lnk"
+sed -i "" 's/au BufDelete,BufFilePre \* call \<SID\>BMRemove/au BufUnload,BufDelete,BufFilePre \* call <SID>BMRemove/g' $env:BaseDir "system/vim/menu.vim"
+
+########
+# Set File Associations
+# vim @ Control Panel\Programs\Default Programs\Set Associations
+########
+
+########
+# gvim shortcut
+# arguments:    -u %LocalAppData%\omega\config\omega.vimrc
+# New-Shortcut -targetRelPath "system/vim/gvim.exe" -arguments "-u %LocalAppData%\omega\config\omega.vimrc" -iconRelDir "config\pkg\vim\vim.ico"
+# Register-App vim "${env:ALLUSERSPROFILE}\Microsoft\Windows\Start Menu\Programs\gvim.lnk"
+
+
+
+# // remove the "" after the -i if NOT on the mac
+# sed -i "" 's/au BufDelete,BufFilePre \* call \<SID\>BMRemove/au BufUnload,BufDelete,BufFilePre \* call <SID>BMRemove/g' menuvim.foo
+
+# https://github.com/vim/vim/issues/1522
+
