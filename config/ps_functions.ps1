@@ -920,25 +920,27 @@ function Search-FrequentDirectory {
 		}
 	}
 	process {
+		$Local:DEBUG = $false
 
-		$dirSearch = $PsBoundParameters.dirSearch
-		Debug-Variable $searchHistory "f/searchHistory"
+		# comes out as an array, but only one is possible, so grab that
+		$dirSearch = $PsBoundParameters.dirSearch[0]
+        if ( $Local:DEBUG ) { Debug-Variable $searchHistory "f/searchHistory" }
 
-		Write-Debug "dirSearch=$dirSearch"
+        if ( $Local:DEBUG ) { Write-Debug "dirSearch=$dirSearch" }
 		
 		#this is doing ___EQUAL___ /// or do I want to be doing a like dirSearch*
 		$filteredDirs = $searchHistory.GetEnumerator() | ?{ $_.Value -eq $dirSearch } 
 
 		# if there is a single match
 		if ( $filteredDirs.count -eq 1 ){
-			$testedPath =$ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($filteredDirs.name)
+			$testedPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($filteredDirs.name)
 			if( $testedPath | Test-Path ){
 				Set-LocationHelper $testedPath
 			}
 		} else {
 			# there are multiple matches
 			# do a lookup for number of times it was cd'd into with the searchCount
-			Debug-Variable $searchCount
+            if ( $Local:DEBUG ){ Debug-Variable $searchCount }
 
 			$searchCount.GetEnumerator() | Sort-Object -Property Value -Descending | ForEach-Object {
 				$countedDir = $_
@@ -951,39 +953,30 @@ function Search-FrequentDirectory {
 						Write-Warning "Tried to cd to $($highestDir.name) (resolved to $testedPath), but it does not exist"
 					}
 				} else {
-					$highestDir.name
+                    if ( $Local:DEBUG ) { $highestDir.name }
 				}
 			}
 		}
 
+		# if a match was found above; but it did not immeditately resolve
 		if( ( $testedPath ) `
 				-and ( -not ( $testedPath | Test-Path ) ) ){
-			Write-Information "Could not find test string, possibly not an absolute path, Attempting to Locate"
+            if ( $Local:DEBUG ) { Write-Information "Could not find test string, possibly not an absolute path, Attempting to Locate" }
+            $searchCount.GetEnumerator() | Sort-Object -Property Value -Descending | Where-Object { $_.Name -like "*$dirSearch*" } | ForEach-Object {
+                $testedPath = $_.Name
+                if ( $Local:DEBUG ) {
+					Write-Debug "Command like dirsearch:`n$testedPath" 
+					"{0,$i}" -f "|"
+				}
+                $testedPath = Join-Path $testedPath.Substring( 0 , $testedPath.IndexOf($dirSearch) ) $dirSearch
+				if ( Test-Path $testedPath ){
+					Set-LocationHelper $testedPath
+				}
+			}
 			
-
-			# could look at prior cd to determine location?
-			# if test path fails - scan all subdirectories of the current working directory, looking for a match
+			# if we were REALLY deperate, could scan all subdirectories of the current working directory, looking for a match
+			# but this seems excessive
 		}
-
-
-
-
-	
-		#cd $searchHistory.GetEnumerator() | ?{ $_.Value -eq $dirSearch } | Sort-Object -Property Value -Descending | Select-Object -First 1
-		#$searchCount | Sort
-
-	<#
-$a | Select-Object -Unique
-( $filename | Select-String -Pattern $Package.installParams.versionPattern | % {"$($_.matches.groups[1])"} )
-
-	#>
-
-	# directories under current working directory
-	#$wd = Get-Location
-	#$directories = Get-ChildItem -Path $wd -Recurse -Directory -Name
-
-	
-
 	} <# End process {} #>
 
 }

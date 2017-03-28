@@ -278,10 +278,15 @@ Set-PSReadlineKeyHandler -Key '"',"'" `
     [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
 
     $quoteNumber = Select-String -InputObject $line -Pattern $key.KeyChar -AllMatches
+    
+    # if already on a quote character, don't do anything, just move over it.
+    if ($line[$cursor] -eq $key.KeyChar) {
+        [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($cursor + 1)
+    } 
     # insert a SINGLE quote if 
     #   1) there is an ODD number of quotes on the line currently
     #   2) There is a character to the immediate right of the cursor
-    if (($quoteNumber.Matches.Count % 2 -eq 1) -or (-not [string]::IsNullOrWhiteSpace($line[$cursor + 1]))) {
+    elseif (($quoteNumber.Matches.Count % 2 -eq 1) -or (-not [string]::IsNullOrWhiteSpace($line[$cursor + 1]))) {
         # If there is an uneven amount of quotes, put just one quote (modulus 1 / Remainder)
         [Microsoft.PowerShell.PSConsoleReadline]::Insert($key.KeyChar)
     }
@@ -317,32 +322,35 @@ Set-PSReadlineKeyHandler -Key '(','{','[' `
     # insert the entered character itself
     [Microsoft.PowerShell.PSConsoleReadLine]::Insert("$($key.KeyChar)")
     # If there isn't another character to the immediate right, insert matching braces
-    if ([string]::IsNullOrWhiteSpace($line[$cursor + 1])) {
+    if ($line[$cursor] -eq $key.KeyChar) {
+        [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($cursor + 1)
+    } 
+    elseif ([string]::IsNullOrWhiteSpace($line[$cursor + 1])) {
         [Microsoft.PowerShell.PSConsoleReadLine]::Insert("$closeChar")
         [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
         [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($cursor - 1)
     }      
 }
 
-# Set-PSReadlineKeyHandler -Key ')',']','}' `
-#                          -BriefDescription SmartCloseBraces `
-#                          -LongDescription "Insert closing brace or skip" `
-#                          -ScriptBlock {
-#     param($key, $arg)
+Set-PSReadlineKeyHandler -Key ')',']','}' `
+                         -BriefDescription SmartCloseBraces `
+                         -LongDescription "Insert closing brace or skip" `
+                         -ScriptBlock {
+    param($key, $arg)
 
-#     $line = $null
-#     $cursor = $null
-#     [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
+    $line = $null
+    $cursor = $null
+    [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
 
-#     if ($line[$cursor] -eq $key.KeyChar)
-#     {
-#         [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($cursor + 1)
-#     }
-#     else
-#     {
-#         [Microsoft.PowerShell.PSConsoleReadLine]::Insert("$($key.KeyChar)")
-#     }
-# }
+    if ($line[$cursor] -eq $key.KeyChar)
+    {
+        [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($cursor + 1)
+    }
+    else
+    {
+        [Microsoft.PowerShell.PSConsoleReadLine]::Insert("$($key.KeyChar)")
+    }
+}
 
 # Sometimes you want to get a property of invoke a member on what you've entered so far
 # but you need parens to do that.  This binding will help by putting parens around the current selection,
