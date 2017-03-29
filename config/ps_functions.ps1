@@ -911,7 +911,17 @@ function Search-FrequentDirectory {
 	return $paramDictionary
     }
 	begin {
-		function Set-LocationHelper($dir) {
+		function Set-LocationHelper {
+			param(
+				[Parameter(Mandatory=$True)]
+				[string] $dir,
+                [switch] $delete,
+                [switch] $addToHistory
+			)
+			# Add to history so that in the future this directory will be found with `cd` scanning and brute force WILL NOT BE REQUIRED
+			if ($addToHistory){
+                [Microsoft.PowerShell.PSConsoleReadLine]::AddToHistory("cd $dir")
+			}
 			if ( $delete ){
 				Clear-History -CommandLine $filteredDirs -Confirm
 			} else {
@@ -920,7 +930,7 @@ function Search-FrequentDirectory {
 		}
 	}
 	process {
-		$Local:DEBUG = $false
+		$Local:DEBUG = $true
 
 		# comes out as an array, but only one is possible, so grab that
 		$dirSearch = $PsBoundParameters.dirSearch[0]
@@ -940,15 +950,21 @@ function Search-FrequentDirectory {
 		} else {
 			# there are multiple matches
 			# do a lookup for number of times it was cd'd into with the searchCount
+			#### searchCount ####
+			## NAME ===> VALUE ##
+			## (DIR) ==> COUNT ##
             if ( $Local:DEBUG ){ Debug-Variable $searchCount }
 
+            if ($Local:DEBUG) { "More than one matching entry was found, now sorting and checking each historical cd" }
 			$searchCount.GetEnumerator() | Sort-Object -Property Value -Descending | ForEach-Object {
 				$countedDir = $_
 				$highestDir = ( $filteredDirs.GetEnumerator() | ?{$_.Name -contains $countedDir.Name} )
-				if ( $highestDir.count -eq 1 ){ 
+				if ( $highestDir.count -eq 1 ){
+                    if ($Local:DEBUG) { Write-Debug "Check for $($highestDir.name)" }
 					$testedPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($highestDir.name) 
 					if( $testedPath | Test-Path ){
 						Set-LocationHelper $testedPath
+						break
 					} else {
 						Write-Warning "Tried to cd to $($highestDir.name) (resolved to $testedPath), but it does not exist"
 					}
@@ -961,22 +977,40 @@ function Search-FrequentDirectory {
 		# if a match was found above; but it did not immeditately resolve
 		if( ( $testedPath ) `
 				-and ( -not ( $testedPath | Test-Path ) ) ){
-            if ( $Local:DEBUG ) { Write-Information "Could not find test string, possibly not an absolute path, Attempting to Locate" }
-            $searchCount.GetEnumerator() | Sort-Object -Property Value -Descending | Where-Object { $_.Name -like "*$dirSearch*" } | ForEach-Object {
+            if ( $Local:DEBUG ) { Write-Information "Could not find test string '$dirSearch', possibly not an absolute path, Attempting to Locate" }
+            # iterate history where the directory that was being searched for is PART of one of the historical items
+            # for example; if searching for dirB. This would find it in /dirA/dirB/dirC/ and return /dirA/dirB/
+			## <START LOOP>
+            $searchCount.GetEnumerator() | Sort-Object -Property Value -Descending | Where-Object { $_.Name -like "*$dirSearch*" } | ForEach-Object -ErrorAction SilentlyContinue {
                 $testedPath = $_.Name
                 if ( $Local:DEBUG ) {
 					Write-Debug "Command like dirsearch:`n$testedPath" 
-					"{0,$i}" -f "|"
+					Write-Output "{0,$i}" -f "|" -ErrorAction SilentlyContinue
 				}
                 $testedPath = Join-Path $testedPath.Substring( 0 , $testedPath.IndexOf($dirSearch) ) $dirSearch
 				if ( Test-Path $testedPath ){
 					Set-LocationHelper $testedPath
+					break
 				}
-			}
-			
-			# if we were REALLY deperate, could scan all subdirectories of the current working directory, looking for a match
-			# but this seems excessive
-		}
+            }
+            ## <END LOOP>
+
+            #### Brute force search directories ####
+			# if we reached this point, none of the above worked, it is time to just brute force search,
+            # Not found within the path of another match, so just scan every single directory. Maybe slow, but it should work
+			if ($Local:DEBUG){ Write-Debug "We are now going to brute force search, all other methods have failed" }
+            $dirsToScan = @(".", $env:HOME, $env:LOCALAPPDATA)
+            foreach ($dir in $dirsToScan ) {
+                if ($Local:DEBUG) { Write-Debug "Scanning: $dir" }
+                Get-Childitem -path $dir -recurse -directory -filter "$dirSearch" -ErrorAction SilentlyContinue | ForEach-Object {
+                    $testedPath = $_.FullName
+                    if (Enter-UserConfirm -dialog "Confirm: Change Directory to $testedPath") {
+                        Set-LocationHelper $testedPath -addToHistory
+						break
+                    }
+                }
+            }
+        }
 	} <# End process {} #>
 
 }
