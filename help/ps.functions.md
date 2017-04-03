@@ -46,3 +46,13 @@ Errors can be seen with the `$error` variable.
 Errors can be redirected, see [Stack Overflow - How to handle errors thrown](http://stackoverflow.com/questions/17420474/how-to-capture-error-messages-thrown-by-a-command)
 
 [Introduction to error handling](https://blogs.msdn.microsoft.com/kebab/2013/06/09/an-introduction-to-error-handling-in-powershell/)
+
+
+```powershell
+ if ( $PSCmdlet.MyInvocation.BoundParameters["debug"].IsPresent ) {
+    echo "Debug is turned on via a switch to this function"
+}
+if ( $DebugPreference -eq "Continue" ) {
+    echo "Debug is turned on in the profiles"
+}
+```

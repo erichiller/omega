@@ -329,17 +329,17 @@ Adapted from (see link)
 http://stackoverflow.com/questions/35624787/powershell-whats-the-best-way-to-display-variable-contents-via-write-debug
 #>
 function Debug-Variable { 
-	param(
-	[Parameter(Mandatory=$True)] $var,
-	[string] $name
-	)
-	@(
-		if([string]::IsNullOrEmpty($name) -ne $true) { "Debug-Variable: ===|$name|===" }
-		#"Variable: $(Get-Variable | Where-Object {$_.Value -eq $var } )",
-		#"Debug-Variable-Type:$(get-member -inputobject $var | Format-Table -AutoSize -Wrap | Out-String )",
-		"Debug-Variable-Type:$($var.getType())",
-		"Debug-Variable`n----START-VALUE-PRINT----`n$( $var | Format-Table -AutoSize -Wrap | Out-String )----END-VALUE-PRINT----" 
-	) | Write-Debug
+    param(
+        [Parameter(Mandatory = $True)] $var,
+        [string] $name
+    )
+    @(
+        if ([string]::IsNullOrEmpty($name) -ne $true) { "Debug-Variable: ===|$name|===" }
+        #"Variable: $(Get-Variable | Where-Object {$_.Value -eq $var } )",
+        #"Debug-Variable-Type:$(get-member -inputobject $var | Format-Table -AutoSize -Wrap | Out-String )",
+        "Debug-Variable-Type:$($var.getType())",
+        "Debug-Variable`n----START-VALUE-PRINT----`n$( $var | Format-Table -AutoSize -Wrap | Out-String )----END-VALUE-PRINT----" 
+    ) | Write-Debug
 }
 
 function mv {
@@ -844,7 +844,9 @@ function Search-FrequentDirectory {
 	[CmdletBinding()]
 	Param (
 		[Parameter(Mandatory=$false)]
-		[Switch] $delete
+		[Switch] $delete,
+        [Parameter(Mandatory = $false)]
+		[Switch] $outputDebug
 	)
 	DynamicParam {
 	$dirSearch = new-object -Type System.Collections.ObjectModel.Collection[System.Attribute]
@@ -930,13 +932,20 @@ function Search-FrequentDirectory {
 		}
 	}
 	process {
-		$Local:DEBUG = $true
+		# I only want to see Debug messages when I specify the DEBUG flag
+        if ($PSCmdlet.MyInvocation.BoundParameters["debug"].IsPresent) {
+            $LOCAL:DebugPreference = "Continue"
+		} else {
+            $LOCAL:DebugPreference = "SilentlyContinue"
+		}
+
 
 		# comes out as an array, but only one is possible, so grab that
 		$dirSearch = $PsBoundParameters.dirSearch[0]
-        if ( $Local:DEBUG ) { Debug-Variable $searchHistory "f/searchHistory" }
-
-        if ( $Local:DEBUG ) { Write-Debug "dirSearch=$dirSearch" }
+		
+		Debug-Variable $searchHistory "f/searchHistory"
+				
+        Write-Debug "dirSearch=$dirSearch"
 		
 		#this is doing ___EQUAL___ /// or do I want to be doing a like dirSearch*
 		$filteredDirs = $searchHistory.GetEnumerator() | ?{ $_.Value -eq $dirSearch } 
@@ -953,14 +962,14 @@ function Search-FrequentDirectory {
 			#### searchCount ####
 			## NAME ===> VALUE ##
 			## (DIR) ==> COUNT ##
-            if ( $Local:DEBUG ){ Debug-Variable $searchCount }
+            Debug-Variable $searchCount
 
-            if ($Local:DEBUG) { "More than one matching entry was found, now sorting and checking each historical cd" }
+            "More than one matching entry was found, now sorting and checking each historical cd"
 			$searchCount.GetEnumerator() | Sort-Object -Property Value -Descending | ForEach-Object {
 				$countedDir = $_
 				$highestDir = ( $filteredDirs.GetEnumerator() | ?{$_.Name -contains $countedDir.Name} )
 				if ( $highestDir.count -eq 1 ){
-                    if ($Local:DEBUG) { Write-Debug "Check for $($highestDir.name)" }
+                    Write-Debug "Check for $($highestDir.name)"
 					$testedPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($highestDir.name) 
 					if( $testedPath | Test-Path ){
 						Set-LocationHelper $testedPath
@@ -969,7 +978,7 @@ function Search-FrequentDirectory {
 						Write-Warning "Tried to cd to $($highestDir.name) (resolved to $testedPath), but it does not exist"
 					}
 				} else {
-                    if ( $Local:DEBUG ) { $highestDir.name }
+                    $highestDir.name
 				}
 			}
 		}
@@ -977,16 +986,13 @@ function Search-FrequentDirectory {
 		# if a match was found above; but it did not immeditately resolve
 		if( ( $testedPath ) `
 				-and ( -not ( $testedPath | Test-Path ) ) ){
-            if ( $Local:DEBUG ) { Write-Information "Could not find test string '$dirSearch', possibly not an absolute path, Attempting to Locate" }
+            Write-Information "Could not find test string '$dirSearch', possibly not an absolute path, Attempting to Locate"
             # iterate history where the directory that was being searched for is PART of one of the historical items
             # for example; if searching for dirB. This would find it in /dirA/dirB/dirC/ and return /dirA/dirB/
 			## <START LOOP>
             $searchCount.GetEnumerator() | Sort-Object -Property Value -Descending | Where-Object { $_.Name -like "*$dirSearch*" } | ForEach-Object -ErrorAction SilentlyContinue {
                 $testedPath = $_.Name
-                if ( $Local:DEBUG ) {
-					Write-Debug "Command like dirsearch:`n$testedPath" 
-					Write-Output "{0,$i}" -f "|" -ErrorAction SilentlyContinue
-				}
+					Write-Debug "Command like dirsearch:`n$testedPath`n{0,$i}" -f "|" -ErrorAction SilentlyContinue
                 $testedPath = Join-Path $testedPath.Substring( 0 , $testedPath.IndexOf($dirSearch) ) $dirSearch
 				if ( Test-Path $testedPath ){
 					Set-LocationHelper $testedPath
@@ -998,10 +1004,10 @@ function Search-FrequentDirectory {
             #### Brute force search directories ####
 			# if we reached this point, none of the above worked, it is time to just brute force search,
             # Not found within the path of another match, so just scan every single directory. Maybe slow, but it should work
-			if ($Local:DEBUG){ Write-Debug "We are now going to brute force search, all other methods have failed" }
+            Write-Debug "We are now going to brute force search, all other methods have failed"
             $dirsToScan = @(".", $env:HOME, $env:LOCALAPPDATA)
             foreach ($dir in $dirsToScan ) {
-                if ($Local:DEBUG) { Write-Debug "Scanning: $dir" }
+                Write-Debug "Scanning: $dir"
                 Get-Childitem -path $dir -recurse -directory -filter "$dirSearch" -ErrorAction SilentlyContinue | ForEach-Object {
                     $testedPath = $_.FullName
                     if (Enter-UserConfirm -dialog "Confirm: Change Directory to $testedPath") {
