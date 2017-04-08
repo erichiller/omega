@@ -591,9 +591,8 @@ function opkg {
 	}
 
 	if ( $Help ){
-        Get-Help $MyInvocation.MyCommand
+		Get-Help $MyInvocation.MyCommand
 	}
-
 
 	if ( $Status ) {
 		if ( $PackageName ){
@@ -604,13 +603,13 @@ function opkg {
 	}
 	if ( $Install ) {
 		$Packages = ( Get-Content (Join-Path $PSScriptRoot "\manifest.json" ) | ConvertFrom-Json )
-		echo "================================================>PACKAGES========================>"
+		Write-Host -ForegroundColor Black -BackgroundColor White "================================================>PACKAGES========================>"
 		$Packages
-		echo "================================================>END========================>"
-		$Package = ($Packages | Where-Object { $_.name -EQ $PackageName } )
-		echo "================================================>PACKAGE========================>"
+		Write-Host -ForegroundColor Black -BackgroundColor White "================================================>END========================>"
+		$Package = ($Packages | Where-Object { $_.name -EQ $PackageName -or $_.alias -contains $PackageName } )
+		Write-Host -ForegroundColor Black -BackgroundColor White "================================================>PACKAGE========================>"
 		$Package
-		echo "================================================>END========================>"
+		Write-Host -ForegroundColor Black -BackgroundColor White "================================================>END========================>"
 		# Check for existance of $ModulePath , if it does not exist , create the directory
 		if ( -not ( Test-Path $ModulePath ) ) { New-Item $ModulePath -type directory }
 		switch ( $Package.type ) {

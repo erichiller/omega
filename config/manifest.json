@@ -2,6 +2,9 @@
     {
         "type":  "psmodule",
         "name":  "GitStatusCachePoshClient",
+        "alias":  [
+                      "git-status-cache-posh-client"
+                  ],
         "brief":  "Caches git status, especially useful for large directories which may take significantly longer without it.",
         "required":  true,
         "installMethod":  "git",
@@ -11,7 +14,7 @@
                             "Update-GitStatusCache"
                         ],
         "state":  {
-                      "updateDate":  "2016-Dec-28 06:17",
+                      "updateDate":  "2017-Apr-08 12:06",
                       "installed":  true
                   }
     },
@@ -36,7 +39,7 @@
         "required":  true,
         "installMethod":  "save-package",
         "state":  {
-                      "updateDate":  "2016-Dec-28 06:12",
+                      "updateDate":  "2017-Apr-08 11:31",
                       "installed":  true
                   },
         "postInstall":  [
