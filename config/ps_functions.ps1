@@ -254,6 +254,14 @@ Your settings (.bashrc and .vimrc) will be created from the locations specified 
 Your public key(s) will be discovered from ssh-agent and uploaded to the remote hostname.
 Should any of the keys be already present on the remote host, that key will NOT be redundantly added.
 And operation will continue to process subsequent keys.
+
+If you encounter issues connecting to the remote host:
+A) Connection denied: (this means sshd is running, but that your access is restricted)
+    most likely your user is not allowed, if connecting as root ensure it is enabled.
+	In `/etc/ssh/sshd_config`:
+	1. comment out `PermitRootLogin without-password`
+	2. add in `PermitRootLogin yes`
+	And restart sshd with `service ssh restart` -or- `/etc/init.d/ssh restart`
 .PARAMETER ConnectionString
 Please enter username@hostname that you would like your settings pushed to
 .LINK
@@ -274,9 +282,16 @@ Updated for Powershell: 25 March 2017
 #>
 function Send-LinuxConfig {
     param(
-        [Parameter(Mandatory = $True , Position = 1)]
-        [string] $ConnectionString
+        [Parameter(Mandatory = $False , Position = 1)]
+        [string] $ConnectionString,
+    [Alias("h", "?")]
+	[switch] $help
     )
+
+	if ( $help -or -not $ConnectionString){
+    get-help $MyInvocation.MyCommand
+	return;
+	}
 
 
     if ( -not ( Get-Command "ssh" -ErrorAction SilentlyContinue )) {
