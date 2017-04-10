@@ -1006,7 +1006,7 @@ function Search-FrequentDirectory {
 			## <START LOOP>
             $searchCount.GetEnumerator() | Sort-Object -Property Value -Descending | Where-Object { $_.Name -like "*$dirSearch*" } | ForEach-Object -ErrorAction SilentlyContinue {
                 $testedPath = $_.Name
-					Write-Debug "Command like dirsearch:`n$testedPath`n{0,$i}" -f "|" -ErrorAction SilentlyContinue
+					Write-Debug "Command like dirsearch:$testedPath" -ErrorAction SilentlyContinue
                 $testedPath = Join-Path $testedPath.Substring( 0 , $testedPath.IndexOf($dirSearch) ) $dirSearch
 				if ( Test-Path $testedPath ){
 					Set-LocationHelper $testedPath
