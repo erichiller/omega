@@ -293,13 +293,9 @@ function Send-LinuxConfig {
 	return;
 	}
 
-
     if ( -not ( Get-Command "ssh" -ErrorAction SilentlyContinue )) {
 		Write-Warning "ssh is not present on the path, please install before proceeding`n Operation can not proceed, exiting."
 	}
-
-    $(Invoke-WebRequest -UseBasicParsing $OMEGA_CONF.push_bashrc).Content | ssh $ConnectionString "sed $'s/\r//' > ~/.bashrc"
-    $(Invoke-WebRequest -UseBasicParsing $OMEGA_CONF.push_vimrc).Content | ssh $ConnectionString "sed $'s/\r//' > ~/.vimrc"
 
 	## Send key(s) , and skip if already present
     # get keys from ssh-agent ; THAT MEANS THIS WORKS WITH keeagent (KeePass) !! _nice_
@@ -317,6 +313,11 @@ function Send-LinuxConfig {
         # do your thing
         $line | ssh $ConnectionString $sh
     }
+	
+	# push bashrc and vimrc
+	$(Invoke-WebRequest -UseBasicParsing $OMEGA_CONF.push_bashrc).Content | ssh $ConnectionString "sed $'s/\r//' > ~/.bashrc"
+	$(Invoke-WebRequest -UseBasicParsing $OMEGA_CONF.push_vimrc).Content | ssh $ConnectionString "sed $'s/\r//' > ~/.vimrc"
+	
 }
 
 
