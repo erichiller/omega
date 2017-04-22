@@ -8,9 +8,13 @@ installDir("${env:TEMP}\vimfiles\undo")
 installDir("${env:TEMP}\vimfiles\cache\neocomplete")
 installDir("${env:TEMP}\vimfiles\sessions")
 
-New-Shortcut -targetRelPath "system/vim/gvim.exe" -arguments "-u %LocalAppData%\omega\config\omega.vimrc" -iconRelDir "config\pkg\vim\vim.ico"
+New-Shortcut -targetRelPath "system/vim/gvim.exe" -arguments "-u %LocalAppData%\omega\config\omega.vimrc" -iconRelFile "config\pkg\vim\vim.ico"
 Register-App vim "${env:ALLUSERSPROFILE}\Microsoft\Windows\Start Menu\Programs\gvim.lnk"
-sed -i "" 's/au BufDelete,BufFilePre \* call \<SID\>BMRemove/au BufUnload,BufDelete,BufFilePre \* call <SID>BMRemove/g' $env:BaseDir "system/vim/menu.vim"
+sed -i "" 's/au BufDelete,BufFilePre \* call \<SID\>BMRemove/au BufUnload,BufDelete,BufFilePre \* call <SID>BMRemove/g' $(Join-Path $env:BaseDir "system/vim/menu.vim")
+
+
+# see :help startup
+# see EXTINIT or put $VIM/.vimrc in so that direct links to gvim work
 
 ########
 # Set File Associations

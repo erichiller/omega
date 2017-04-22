@@ -28,7 +28,7 @@ let $PATH.=";".$VIM."\\..\\..\\bin"
 " the following is for preserving files and settings
 " see :help swap
 """""""""""""""""""""""""""""""""""""""""""""""""""""
-set directory=$TEMP/vimfiles/swap/
+set directory=$TEMP/vimfiles/swap
 " make windows function much as *nix
 if has('win32') || has('win64')
     set runtimepath=$VIM/../vimfiles

@@ -125,10 +125,10 @@ function New-Shortcut {
     param(
         [Parameter(Mandatory = $true)]
         [string] $targetRelPath,
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [string] $shortcutFile,
         [Parameter(Mandatory = $false)]
-        [string] $iconRelFile,
+        [string] $iconRelPath,
         [Parameter(Mandatory = $false)]
         [string]$arguments
     )
@@ -141,6 +141,9 @@ function New-Shortcut {
 
     # if no shortcut file is specified, create a default on in the start menu folder
     if ( -not $shortcutFile) {
+		# MUST BE ADMIN to create in the default start menu location;
+		# check, if not warn and exit
+		if ( Test-Admin -warn -not ) { return }
         Write-Debug $targetRelPath
         # get targetName without extension (or Parent directory/ path)
         $baseName = Split-Path -Path (Join-Path $env:basedir $targetRelPath) -Leaf -Resolve
@@ -169,7 +172,7 @@ function New-Shortcut {
 		
     $Shortcut.WorkingDirectory = "$env:Home"
 
-    $Shortcut.IconLocation = Join-Path $env:basedir $iconRelFile
+    $Shortcut.IconLocation = Join-Path $env:basedir $iconRelPath
 
     $Shortcut.Save()
     Write-Output "Shortcut Created at $shortcutFile"
@@ -185,11 +188,11 @@ function New-OmegaShortcut {
 
     $shortcutFile = Join-Path $env:basedir "omega.lnk"
 
-    $iconRelFile = "icons\omega_256.ico"
+    $iconRelPath = "icons\omega_256.ico"
 
     $targetRelPath = ( Join-Path $OMEGA_CONF.sysdir "ConEmu\ConEmu64.exe" )
 
-    New-Shortcut -targetRelPath $targetRelPath -iconRelFile $iconRelFile -shortcutFile $shortcutFile -arguments $arguments
+    New-Shortcut -targetRelPath $targetRelPath -iconRelPath $iconRelPath -shortcutFile $shortcutFile -arguments $arguments
 }
 
 <#
