@@ -1,0 +1,13 @@
+{
+  "name": "vim-ehlog",
+  "description": "log analyzation vim plugin (colors, expansion)",
+  "dependencies": {
+    "vim": "8.*",
+    "edh_markdown": "*"
+  },
+  "repo":
+  {
+    "type": "git",
+    "url": "https://github.com/erichiller/vim-ehlog"
+  }
+}

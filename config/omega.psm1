@@ -177,33 +177,33 @@ $sl.GitSymbols.BranchAheadStatusSymbol              = [char]::ConvertFromUtf32(0
 $sl.GitSymbols.BranchBehindStatusSymbol             = [char]::ConvertFromUtf32(0xf0a3)      # Octicons "chevron-down"
 
 #$sl.Colors.SessionInfoBackgroundColor       = [ConsoleColor]::DarkRed
-$sl.Colors.SessionInfoBackgroundColor       = [ConsoleColor]::DarkGreen
+$sl.Colors.SessionInfoBackgroundColor        = [ConsoleColor]::DarkGreen
     
-$sl.Colors.SessionInfoForegroundColor       = [ConsoleColor]::White
-$sl.Colors.CommandFailedIconForegroundColor = [ConsoleColor]::DarkRed
-$sl.Colors.AdminIconForegroundColor         = [ConsoleColor]::DarkYellow
+$sl.Colors.SessionInfoForegroundColor        = [ConsoleColor]::White
+$sl.Colors.CommandFailedIconForegroundColor  = [ConsoleColor]::DarkRed
+$sl.Colors.AdminIconForegroundColor          = [ConsoleColor]::DarkYellow
 
-$sl.Colors.DriveForegroundColor             = [ConsoleColor]::DarkBlue
-
-
-$sl.Colors.GitDefaultColor                  = [ConsoleColor]::DarkGreen
-$sl.Colors.GitLocalChangesColor             = [ConsoleColor]::Green
-$sl.Colors.GitNoLocalChangesAndAheadColor   = [ConsoleColor]::DarkMagenta
-#$sl.Colors.GitForegroundColor = [ConsoleColor]::Black
-$sl.Colors.GitForegroundColor = [ConsoleColor]::Magenta
+$sl.Colors.DriveForegroundColor              = [ConsoleColor]::DarkBlue
 
 
-$sl.Colors.WithForegroundColor = [ConsoleColor]::Gray
-$sl.Colors.WithBackgroundColor = [ConsoleColor]::DarkRed # DISABLE 
+$sl.Colors.GitDefaultColor                   = [ConsoleColor]::DarkGreen
+$sl.Colors.GitLocalChangesColor              = [ConsoleColor]::Green
+$sl.Colors.GitNoLocalChangesAndAheadColor    = [ConsoleColor]::DarkMagenta
+#$sl.Colors.GitForegroundColor               = [ConsoleColor]::Black
+$sl.Colors.GitForegroundColor                = [ConsoleColor]::Magenta
 
-$sl.Colors.PromptForegroundColor = [ConsoleColor]::White
-$sl.Colors.PromptBackgroundColor = [ConsoleColor]::DarkBlue
-$sl.Colors.PromptHighlightColor = [ConsoleColor]::DarkRed ###??? DISABLE ???
-$sl.Colors.PromptSymbolColor = [ConsoleColor]::White
 
-$sl.Colors.ClockBackgroundColor = [ConsoleColor]::DarkBlue
-$sl.Colors.ClockForegroundColor = [ConsoleColor]::DarkYellow
-$sl.Colors.ClockTextColor       = [ConsoleColor]::White
+$sl.Colors.WithForegroundColor               = [ConsoleColor]::Gray
+$sl.Colors.WithBackgroundColor               = [ConsoleColor]::DarkRed #      DISABLE 
+
+$sl.Colors.PromptForegroundColor             = [ConsoleColor]::White
+$sl.Colors.PromptBackgroundColor             = [ConsoleColor]::DarkBlue
+$sl.Colors.PromptHighlightColor              = [ConsoleColor]::DarkRed ###??? DISABLE ???
+$sl.Colors.PromptSymbolColor                 = [ConsoleColor]::White
+
+$sl.Colors.ClockBackgroundColor              = [ConsoleColor]::DarkBlue
+$sl.Colors.ClockForegroundColor              = [ConsoleColor]::DarkYellow
+$sl.Colors.ClockTextColor                    = [ConsoleColor]::White
 
 # add some newer languages --> typescript, jsx, tsx, golang
 # change the color to goldy
@@ -237,16 +237,16 @@ Set-PSReadlineKeyHandler -Key DownArrow -Function HistorySearchForward
 
 
 
-Set-PSReadlineOption -TokenKind comment -BackgroundColor $MASTER_BACKGROUND
-Set-PSReadlineOption -TokenKind none -BackgroundColor $MASTER_BACKGROUND
-Set-PSReadlineOption -TokenKind command -BackgroundColor $MASTER_BACKGROUND
+Set-PSReadlineOption -TokenKind comment   -BackgroundColor $MASTER_BACKGROUND
+Set-PSReadlineOption -TokenKind none      -BackgroundColor $MASTER_BACKGROUND
+Set-PSReadlineOption -TokenKind command   -BackgroundColor $MASTER_BACKGROUND
 Set-PSReadlineOption -TokenKind parameter -BackgroundColor $MASTER_BACKGROUND
-Set-PSReadlineOption -TokenKind variable -BackgroundColor $MASTER_BACKGROUND
-Set-PSReadlineOption -TokenKind type -BackgroundColor $MASTER_BACKGROUND
-Set-PSReadlineOption -TokenKind number -BackgroundColor $MASTER_BACKGROUND
-Set-PSReadlineOption -TokenKind string -BackgroundColor $MASTER_BACKGROUND
-Set-PSReadlineOption -TokenKind operator -BackgroundColor $MASTER_BACKGROUND
-Set-PSReadlineOption -TokenKind member -BackgroundColor $MASTER_BACKGROUND
+Set-PSReadlineOption -TokenKind variable  -BackgroundColor $MASTER_BACKGROUND
+Set-PSReadlineOption -TokenKind type      -BackgroundColor $MASTER_BACKGROUND
+Set-PSReadlineOption -TokenKind number    -BackgroundColor $MASTER_BACKGROUND
+Set-PSReadlineOption -TokenKind string    -BackgroundColor $MASTER_BACKGROUND
+Set-PSReadlineOption -TokenKind operator  -BackgroundColor $MASTER_BACKGROUND
+Set-PSReadlineOption -TokenKind member    -BackgroundColor $MASTER_BACKGROUND
 
 
 

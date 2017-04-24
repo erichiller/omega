@@ -66,7 +66,6 @@ set encoding=utf-8
 """"""" spell settings """"""""
 " set spelllang=en              " defaulted to english anyways
 """"""" For REGEX """"""""
-set gdefault                    " global regex substitutions
 " these two lines fix vim's regex implrementation so that it uses the standard pcre
 " this clears out the search results
 nnoremap <leader><space> :noh<cr>

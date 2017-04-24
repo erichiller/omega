@@ -29,9 +29,9 @@ Update-Config
 # Set this to continue to display verbose messages where available
 # See $OMEGA_CONF.verbosity for these configurations
 #>
-$VerbosePreference			= $OMEGA_CONF.verbosity.verbose
-$InformationPreference		= $OMEGA_CONF.verbosity.information
-$DebugPreference			= $OMEGA_CONF.verbosity.debug
+$VerbosePreference					= $OMEGA_CONF.verbosity.verbose
+$InformationPreference			= $OMEGA_CONF.verbosity.information
+$DebugPreference						= $OMEGA_CONF.verbosity.debug
 
 
 #################################################

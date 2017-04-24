@@ -4,7 +4,7 @@
  Helper Functions
 #>
 
-function ohelp {
+function Omega-Help {
 	### change this to user help system!!!
 	### md -> manpages /// xml help?
 
