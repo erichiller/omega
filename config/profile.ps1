@@ -203,3 +203,7 @@ Set-Alias -Name grep -Value "${env:basedir}\system\git\usr\bin\grep.exe"
 
 # sed
 Set-Alias -Name sed -Value "${env:basedir}\system\git\usr\bin\sed.exe"
+
+# Use the Silver Searcher to do 
+# Find File
+function ff { & "${env:basedir}\bin\ag.exe" -g $args }
