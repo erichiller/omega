@@ -113,7 +113,7 @@ set confirm						" raise a dialog asking if you wish to save the current file(s)
 source $VIMRUNTIME/mswin.vim
 " modify guioptions // win32 default is ----| egmrLtT |----
 
-" <---- GUI Settings ----
+" <---- GUI ( gvim ) Settings ----
 if has('gui_running')
     set lines=42                " 40 lines of text instead of 24,
     " FONT == SEE ==> http://vimhelp.appspot.com/options.txt.html#%27guifont%27 
@@ -128,7 +128,7 @@ if has('gui_running')
     " only show a brief filename for the tab title
     set guitablabel=%F
 
-
+    " menu
     an 10.310.100 &File.Open\ File.New\ Tab	:browse tabnew<CR>
     an 10.310.120 &File.Open\ File.&OverWrite\ Window  :browse confirm e<CR>
     an 10.310.140 &File.Open\ File.Sp&lit\ Window	:browse sp<CR>
