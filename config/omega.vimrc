@@ -117,8 +117,7 @@ source $VIMRUNTIME/mswin.vim
 if has('gui_running')
     set lines=42                " 40 lines of text instead of 24,
     " FONT == SEE ==> http://vimhelp.appspot.com/options.txt.html#%27guifont%27 
-    " set guifont=Courier:h9:cANSI:qANTIALIASED
-    set guifont=Courier\ New:h10:cANSI:qPROOF,Consolas:h12:cANSI:qDEFAULT
+    set guifont=Consolas:h9:cANSI:qDEFAULT,Courier\ New:h10:cANSI:qPROOF
     
     " GUI configurations, see guioptions
     " http://vimdoc.sourceforge.net/htmldoc/options.html#'guioptions'
@@ -134,6 +133,7 @@ if has('gui_running')
     an 10.310.140 &File.Open\ File.Sp&lit\ Window	:browse sp<CR>
 
     an 10.325 &File.&New\ Tab<Tab>			:tabnew<CR>
+    an 10.325 &File.New\ &Split<Tab>			:vnew<CR>
 
     aunmenu File.Open\.\.\.
     " remove Open Tab, rename
