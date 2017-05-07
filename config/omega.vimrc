@@ -244,6 +244,7 @@ fun! NewFileSetup()
         setlocal laststatus=0
         colorscheme edh
         setlocal spell
+		let b:browsefilter = "Markdown Files\t*.md\nMarkdown Text\t*.txt\nAll Files\t*.*\n"
         
         amenu 30.30 &Tools.Format\ Table    :TableFormat<CR>
         amenu 30.31 &Tools.Table\ of\ Contents    :Toc<CR>
