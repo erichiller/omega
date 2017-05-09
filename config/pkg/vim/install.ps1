@@ -12,6 +12,10 @@ New-Shortcut -targetRelPath "system/vim/gvim.exe" -arguments "-u %LocalAppData%\
 Register-App vim "${env:ALLUSERSPROFILE}\Microsoft\Windows\Start Menu\Programs\gvim.lnk"
 sed -i "" 's/au BufDelete,BufFilePre \* call \<SID\>BMRemove/au BufUnload,BufDelete,BufFilePre \* call <SID>BMRemove/g' $(Join-Path $env:BaseDir "system/vim/menu.vim")
 
+# set the registry; this is so that gvim can be opened as a registered app. "open with" and still have the proper settings
+# $env:VIMINIT = 'source $VIM/../../config/omega.vimrc'
+# ????
+if ( -not (& setx VIMINIT /m 'source $VIM/../../config/omega.vimrc' ) ) { return $false }
 
 # see :help startup
 # see EXTINIT or put $VIM/.vimrc in so that direct links to gvim work

@@ -18,6 +18,8 @@ Defined at the beggining of the function, in a `Param()` block these are listed 
 <http://stackoverflow.com/questions/14844542/powershell-cmdlet-parameter-value-tab-completion>  
 <https://foxdeploy.com/2017/01/13/adding-tab-completion-to-your-powershell-functions/>
 
+[TabExpansionPlusPlus](https://github.com/lzybkr/TabExpansionPlusPlus) is an autocompletion extension allowing for easier creation of your own autocomplete functions. An example can be found [here](https://github.com/lzybkr/TabExpansionPlusPlus/blob/master/WindowsExe.ArgumentCompleters.ps1)
+
 ## Data Handling
 
 [Select-String] http://searchwindowsserver.techtarget.com/feature/Filtering-output-from-Windows-PowerShell
