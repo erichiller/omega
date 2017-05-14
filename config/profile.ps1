@@ -191,10 +191,6 @@ Set-Alias -Name "which" -Value "${env:windir}\System32\where.exe"
 # new mv
 if (alias mv -ErrorAction SilentlyContinue) { Remove-Item alias:mv }
 
-# Ultimately this should be its own usr file
-function gh { Set-Location "${env:Home}\Dev\src\github.com\erichiller\$($args[0])" }
-function om { Set-Location ${env:Basedir} }
-
 # less
 Set-Alias -Name "less" -Value "${env:basedir}\system\git\usr\bin\less.exe"
 
@@ -205,5 +201,37 @@ Set-Alias -Name grep -Value "${env:basedir}\system\git\usr\bin\grep.exe"
 Set-Alias -Name sed -Value "${env:basedir}\system\git\usr\bin\sed.exe"
 
 # Use the Silver Searcher to do 
-# Find File
+# Find File; -g finds files
 function ff { & "${env:basedir}\bin\ag.exe" -g $args }
+
+
+#################################################
+######        STEP #4: USER SPECIFICS       #####
+#################################################
+# Ultimately this should be its own usr file
+function gh { Set-Location "${env:Home}\Dev\src\github.com\erichiller\$($args[0])" }
+function om { Set-Location ${env:Basedir} }
+<#
+.Synopsis
+ Search Knowledge Base files for text using Silver Surfer
+#>
+function kb {
+    # Set-RegisterCommandAvailable this is only called if kb is called, must be moved outside function
+	Write-Output "---kb---start---"
+    Write-Output $MyInvocation.MyCommand
+    Write-Output "---kb---end---"
+	# NOTE: THE PATH CAN _NOT_ HAVE A TRAILING SLASH
+	$path = (Join-Path ${env:Home} "\Google Drive\Documents\Knowledge Base")
+	if ($args){
+		& "${env:basedir}\bin\ag.exe" --all-text --stats --ignore-case $args $path 
+	} else {
+		Write-Warning "Please enter search text"
+		
+        Write-Output "---kb---help---start---"
+        Get-Help $MyInvocation.MyCommand
+        Write-Output "---kb---help---end---"
+	}
+}
+Set-RegisterCommandAvailable kb
+
+

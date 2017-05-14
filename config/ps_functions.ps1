@@ -9,7 +9,29 @@ function Omega-Help {
 	### md -> manpages /// xml help?
 
 	Get-Content ( Join-Path $OMEGA_CONF.help "omega.install.md" )
+	Get-Content ( Join-Path $OMEGA_CONF.help "ps.cmdline_tips.md" )
 }
+
+<#
+.Synopsis
+ Display the commands Omega provides
+#>
+function Omega-CommandsAvailable {
+	# print the table
+	if ( $OMEGA_CONF.RegisteredCommands -ne $null ){
+		$OMEGA_CONF.RegisteredCommands
+	}
+}
+function Set-RegisterCommandAvailable ($command) {
+	if ( $command -eq $null ){
+		# if no command was sent, use the caller
+		# powershell stack - get caller function
+		$command = $((Get-PSCallStack)[1].Command)
+	}
+	# put the name and synopsis into the table
+	$OMEGA_CONF.RegisteredCommands += (Get-Help $command | Select-Object Name, Synopsis)
+}
+
 
 <#
 .Synopsis
@@ -22,7 +44,7 @@ function Show-Path {
 	[switch] $Debug,
 	[switch] $System,
 	[switch] $User,
-        [switch] $Objects
+	[switch] $Objects
 	)
 	if ($System -eq $true) {
 		$PathToPrint = (Get-ItemProperty -Path "$($OMEGA_CONF.system_environment_key)" -Name PATH).Path
@@ -30,10 +52,10 @@ function Show-Path {
 	if ($User -eq $true) {
 		$PathToPrint = (Get-ItemProperty -Path "$($OMEGA_CONF.user_environment_key)" -Name PATH).Path
 	}
-    if ( $Objects ) {
+	if ( $Objects ) {
 		$obj = @()
-        foreach ( $dirAsStr in $PathToPrint.Split(";") ) {
-            if (Test-Path $dirAsStr) {
+		foreach ( $dirAsStr in $PathToPrint.Split(";") ) {
+			if (Test-Path $dirAsStr) {
 				$obj += Get-Item -Path $dirAsStr
 			} else { Write-Warning "$dirAsStr DOES NOT EXIST! Not adding to new path." }
 		}
@@ -54,17 +76,17 @@ Optional dialog text before [y|n] to propmt user for input
 Else default will be displayed.
 #>
 function Enter-UserConfirm {
-    param (
-        [string] $dialog = "Do you want to continue?"
+	param (
+		[string] $dialog = "Do you want to continue?"
 	)
-    while ($choice -notmatch "[y|n]") {
-        Write-Host -NoNewline -ForegroundColor Cyan "$dialog (Y/N)"
-        $choice = Read-Host " "
-    }
-    if ( $choice.ToLower() -eq "y") {
+	while ($choice -notmatch "[y|n]") {
+		Write-Host -NoNewline -ForegroundColor Cyan "$dialog (Y/N)"
+		$choice = Read-Host " "
+	}
+	if ( $choice.ToLower() -eq "y") {
 		return $true
-    }
-    return $false
+	}
+	return $false
 }
 <#
 .Synopsis
@@ -74,31 +96,31 @@ Accepts partials %like
 #>
 function Remove-DirFromPath($dir) {
 	$newPath = ""
-    ForEach ( $testDir in $(Show-Path -Objects) ) {
+	ForEach ( $testDir in $(Show-Path -Objects) ) {
 
 		if ( $testdir -match $dir -and $(Enter-UserConfirm("Remove $testdir ?") === $false)) {
-            Write-Warning "removing $testdir"
-        }
-        else {
+			Write-Warning "removing $testdir"
+		}
+		else {
 			Write-Output "Re-adding $testdir"
-            $newPath += "$testdir;"
-        }
+			$newPath += "$testdir;"
+		}
 	}
 
 	# remove trailing semi-colon
-    $newPath = $newPath.TrimEnd(";")
+	$newPath = $newPath.TrimEnd(";")
 	Write-Output "`n`nPath is now:`n$(Show-Path $newPath)"
 	Write-Debug "RAW Path String --->`n$newPath"
 	$env:Path = $newPath
 }
 function Add-DirToPath($dir) {
-    # ensure the directory exists
-    if (Test-Path -Path $dir ) {
-        # if it isn't already in the PATH, add it
-        if ( -not $env:Path.Contains($dir) ) {
-            $env:Path += ";" + $dir
-        }
-    }
+	# ensure the directory exists
+	if (Test-Path -Path $dir ) {
+		# if it isn't already in the PATH, add it
+		if ( -not $env:Path.Contains($dir) ) {
+			$env:Path += ";" + $dir
+		}
+	}
 }
 
 function Show-Env { Write-Output (Get-ChildItem Env:) }
@@ -122,77 +144,77 @@ shortcutFile is where the resulting shortcut will be placed
 Defaults to C:\Users\ehiller\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\ + <baseName>
 #>
 function New-Shortcut {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string] $targetRelPath,
-        [Parameter(Mandatory = $false)]
-        [string] $shortcutFile,
-        [Parameter(Mandatory = $false)]
-        [string] $iconRelPath,
-        [Parameter(Mandatory = $false)]
-        [string]$arguments
-    )
+	param(
+		[Parameter(Mandatory = $true)]
+		[string] $targetRelPath,
+		[Parameter(Mandatory = $false)]
+		[string] $shortcutFile,
+		[Parameter(Mandatory = $false)]
+		[string] $iconRelPath,
+		[Parameter(Mandatory = $false)]
+		[string]$arguments
+	)
 
-    Update-Config
-    if (!$env:basedir) {
-        Write-Warning "`$env:BaseDir is not set. Ensure that profile.ps1 is run properly first. Exiting immeditately, no action taken."
-        return
-    }
+	Update-Config
+	if (!$env:basedir) {
+		Write-Warning "`$env:BaseDir is not set. Ensure that profile.ps1 is run properly first. Exiting immeditately, no action taken."
+		return
+	}
 
-    # if no shortcut file is specified, create a default on in the start menu folder
-    if ( -not $shortcutFile) {
+	# if no shortcut file is specified, create a default on in the start menu folder
+	if ( -not $shortcutFile) {
 		# MUST BE ADMIN to create in the default start menu location;
 		# check, if not warn and exit
 		if ( Test-Admin -warn -not ) { return }
-        Write-Debug $targetRelPath
-        # get targetName without extension (or Parent directory/ path)
-        $baseName = Split-Path -Path (Join-Path $env:basedir $targetRelPath) -Leaf -Resolve
+		Write-Debug $targetRelPath
+		# get targetName without extension (or Parent directory/ path)
+		$baseName = Split-Path -Path (Join-Path $env:basedir $targetRelPath) -Leaf -Resolve
 		Write-Debug $baseName
-        $positionDot = $baseName.LastIndexOf(".")
-        Write-Debug $positionDot
-        if ($positionDot -gt 0) {
-            $baseName = $baseName.substring(0, $positionDot)
-            Write-Debug $baseName
+		$positionDot = $baseName.LastIndexOf(".")
+		Write-Debug $positionDot
+		if ($positionDot -gt 0) {
+			$baseName = $baseName.substring(0, $positionDot)
+			Write-Debug $baseName
 
-        }
-        Write-Debug $baseName
-        $shortcutFile = Join-Path "${env:ALLUSERSPROFILE}\Microsoft\Windows\Start Menu\Programs\" $baseName
-    }
+		}
+		Write-Debug $baseName
+		$shortcutFile = Join-Path "${env:ALLUSERSPROFILE}\Microsoft\Windows\Start Menu\Programs\" $baseName
+	}
 
-    if (-not $shortcutFile.EndsWith(".lnk")) {
-        $shortcutFile += ".lnk"
-    }
+	if (-not $shortcutFile.EndsWith(".lnk")) {
+		$shortcutFile += ".lnk"
+	}
 
-    $WScriptShell = New-Object -ComObject WScript.Shell
-    $Shortcut = $WScriptShell.CreateShortcut( $shortcutFile )
+	$WScriptShell = New-Object -ComObject WScript.Shell
+	$Shortcut = $WScriptShell.CreateShortcut( $shortcutFile )
 
-    $Shortcut.TargetPath = Join-Path $env:basedir $targetRelPath
+	$Shortcut.TargetPath = Join-Path $env:basedir $targetRelPath
 
-    $Shortcut.Arguments = $arguments
+	$Shortcut.Arguments = $arguments
 		
-    $Shortcut.WorkingDirectory = "$env:Home"
+	$Shortcut.WorkingDirectory = "$env:Home"
 
-    $Shortcut.IconLocation = Join-Path $env:basedir $iconRelPath
+	$Shortcut.IconLocation = Join-Path $env:basedir $iconRelPath
 
-    $Shortcut.Save()
-    Write-Output "Shortcut Created at $shortcutFile"
+	$Shortcut.Save()
+	Write-Output "Shortcut Created at $shortcutFile"
 }
 
 function New-OmegaShortcut {
 
-    #$Shortcut.Arguments = '/LoadCfgFile "%HomePath%\AppData\Local\omega\config\ConEmu.xml" /FontDir "%HomePath%\AppData\Local\omega\system\nerd_hack_font" /Icon "%HomePath%\AppData\Local\omega\icons\omega_256.ico" /run "@%HomePath%\AppData\Local\omega\config\powershell.cmd"'
-    $arguments = `
+	#$Shortcut.Arguments = '/LoadCfgFile "%HomePath%\AppData\Local\omega\config\ConEmu.xml" /FontDir "%HomePath%\AppData\Local\omega\system\nerd_hack_font" /Icon "%HomePath%\AppData\Local\omega\icons\omega_256.ico" /run "@%HomePath%\AppData\Local\omega\config\powershell.cmd"'
+	$arguments = `
 	'/LoadCfgFile "' + ( Join-Path ( Join-Path $Env:Basedir $OMEGA_CONF.confdir ) "ConEmu.xml" ) + '" ' + 
-    '/FontDir "' + ( Join-Path (Join-Path $Env:Basedir $OMEGA_CONF.sysdir) "fonts" ) + '" ' + 
-    '/Icon "' + ( Join-Path ( Join-Path $Env:Basedir "icons" ) "omega_256.ico" ) + '" /run "@..\..\config\powershell.cmd"'
+	'/FontDir "' + ( Join-Path (Join-Path $Env:Basedir $OMEGA_CONF.sysdir) "fonts" ) + '" ' + 
+	'/Icon "' + ( Join-Path ( Join-Path $Env:Basedir "icons" ) "omega_256.ico" ) + '" /run "@..\..\config\powershell.cmd"'
 
-    $shortcutFile = Join-Path $env:basedir "omega.lnk"
+	$shortcutFile = Join-Path $env:basedir "omega.lnk"
 
-    $iconRelPath = "icons\omega_256.ico"
+	$iconRelPath = "icons\omega_256.ico"
 
-    $targetRelPath = ( Join-Path $OMEGA_CONF.sysdir "ConEmu\ConEmu64.exe" )
+	$targetRelPath = ( Join-Path $OMEGA_CONF.sysdir "ConEmu\ConEmu64.exe" )
 
-    New-Shortcut -targetRelPath $targetRelPath -iconRelPath $iconRelPath -shortcutFile $shortcutFile -arguments $arguments
+	New-Shortcut -targetRelPath $targetRelPath -iconRelPath $iconRelPath -shortcutFile $shortcutFile -arguments $arguments
 }
 
 <#
@@ -208,43 +230,43 @@ this is the path RELATIVE TO BASEDIR where the shortcut or exe to be linked to /
 #>
 function Register-App {
 
-    param(
-        # 
-        [string]$appName = "omega",
-        [string]$targetPath = "${env:basedir}omega.lnk"
-    )
+	param(
+		# 
+		[string]$appName = "omega",
+		[string]$targetPath = "${env:basedir}omega.lnk"
+	)
 	
-    # add .exe suffix if not present asa the appPath requires it.
-    # .exe will not show up in the index
-    if (-not $appName.EndsWith(".exe")) {
-        $appName += ".exe"
-    }
+	# add .exe suffix if not present asa the appPath requires it.
+	# .exe will not show up in the index
+	if (-not $appName.EndsWith(".exe")) {
+		$appName += ".exe"
+	}
 
-    # extract target of shortcut from the shortcut itself
-    # https://social.technet.microsoft.com/Forums/office/en-US/f0e20c30-834a-47f1-9a8c-8c719813f900/powershell-script-to-find-target-from-shortcuts-and-then-moverename-target-files?forum=winserverpowershell
-    #$targetRelPath = Get-Item (New-Object -ComObject Wscript.Shell).CreateShortcut($shortcutPath).TargetPath
+	# extract target of shortcut from the shortcut itself
+	# https://social.technet.microsoft.com/Forums/office/en-US/f0e20c30-834a-47f1-9a8c-8c719813f900/powershell-script-to-find-target-from-shortcuts-and-then-moverename-target-files?forum=winserverpowershell
+	#$targetRelPath = Get-Item (New-Object -ComObject Wscript.Shell).CreateShortcut($shortcutPath).TargetPath
 	
-    # MUST BE ADMIN; check, if not warn and exit
-    if ( Test-Admin -warn -not ) { return }
+	# MUST BE ADMIN; check, if not warn and exit
+	if ( Test-Admin -warn -not ) { return }
 	
-    #$shortcutPath = Join-Path $env:basedir $targetRelPath
-    # if targetRelPath is a shortcut use that . set $shortcut=
-    #     and set targetRelPath= the shortcut's target
-    # else set $create shortcut = from a new shortcut
-    # 
-    if (Test-Path $targetPath ) {
-        New-Item -Path $($OMEGA_CONF.app_paths_key + "\$appName") -Value $targetPath
-    }
-    else {
-        Write-Warning "The target to launch $appName does not yet exist"
-        if ($appName -eq "omega") { Write-Warning "Create it first with 'New-Shortcut'" }
-        Write-Warning "Checked in $targetPath"
-    }
+	#$shortcutPath = Join-Path $env:basedir $targetRelPath
+	# if targetRelPath is a shortcut use that . set $shortcut=
+	#     and set targetRelPath= the shortcut's target
+	# else set $create shortcut = from a new shortcut
+	# 
+	if (Test-Path $targetPath ) {
+		New-Item -Path $($OMEGA_CONF.app_paths_key + "\$appName") -Value $targetPath
+	}
+	else {
+		Write-Warning "The target to launch $appName does not yet exist"
+		if ($appName -eq "omega") { Write-Warning "Create it first with 'New-Shortcut'" }
+		Write-Warning "Checked in $targetPath"
+	}
 	
-    # C:\Users\ehiller\AppData\Local\omega\system\vim\gvim.exe -u %LocalAppData%\omega\config\omega.vimrc
+	# C:\Users\ehiller\AppData\Local\omega\system\vim\gvim.exe -u %LocalAppData%\omega\config\omega.vimrc
 	
-    # shortcuts in:
-    # 	C:\Users\ehiller\AppData\Roaming\Microsoft\Windows\Start Menu\Programs
+	# shortcuts in:
+	# 	C:\Users\ehiller\AppData\Roaming\Microsoft\Windows\Start Menu\Programs
 	
 }
 <#
@@ -260,7 +282,7 @@ And operation will continue to process subsequent keys.
 
 If you encounter issues connecting to the remote host:
 A) Connection denied: (this means sshd is running, but that your access is restricted)
-    most likely your user is not allowed, if connecting as root ensure it is enabled.
+	most likely your user is not allowed, if connecting as root ensure it is enabled.
 	In `/etc/ssh/sshd_config`:
 	1. comment out `PermitRootLogin without-password`
 	2. add in `PermitRootLogin yes`
@@ -273,49 +295,49 @@ http://stackoverflow.com/questions/12522539/github-gist-editing-without-changing
 Note: When saving configs in a gist:
 1) Ensure you link to the RAW file
 2) Edit the link, which normally hardlinks to a specific REVISION and thus won't reflect changes.
-    Normal/default, REVISION-specific format:
-      https://gist.github.com/[gist_user]/[gist_id]/raw/[revision_id]/[file_name]
-    But we want the latest version always, so edit it to the format:
-      https://gist.github.com/[gist_user]/[gist_id]/raw/[file_name]
-    that is, you simply remove the `[revision_id]` block
+	Normal/default, REVISION-specific format:
+	  https://gist.github.com/[gist_user]/[gist_id]/raw/[revision_id]/[file_name]
+	But we want the latest version always, so edit it to the format:
+	  https://gist.github.com/[gist_user]/[gist_id]/raw/[file_name]
+	that is, you simply remove the `[revision_id]` block
 ********************************************************************************
 Author:                 Eric D Hiller
 Originally:             15 January 2016
 Updated for Powershell: 25 March 2017
 #>
 function Send-LinuxConfig {
-    param(
-        [Parameter(Mandatory = $False , Position = 1)]
-        [string] $ConnectionString,
-    [Alias("h", "?")]
+	param(
+		[Parameter(Mandatory = $False , Position = 1)]
+		[string] $ConnectionString,
+	[Alias("h", "?")]
 	[switch] $help
-    )
+	)
 
 	if ( $help -or -not $ConnectionString){
-    get-help $MyInvocation.MyCommand
+	get-help $MyInvocation.MyCommand
 	return;
 	}
 
-    if ( -not ( Get-Command "ssh" -ErrorAction SilentlyContinue )) {
+	if ( -not ( Get-Command "ssh" -ErrorAction SilentlyContinue )) {
 		Write-Warning "ssh is not present on the path, please install before proceeding`n Operation can not proceed, exiting."
 	}
 
 	## Send key(s) , and skip if already present
-    # get keys from ssh-agent ; THAT MEANS THIS WORKS WITH keeagent (KeePass) !! _nice_
-    $keys = & ${env:basedir}\system\git\usr\bin\ssh-add.exe -L 
+	# get keys from ssh-agent ; THAT MEANS THIS WORKS WITH keeagent (KeePass) !! _nice_
+	$keys = & ${env:basedir}\system\git\usr\bin\ssh-add.exe -L 
 	if( -not $keys ){
-        Write-Warning "No keys present in ssh-agent`n Operation can not proceed, exiting."
-    }
-    foreach ( $line in ( & ${env:basedir}\system\git\usr\bin\ssh-add.exe -L ) ) {
-        $sh = "cd ; umask 077 ; mkdir -p .ssh; touch .ssh/authorized_keys; grep '" + $line + "' "
-        $sh += `
+		Write-Warning "No keys present in ssh-agent`n Operation can not proceed, exiting."
+	}
+	foreach ( $line in ( & ${env:basedir}\system\git\usr\bin\ssh-add.exe -L ) ) {
+		$sh = "cd ; umask 077 ; mkdir -p .ssh; touch .ssh/authorized_keys; grep '" + $line + "' "
+		$sh += `
 @"
 -F ~/.ssh/authorized_keys > /dev/null || sed $'s/\r//' >> .ssh/authorized_keys || exit 1 ; if type restorecon >/dev/null 2>&1 ; then restorecon -F .ssh .ssh/authorized_keys ; fi
 "@
-        Write-Output "Sending Key: $($($line.Split(" ")) | Select-Object -last 1)"
-        # do your thing
-        $line | ssh $ConnectionString $sh
-    }
+		Write-Output "Sending Key: $($($line.Split(" ")) | Select-Object -last 1)"
+		# do your thing
+		$line | ssh $ConnectionString $sh
+	}
 	
 	# push bashrc and vimrc
 	$(Invoke-WebRequest -UseBasicParsing $OMEGA_CONF.push_bashrc).Content | ssh $ConnectionString "sed $'s/\r//' > ~/.bashrc"
@@ -348,17 +370,17 @@ Adapted from (see link)
 http://stackoverflow.com/questions/35624787/powershell-whats-the-best-way-to-display-variable-contents-via-write-debug
 #>
 function Debug-Variable { 
-    param(
-        [Parameter(Mandatory = $True)] $var,
-        [string] $name
-    )
-    @(
-        if ([string]::IsNullOrEmpty($name) -ne $true) { "Debug-Variable: ===|$name|===" }
-        #"Variable: $(Get-Variable | Where-Object {$_.Value -eq $var } )",
-        #"Debug-Variable-Type:$(get-member -inputobject $var | Format-Table -AutoSize -Wrap | Out-String )",
-        "Debug-Variable-Type:$($var.getType())",
-        "Debug-Variable`n----START-VALUE-PRINT----`n$( $var | Format-Table -AutoSize -Wrap | Out-String )----END-VALUE-PRINT----" 
-    ) | Write-Debug
+	param(
+		[Parameter(Mandatory = $True)] $var,
+		[string] $name
+	)
+	@(
+		if ([string]::IsNullOrEmpty($name) -ne $true) { "Debug-Variable: ===|$name|===" }
+		#"Variable: $(Get-Variable | Where-Object {$_.Value -eq $var } )",
+		#"Debug-Variable-Type:$(get-member -inputobject $var | Format-Table -AutoSize -Wrap | Out-String )",
+		"Debug-Variable-Type:$($var.getType())",
+		"Debug-Variable`n----START-VALUE-PRINT----`n$( $var | Format-Table -AutoSize -Wrap | Out-String )----END-VALUE-PRINT----" 
+	) | Write-Debug
 }
 
 function mv {
@@ -421,10 +443,10 @@ function mv {
 	# -UseTransaction
 	# -WhatIf
 	#
-    	If ($Force) {
-            Move-Item -Path "$Source" -Destination "$Destination" -Force
+		If ($Force) {
+			Move-Item -Path "$Source" -Destination "$Destination" -Force
 		} else {
-            Move-Item -Path "$Source" -Destination "$Destination" -Force
+			Move-Item -Path "$Source" -Destination "$Destination" -Force
 		}
 	}
 }
@@ -863,7 +885,7 @@ function Search-FrequentDirectory {
 	Param (
 		[Parameter(Mandatory=$false)]
 		[Switch] $delete,
-        [Parameter(Mandatory = $false)]
+		[Parameter(Mandatory = $false)]
 		[Switch] $outputDebug
 	)
 	DynamicParam {
@@ -916,7 +938,7 @@ function Search-FrequentDirectory {
 	}
 	# this helps with hashtables
 	# https://www.simple-talk.com/sysadmin/powershell/powershell-one-liners-collections-hashtables-arrays-and-strings/
-    
+	
 	$dirPossibles = ( $searchHistory.values | Select -Unique )
 
 	$modulesValidated_SetAttribute = New-Object -type System.Management.Automation.ValidateSetAttribute($dirPossibles)
@@ -929,18 +951,18 @@ function Search-FrequentDirectory {
 	$paramDictionary.Add("dirSearch", $dirSearchDefinition)
 
 	return $paramDictionary
-    }
+	}
 	begin {
 		function Set-LocationHelper {
 			param(
 				[Parameter(Mandatory=$True)]
 				[string] $dir,
-                [switch] $delete,
-                [switch] $addToHistory
+				[switch] $delete,
+				[switch] $addToHistory
 			)
 			# Add to history so that in the future this directory will be found with `cd` scanning and brute force WILL NOT BE REQUIRED
 			if ($addToHistory){
-                [Microsoft.PowerShell.PSConsoleReadLine]::AddToHistory("cd $dir")
+				[Microsoft.PowerShell.PSConsoleReadLine]::AddToHistory("cd $dir")
 			}
 			if ( $delete ){
 				Clear-History -CommandLine $filteredDirs -Confirm
@@ -951,10 +973,10 @@ function Search-FrequentDirectory {
 	}
 	process {
 		# I only want to see Debug messages when I specify the DEBUG flag
-        if ($PSCmdlet.MyInvocation.BoundParameters["debug"].IsPresent) {
-            $LOCAL:DebugPreference = "Continue"
+		if ($PSCmdlet.MyInvocation.BoundParameters["debug"].IsPresent) {
+			$LOCAL:DebugPreference = "Continue"
 		} else {
-            $LOCAL:DebugPreference = "SilentlyContinue"
+			$LOCAL:DebugPreference = "SilentlyContinue"
 		}
 
 
@@ -963,7 +985,7 @@ function Search-FrequentDirectory {
 		
 		Debug-Variable $searchHistory "f/searchHistory"
 				
-        Write-Debug "dirSearch=$dirSearch"
+		Write-Debug "dirSearch=$dirSearch"
 		
 		#this is doing ___EQUAL___ /// or do I want to be doing a like dirSearch*
 		$filteredDirs = $searchHistory.GetEnumerator() | ?{ $_.Value -eq $dirSearch } 
@@ -980,14 +1002,14 @@ function Search-FrequentDirectory {
 			#### searchCount ####
 			## NAME ===> VALUE ##
 			## (DIR) ==> COUNT ##
-            Debug-Variable $searchCount
+			Debug-Variable $searchCount
 
-            "More than one matching entry was found, now sorting and checking each historical cd"
+			"More than one matching entry was found, now sorting and checking each historical cd"
 			$searchCount.GetEnumerator() | Sort-Object -Property Value -Descending | ForEach-Object {
 				$countedDir = $_
 				$highestDir = ( $filteredDirs.GetEnumerator() | ?{$_.Name -contains $countedDir.Name} )
 				if ( $highestDir.count -eq 1 ){
-                    Write-Debug "Check for $($highestDir.name)"
+					Write-Debug "Check for $($highestDir.name)"
 					$testedPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($highestDir.name) 
 					if( $testedPath | Test-Path ){
 						Set-LocationHelper $testedPath
@@ -996,7 +1018,7 @@ function Search-FrequentDirectory {
 						Write-Warning "Tried to cd to $($highestDir.name) (resolved to $testedPath), but it does not exist"
 					}
 				} else {
-                    $highestDir.name
+					$highestDir.name
 				}
 			}
 		}
@@ -1004,37 +1026,37 @@ function Search-FrequentDirectory {
 		# if a match was found above; but it did not immeditately resolve
 		if( ( $testedPath ) `
 				-and ( -not ( $testedPath | Test-Path ) ) ){
-            Write-Information "Could not find test string '$dirSearch', possibly not an absolute path, Attempting to Locate"
-            # iterate history where the directory that was being searched for is PART of one of the historical items
-            # for example; if searching for dirB. This would find it in /dirA/dirB/dirC/ and return /dirA/dirB/
+			Write-Information "Could not find test string '$dirSearch', possibly not an absolute path, Attempting to Locate"
+			# iterate history where the directory that was being searched for is PART of one of the historical items
+			# for example; if searching for dirB. This would find it in /dirA/dirB/dirC/ and return /dirA/dirB/
 			## <START LOOP>
-            $searchCount.GetEnumerator() | Sort-Object -Property Value -Descending | Where-Object { $_.Name -like "*$dirSearch*" } | ForEach-Object -ErrorAction SilentlyContinue {
-                $testedPath = $_.Name
+			$searchCount.GetEnumerator() | Sort-Object -Property Value -Descending | Where-Object { $_.Name -like "*$dirSearch*" } | ForEach-Object -ErrorAction SilentlyContinue {
+				$testedPath = $_.Name
 					Write-Debug "Command like dirsearch:$testedPath" -ErrorAction SilentlyContinue
-                $testedPath = Join-Path $testedPath.Substring( 0 , $testedPath.IndexOf($dirSearch) ) $dirSearch
+				$testedPath = Join-Path $testedPath.Substring( 0 , $testedPath.IndexOf($dirSearch) ) $dirSearch
 				if ( Test-Path $testedPath ){
 					Set-LocationHelper $testedPath
 					break
 				}
-            }
-            ## <END LOOP>
+			}
+			## <END LOOP>
 
-            #### Brute force search directories ####
+			#### Brute force search directories ####
 			# if we reached this point, none of the above worked, it is time to just brute force search,
-            # Not found within the path of another match, so just scan every single directory. Maybe slow, but it should work
-            Write-Debug "We are now going to brute force search, all other methods have failed"
-            $dirsToScan = @(".", $env:HOME, $env:LOCALAPPDATA)
-            foreach ($dir in $dirsToScan ) {
-                Write-Debug "Scanning: $dir"
-                Get-Childitem -path $dir -recurse -directory -filter "$dirSearch" -ErrorAction SilentlyContinue | ForEach-Object {
-                    $testedPath = $_.FullName
-                    if (Enter-UserConfirm -dialog "Confirm: Change Directory to $testedPath") {
-                        Set-LocationHelper $testedPath -addToHistory
+			# Not found within the path of another match, so just scan every single directory. Maybe slow, but it should work
+			Write-Debug "We are now going to brute force search, all other methods have failed"
+			$dirsToScan = @(".", $env:HOME, $env:LOCALAPPDATA)
+			foreach ($dir in $dirsToScan ) {
+				Write-Debug "Scanning: $dir"
+				Get-Childitem -path $dir -recurse -directory -filter "$dirSearch" -ErrorAction SilentlyContinue | ForEach-Object {
+					$testedPath = $_.FullName
+					if (Enter-UserConfirm -dialog "Confirm: Change Directory to $testedPath") {
+						Set-LocationHelper $testedPath -addToHistory
 						break
-                    }
-                }
-            }
-        }
+					}
+				}
+			}
+		}
 	} <# End process {} #>
 
 }
@@ -1047,7 +1069,7 @@ function Test-Admin {
 	Param(
 		[Switch] $warn=$false
 	)
-    If ( -not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')) {
+	If ( -not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')) {
 		if($warn){
 			Write-Warning "You must be an administrator in order to continue.`nPlease try again as administrator."
 		}
@@ -1056,30 +1078,36 @@ function Test-Admin {
 	return $false
 }
 
+<#
+.SYNOPSIS
+Written primarily for setting the tab title in ConEmu.
+.EXAMPLE
+See omega.psm1 for usage
+#>
 function Get-PrettyPath {
-    param (
-    [System.Management.Automation.PathInfo] $dir
-    )
+	param (
+	[System.Management.Automation.PathInfo] $dir
+	)
 	if ( -not $dir ){ $dir = Get-Location }
-    $provider = (Get-Item $dir).PSProvider.Name
-    if($provider -eq 'FileSystem'){
-        $result = @()
-        $currentDir = Get-Item $dir.path
-        while( ($currentDir.Parent) -And ($currentDir.FullName -ne $HOME) -And ($result.Count -lt 2 ) ) {
-            $result = ,$currentDir.Name + $result
-            $currentDir = $currentDir.Parent
-        }
-        $shortPath =  $result -join $ThemeSettings.PromptSymbols.PathSeparator
-        if ($shortPath) {
-            return "$($sl.PromptSymbols.PathSeparator)$shortPath"
-        } else {
-            if ($dir.path -eq $HOME) {
-                return '~'
-            }
-            return "$($dir.Drive.Name):"
-        }
-    } else {
-        return $dir.path.Replace((Get-Drive -dir $dir), '')
-    }
+	$provider = (Get-Item $dir).PSProvider.Name
+	if($provider -eq 'FileSystem'){
+		$result = @()
+		$currentDir = Get-Item $dir.path
+		while( ($currentDir.Parent) -And ($currentDir.FullName -ne $HOME) -And ($result.Count -lt 2 ) ) {
+			$result = ,$currentDir.Name + $result
+			$currentDir = $currentDir.Parent
+		}
+		$shortPath =  $result -join $ThemeSettings.PromptSymbols.PathSeparator
+		if ($shortPath) {
+			return "$($sl.PromptSymbols.PathSeparator)$shortPath"
+		} else {
+			if ($dir.path -eq $HOME) {
+				return '~'
+			}
+			return "$($dir.Drive.Name):"
+		}
+	} else {
+		return $dir.path.Replace((Get-Drive -dir $dir), '')
+	}
 }
 

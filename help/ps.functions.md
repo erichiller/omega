@@ -58,3 +58,14 @@ if ( $DebugPreference -eq "Continue" ) {
     echo "Debug is turned on in the profiles"
 }
 ```
+
+## Stack
+
+Get Caller functions and Stack Traces
+
+```powershell
+# powershell stack - get caller function
+$command = $((Get-PSCallStack)[1].Command)
+```
+
+<https://social.technet.microsoft.com/Forums/windows/en-US/9b8f3677-8416-4685-978a-7daef61d7c52/how-to-get-the-caller-function-name-in-the-called-function-in-ps?forum=winserverpowershell>
