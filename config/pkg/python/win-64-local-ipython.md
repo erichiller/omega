@@ -26,7 +26,6 @@ see [pip package index here](https://pypi.python.org/pypi)
 pip3 install jupyter
 pip3 install matlibplot
 pip3 install pandas
-pip3 install sklearn
 
 
 
