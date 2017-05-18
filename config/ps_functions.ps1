@@ -37,15 +37,28 @@ function Set-RegisterCommandAvailable ($command) {
 .Synopsis
  display the Path, one directory per line
  takes one input parameters, defaults to the env:Path
+.LINK
+Add-DirToPath
+.LINK
+Remove-DirFromPath
 #>
 function Show-Path { 
 	param (
-	[string] $PathToPrint = $ENV:Path,
-	[switch] $Debug,
-	[switch] $System,
-	[switch] $User,
-	[switch] $Objects
-	)
+		[string] $PathToPrint = $ENV:Path,
+		[switch] $Debug,
+		[switch] $System,
+		[switch] $User,
+        [switch] $Objects,
+
+        [Alias("h", "?")]
+        [switch] $help
+    )
+
+    if ( $help ) {
+        get-help $MyInvocation.MyCommand
+        return;
+    }
+
 	if ($System -eq $true) {
 		$PathToPrint = (Get-ItemProperty -Path "$($OMEGA_CONF.system_environment_key)" -Name PATH).Path
 	}
@@ -93,6 +106,10 @@ function Enter-UserConfirm {
 Select matching directories from $env:Path and remove them from _THIS SESSION ONLY_
 .Parameter dir
 Accepts partials %like
+.LINK
+Add-DirToPath
+.LINK
+Show-Path
 #>
 function Remove-DirFromPath($dir) {
 	$newPath = ""
@@ -113,6 +130,16 @@ function Remove-DirFromPath($dir) {
 	Write-Debug "RAW Path String --->`n$newPath"
 	$env:Path = $newPath
 }
+<#
+.Synopsis
+Add given directories into $env:Path ( _THIS SESSION ONLY_ )
+.Parameter dir
+Must be the full VALID path. Do not add the ';' as that is done for you.
+.LINK
+Add-DirToPath
+.LINK
+Remove-Path
+#>
 function Add-DirToPath($dir) {
 	# ensure the directory exists
 	if (Test-Path -Path $dir ) {
@@ -372,15 +399,14 @@ http://stackoverflow.com/questions/35624787/powershell-whats-the-best-way-to-dis
 function Debug-Variable { 
 	param(
 		[Parameter(Mandatory = $True)] $var,
-		[string] $name
+		[string] $name,
+		[string] $description
 	)
 	@(
-		if ([string]::IsNullOrEmpty($name) -ne $true) { "Debug-Variable: ===|$name|===" }
-		#"Variable: $(Get-Variable | Where-Object {$_.Value -eq $var } )",
-		#"Debug-Variable-Type:$(get-member -inputobject $var | Format-Table -AutoSize -Wrap | Out-String )",
-		"Debug-Variable-Type:$($var.getType())",
-		"Debug-Variable`n----START-VALUE-PRINT----`n$( $var | Format-Table -AutoSize -Wrap | Out-String )----END-VALUE-PRINT----" 
+		if ([string]::IsNullOrEmpty($name) -ne $true) { $name = "`nName: ``$name``" }
+        "<<<<<<<<<<<<<<<<<<<< START-VARIABLE-DEBUG >>>>>>>>>>>>>>>>>>>>$name`nType:$($var.getType())`n(VALUES FOLLOW)`n$( $var | Format-Table -AutoSize -Wrap | Out-String )" 
 	) | Write-Debug
+    Write-Debug "<<<<<<<<<<<<<<<<<<<< END-VARIABLE-DEBUG >>>>>>>>>>>>>>>>>>>>"
 }
 
 function mv {

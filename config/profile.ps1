@@ -191,6 +191,12 @@ Set-Alias -Name "which" -Value "${env:windir}\System32\where.exe"
 # new mv
 if (alias mv -ErrorAction SilentlyContinue) { Remove-Item alias:mv }
 
+# new curl
+if (alias wget -ErrorAction SilentlyContinue) { Remove-Item alias:wget }
+
+# new wget
+if (alias curl -ErrorAction SilentlyContinue) { Remove-Item alias:curl }
+
 # less
 Set-Alias -Name "less" -Value "${env:basedir}\system\git\usr\bin\less.exe"
 
