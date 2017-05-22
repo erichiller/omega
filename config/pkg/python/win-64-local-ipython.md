@@ -33,7 +33,7 @@ pip3 install pandas
 
 > I added `python\` and `python\Scripts\` to the **PATH**
 
-jupyter-notebook.exe --no-browser --port=8888 --NotebookApp.allow_origin=\"*\" .\preparedata.ipynb
+jupyter-notebook.exe --no-browser --port=8888 --NotebookApp.allow_origin=\"*\" --notebook-dir='~/Downloads/_jupyter-notebooks'
 
 
 
