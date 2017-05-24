@@ -11,7 +11,27 @@ When writing programs, modules, etc... you are supposed to use a set of [approve
 [Parameters](http://ss64.com/ps/syntax-functions.html)
 
 Defined at the beggining of the function, in a `Param()` block these are listed in the form of `[TYPE]$NAME`:   
-- [switch]$switchname` would define a boolean flag of the form `-switchname` for the function
+
+- `[switch]$switchname` would define a boolean flag of the form `-switchname` for the function
+
+
+**Example**   
+This example shows how to define whether a parameter is 
+- mandatory: `Mandatory=$True`
+- what its position must be: `Position=1`
+- a help message: `HelpMessage="Source/Origin - this is the file or folder/directory to copy"`
+- possible aliases: `[Alias("src","s")]`
+- the parameter type: `[String]`
+```powershell
+#function
+	param(
+	[Parameter(Mandatory=$True,Position=1,
+					HelpMessage="Source/Origin - this is the file or folder/directory to copy")]
+	[Alias("src","s")]
+	[String] $Source,
+#....
+```
+
 
 ### Dynamic Parameters
 

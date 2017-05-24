@@ -222,14 +222,31 @@ function om { Set-Location ${env:Basedir} }
  Search Knowledge Base files for text using Silver Surfer
 #>
 function kb {
-    # Set-RegisterCommandAvailable this is only called if kb is called, must be moved outside function
-	Write-Output "---kb---start---"
-    Write-Output $MyInvocation.MyCommand
-    Write-Output "---kb---end---"
-	# NOTE: THE PATH CAN _NOT_ HAVE A TRAILING SLASH
-	$path = (Join-Path ${env:Home} "\Google Drive\Documents\Knowledge Base")
-	if ($args){
-		& "${env:basedir}\bin\ag.exe" --all-text --stats --ignore-case $args $path 
+    param (
+        [Parameter(Mandatory = $false, Position=1)]
+		[string] $Term,
+
+        [Parameter(Mandatory = $false, HelpMessage = "The Path can not have a trailing slash.")]
+        [string] $Path = (Join-Path ${env:Home} "\Google Drive\Documents\Knowledge Base"),
+
+        [Parameter(Mandatory = $false, HelpMessage = "Opens a new vscode window into your kb folder.")]
+        [switch] $Create,
+
+        [Alias("h", "?")][switch] $help
+    )
+    if ( $help ) { Get-Help $MyInvocation.MyCommand; return; } # Call help on self and exit
+	# NOTE: THE PATH CAN _NOT_ HAVE A TRAILING SLASH , but we will make it safe just in case nobody listens
+	# replace the last character ONLY IF IT IS / or \
+    $path = $path -replace "[\\/]$"
+	if ($Create) {
+        # https://code.visualstudio.com/docs/editor/command-line
+		code $path
+	#### -$Edit HERE
+        # code file:line[:character]	
+
+    }
+    elseif ( $Term ) {
+        & "${env:basedir}\bin\ag.exe" --all-text --stats --ignore-case $Term $Path 
 	} else {
 		Write-Warning "Please enter search text"
 		
@@ -238,6 +255,6 @@ function kb {
         Write-Output "---kb---help---end---"
 	}
 }
-Set-RegisterCommandAvailable kb
+Set-RegisterCommandAvailable kb		# see Omega-CommandsAvailable for more information
 
 
