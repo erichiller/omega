@@ -28,6 +28,9 @@ let $PATH.=";".$VIM."\\..\\..\\bin"
 " the following is for preserving files and settings
 " see :help swap
 """""""""""""""""""""""""""""""""""""""""""""""""""""
+if !isdirectory($TEMP . "/vimfiles/swap")
+	execute mkdir($TEMP . "\\vimfiles\\swap")
+endif 
 set directory=$TEMP/vimfiles/swap
 " make windows function much as *nix
 if has('win32') || has('win64')
@@ -234,6 +237,9 @@ endif " has("autocmd")
 " map CTRL+SPACE in _normal_ and _insert_ modes to bring the spell popup up
 inoremap <C-SPACE> <C-X><C-S>
 noremap <C-SPACE> <C-X><C-S>
+
+inoremap <C-D> <ESC>dd
+noremap <C-D> dd
 
 " setup a new file with filetype specific values
 fun! NewFileSetup()
