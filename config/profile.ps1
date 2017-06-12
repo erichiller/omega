@@ -257,4 +257,5 @@ function kb {
 }
 Set-RegisterCommandAvailable kb		# see Omega-CommandsAvailable for more information
 
+Invoke-Expression ((gulp --completion=powershell) -join [System.Environment]::NewLine)
 
