@@ -232,6 +232,12 @@ function kb {
         [Parameter(Mandatory = $false, HelpMessage = "Opens a new vscode window into your kb folder.")]
         [switch] $Create,
 
+        [Parameter(Mandatory = $false, HelpMessage = "Open file, Read-only.")]
+        [Alias("o")][switch] $Open,
+
+		[Parameter(Mandatory = $false, HelpMessage = "Search in filenames only, not contents.")]
+        [Alias("f")][switch] $Filenames,
+
         [Alias("h", "?")][switch] $help
     )
     if ( $help ) { Get-Help $MyInvocation.MyCommand; return; } # Call help on self and exit
@@ -246,6 +252,9 @@ function kb {
 
     }
     elseif ( $Term ) {
+		# if ( $File ){
+        #     & "${env:basedir}\bin\ag.exe" -g --stats --ignore-case $Term $Path 
+		# }
         & "${env:basedir}\bin\ag.exe" --all-text --stats --ignore-case $Term $Path 
 	} else {
 		Write-Warning "Please enter search text"
@@ -257,4 +266,5 @@ function kb {
 }
 Set-RegisterCommandAvailable kb		# see Omega-CommandsAvailable for more information
 
+Invoke-Expression ((gulp --completion=powershell) -join [System.Environment]::NewLine)
 
