@@ -130,6 +130,7 @@ function Remove-DirFromPath($dir) {
 	Write-Debug "RAW Path String --->`n$newPath"
 	$env:Path = $newPath
 }
+
 <#
 .Synopsis
 Add given directories into $env:Path ( _THIS SESSION ONLY_ )
@@ -296,6 +297,7 @@ function Register-App {
 	# 	C:\Users\ehiller\AppData\Roaming\Microsoft\Windows\Start Menu\Programs
 	
 }
+
 <#
 .SYNOPSIS
 PROFILE SETTINGS AND PUPLIC KEYS PUSH SCRIPT
@@ -847,6 +849,11 @@ function Update-SystemPath {
 	# Check that the directory is not already on the configured path
 	if ( $OMEGA_CONF.path_additions -Contains $Directory) 
 		{ Debug-Variable $OMEGA_CONF.path_additions "path_additions"; Return "$Directory is already present in `$OMEGA_CONF.path_additions" }
+	
+	# MUST BE ADMIN to create in the default start menu location;
+	# check, if not warn and exit
+	if ( Test-Admin -warn -not ) { return }
+
 	# Add the directory to $OMEGA_CONF.path_additions
 	SafeObjectArray $OMEGA_CONF "path_additions"
 	$OMEGA_CONF.path_additions = ArrayAddUnique $OMEGA_CONF.path_additions $Directory
