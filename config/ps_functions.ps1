@@ -484,6 +484,54 @@ function mv {
  ######### package logic ##########
  ##################################>
 
+function SafeObjectArray {
+    param(
+        [Parameter(Mandatory = $True, Position = 1)]
+        [PSCustomObject] $object,
+
+        [Parameter(Mandatory = $True, Position = 2)]
+        [string] $pN
+    )
+
+    # debug
+    if ( $VerbosePreference ) {
+        echo "object---"
+        $object | Get-Member | Format-Table
+        echo "propertyName---"
+        $pN | Get-Member | Format-Table
+        echo "end---"
+    }
+	
+    if (!(Get-Member -InputObject $object -Name $pN -Membertype Properties)) {
+        Add-Member -InputObject $object -MemberType NoteProperty -Name $pN -Value $ArrayList
+
+        #debug
+        if ( $VerbosePreference ) { 
+            echo "$pN not present on $object"
+            $object | Get-Member | Format-Table
+        }
+        $object.$pN = @()
+    }
+}
+
+function ArrayAddUnique {
+    param(
+        [Parameter(Mandatory = $True, Position = 1)]
+        [AllowEmptyCollection()]
+        [Object[]] $AddTo,
+
+        [Parameter(Mandatory = $True, Position = 2)]
+        [String] $AdditionalItem
+    )
+
+    if ( $AddTo -notcontains $AdditionalItem) {
+        $AddTo += $AdditionalItem
+    }
+    return $AddTo
+
+	
+}
+
  function opkg-install { opkg -install $args }
 
 <#
@@ -525,55 +573,6 @@ function opkg {
 
 	$CallingDirectory = (Convert-Path . )
 
-
-	function ArrayAddUnique {
-		param(
-		[Parameter(Mandatory=$True,Position=1)]
-		[AllowEmptyCollection()]
-		[Object[]] $AddTo,
-
-		[Parameter(Mandatory=$True,Position=2)]
-		[String] $AdditionalItem
-		)
-
-		if( $AddTo -notcontains $AdditionalItem){
-			$AddTo += $AdditionalItem
-		}
-		return $AddTo
-
-		
-	}
-
-	function SafeObjectArray {
-		param(
-		[Parameter(Mandatory=$True,Position=1)]
-		[PSCustomObject] $object,
-
-		[Parameter(Mandatory=$True,Position=2)]
-		[string] $pN
-		)
-
-		# debug
-		if ( $VerbosePreference ){
-			echo "object---"
-			$object | Get-Member | Format-Table
-			echo "propertyName---"
-			$pN | Get-Member | Format-Table
-			echo "end---"
-		}
-		
-		if(!(Get-Member -InputObject $object -Name $pN -Membertype Properties)) {
-			Add-Member -InputObject $object -MemberType NoteProperty -Name $pN -Value $ArrayList
-
-			#debug
-			if ( $VerbosePreference ){ 
-				echo "$pN not present on $object"
-				$object | Get-Member | Format-Table
-			}
-			$object.$pN = @()
-		}
-	}
-	
 	<##################################
 	######### symlink logic ##########
 	##################################>
@@ -850,8 +849,8 @@ function Update-SystemPath {
 	if ( $OMEGA_CONF.path_additions -Contains $Directory) 
 		{ Debug-Variable $OMEGA_CONF.path_additions "path_additions"; Return "$Directory is already present in `$OMEGA_CONF.path_additions" }
 	
-	# MUST BE ADMIN to create in the default start menu location;
-	# check, if not warn and exit
+    # MUST BE ADMIN to create in the default start menu location;
+    # check, if not warn and exit
 	if ( Test-Admin -warn -not ) { return }
 
 	# Add the directory to $OMEGA_CONF.path_additions

@@ -45,15 +45,25 @@ Install-PackageFromURL($Package)
 # (and) python36._pth~
 # I could install pip packages fine.
 
-Remove-Item -Path ( Join-Path ( Join-Path (Join-Path $Env:Basedir $OMEGA_CONF.sysdir) $Package.name ) "python36._pth" )
-Remove-Item -Path ( Join-Path ( Join-Path (Join-Path $Env:Basedir $OMEGA_CONF.sysdir) $Package.name ) "python36._pth~" )
+Remove-Item -ErrorAction Ignore -WarningAction SilentlyContinue -Path ( Join-Path ( Join-Path (Join-Path $Env:Basedir $OMEGA_CONF.sysdir) $Package.name ) "python36._pth" )
+Remove-Item -ErrorAction Ignore -WarningAction SilentlyContinue -Path ( Join-Path ( Join-Path (Join-Path $Env:Basedir $OMEGA_CONF.sysdir) $Package.name ) "python36._pth~" ) -ErrorAction Cot
 
 # YOU __MAY__ HAVE TO EXTRACT THE python36.zip into /Lib/
 
-# step 3 -> run
-# https://bootstrap.pypa.io/get-pip.py
-# python get-pip.py
+########################################
+################ STEP 3 ################
+# ADD TO PATH - MUST BE ADMIN
+########################################
+Update-SystemPath ( Join-Path (Join-Path $Env:Basedir $OMEGA_CONF.sysdir) $Package.name )
+
+########################################
+######### step 4 -> Install pip ########
+########################################
 # https://pip.pypa.io/en/latest/installing/
+
+Start-BitsTransfer -Source "https://bootstrap.pypa.io/get-pip.py" -Destination $env:TEMP
+python $env:TEMP\get-pip.py
+
 
 
 
