@@ -261,7 +261,7 @@ function Register-App {
 	param(
 		# 
 		[string]$appName = "omega",
-		[string]$targetPath = "${env:basedir}omega.lnk"
+		[string]$targetPath = "${env:basedir}\omega.lnk"
 	)
 	
 	# add .exe suffix if not present asa the appPath requires it.

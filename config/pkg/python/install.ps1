@@ -25,17 +25,6 @@ Install-PackageFromURL($Package)
 
 # step 2 -> unpack
 
-# inject into python36._pth
-# insert line-1 (lib/site-packages)
-# uncomment last line (import site)
-
-					# lib/site-packages
-					# python36.zip
-					# .
-
-					# # Uncomment to run site.main() automatically
-					# import site
-
 # from: https://github.com/pypa/pip/issues/4207
 ######
 # after this lib2to3 was broken; because of this
@@ -49,6 +38,7 @@ Remove-Item -ErrorAction Ignore -WarningAction SilentlyContinue -Path ( Join-Pat
 Remove-Item -ErrorAction Ignore -WarningAction SilentlyContinue -Path ( Join-Path ( Join-Path (Join-Path $Env:Basedir $OMEGA_CONF.sysdir) $Package.name ) "python36._pth~" ) -ErrorAction Cot
 
 # YOU __MAY__ HAVE TO EXTRACT THE python36.zip into /Lib/
+# YOU MAY have to copy an older version of lib2to3 and libimport from an installed version into your site-packages
 
 ########################################
 ################ STEP 3 ################
