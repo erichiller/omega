@@ -229,10 +229,11 @@ Set-PSReadlineOption -TokenKind Parameter -ForegroundColor Yellow
 
 # see possible options under "Tab Complete" here: 
 # https://github.com/lzybkr/PSReadLine/blob/master/PSReadLine/en-US/about_PSReadline.help.txt
-Set-PSReadlineKeyHandler -Key Tab -Function Complete
 # Note: Ctrl + Space already performs MenuComplete
 # TabCompleteNext , Complete , MenuComplete
-Set-PSReadlineKeyHandler -Key UpArrow -Function HistorySearchBackward
+Set-PSReadlineKeyHandler -Key Tab       -Function Complete
+
+Set-PSReadlineKeyHandler -Key UpArrow   -Function HistorySearchBackward
 Set-PSReadlineKeyHandler -Key DownArrow -Function HistorySearchForward
 
 
@@ -352,9 +353,13 @@ Set-PSReadlineKeyHandler -Key ')',']','}' `
     }
 }
 
-# Sometimes you want to get a property of invoke a member on what you've entered so far
-# but you need parens to do that.  This binding will help by putting parens around the current selection,
-# or if nothing is selected, the whole line.
+# 
+<#
+.SYNOPSIS
+Sometimes you want to get a property of invoke a member on what you've entered so far
+but you need parens to do that.  This binding will help by putting parens around the current selection,
+or if nothing is selected, the whole line.
+#>
 Set-PSReadlineKeyHandler -Key 'Alt+(' `
                          -BriefDescription ParenthesizeSelection `
                          -LongDescription "Put parenthesis around the selection or entire line and move the cursor to after the closing parenthesis" `

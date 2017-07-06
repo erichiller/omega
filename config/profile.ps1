@@ -29,9 +29,9 @@ Update-Config
 # Set this to continue to display verbose messages where available
 # See $OMEGA_CONF.verbosity for these configurations
 #>
-$VerbosePreference					= $OMEGA_CONF.verbosity.verbose
-$InformationPreference			= $OMEGA_CONF.verbosity.information
-$DebugPreference						= $OMEGA_CONF.verbosity.debug
+$VerbosePreference     = $OMEGA_CONF.verbosity.verbose
+$InformationPreference = $OMEGA_CONF.verbosity.information
+$DebugPreference       = $OMEGA_CONF.verbosity.debug
 
 
 #################################################
@@ -189,7 +189,7 @@ Set-Alias -Name "whereis" -Value "${env:windir}\System32\where.exe"
 Set-Alias -Name "which" -Value "${env:windir}\System32\where.exe"
 
 # new mv
-if (alias mv -ErrorAction SilentlyContinue) { Remove-Item alias:mv }
+if (alias mv   -ErrorAction SilentlyContinue) { Remove-Item alias:mv   }
 
 # new curl
 if (alias wget -ErrorAction SilentlyContinue) { Remove-Item alias:wget }

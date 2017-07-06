@@ -1143,3 +1143,22 @@ function Get-PrettyPath {
 	}
 }
 
+
+<#
+.SYNOPSIS
+View Checksums (SHA1 by default) and diff of all files in directories A and B
+#>
+function Get-DirectoryDiff {
+	param (
+	[Parameter(Position=1,Mandatory=$True)]
+	[System.Management.Automation.PathInfo] $a,
+	
+	[Parameter(Position=2,Mandatory=$True)]	
+	[System.Management.Automation.PathInfo] $b
+	)
+	Get-FileHash $a | ForEach-Object {
+		$shortName = ($_.Path | Split-Path -Leaf)
+		($_.Path | Split-Path -Leaf).PadRight(30, " ") + $_.Hash.Substring($_.Hash.Length - 8) + " ".PadRight(10, " ") + (Get-FileHash $b\$($_.Path | Split-Path -Leaf)).Hash | Write-Host 
+		Compare-Object -ReferenceObject $(Get-Content .\$shortName) -DifferenceObject $(Get-Content $b\$shortName)
+	}
+}
