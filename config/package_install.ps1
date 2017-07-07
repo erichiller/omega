@@ -1,16 +1,39 @@
 function Install-PackageFromURL ($Package) {
 	$concat = $Package.installParams.searchPath[0]
+	$matchPath = New-Object System.Collections.ArrayList
+	$matchPath.add($Package.installParams.searchPath[0])
+	$d = 1
 	for ( $i = 1; $i -lt $Package.installParams.searchPath.Length; $i++) {
+		Write-Debug "i=$i of $($Package.installParams.searchPath.Length); d=$d"
 		Write-Debug "requesting $concat"
-		$filename = ((Invoke-WebRequest -UseBasicParsing -Uri $concat).Links | Where { $_.href -match $Package.installParams.searchPath[$i] }).href | Sort-Object | Select-Object -Last 1
+		$filename = ( ((Invoke-WebRequest -UseBasicParsing -Uri $concat).Links | Where-Object { $_.href -match $Package.installParams.searchPath[$i] }).href | Sort-Object | Select-Object -Last $d ) | Select-Object -Index 0
+	
 		$concat += $filename
-		Write-Debug "Found Filename: $filename"
-		Write-Debug "(concat): $concat"
+		$matchPath.Add($filename)
+		
+		Write-Debug "Append Filename: $filename"
+		Write-Debug "New Search Path(concat): $concat"
+
+		if ( -not $filename ) {
+			Debug-Variable $matchPath "matchPath"
+			Write-Warning "Filename not found, dropping i, raising d"
+			$i-=2;
+			Write-Host -BackgroundColor Red $matchPath.Count
+			$matchPath.RemoveRange($matchPath.Count - 2,1)
+			Debug-Variable $matchPath "matchPath"
+
+			$concat = $matchPath -join ""
+			Write-Host -BackgroundColor White "Concat reverted to: $concat"
+			$d++
+			continue;
+		} else {
+			$d=1
+		}
 	}
 	Write-Debug "Found Filename: $filename"
-	Write-Debug "(concat): $concat"
+	Write-Debug "Final Path(concat): $concat"
 
-	$version = ( $filename | Select-String -Pattern $Package.installParams.versionPattern | % {"$($_.matches.groups[1])"} )
+	$version = ( $filename | Select-String -Pattern $Package.installParams.versionPattern | ForEach-Object {"$($_.matches.groups[1])"} )
 	Write-Debug "Found Version: $version"
 
 	# deploy
@@ -36,6 +59,9 @@ function Install-DeployToOmegaSystem {
 
 	Write-Information "omega opkg install version $version of $($Package.installParams.searchPath)($filename)"
 	(new-object System.Net.WebClient).DownloadFile( $sourcefile, $outFile )
+	###
+	exit
+	###
 
 	# deploy is where the Package will be _INSTALLED_
 	$deploy = ( Join-Path (Join-Path $Env:Basedir $OMEGA_CONF.sysdir) $Package.name )
