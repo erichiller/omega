@@ -19,10 +19,6 @@ Install-PackageFromURL($Package)
 
 
 
-
-
-
-
 # step 2 -> unpack
 
 # from: https://github.com/pypa/pip/issues/4207
@@ -35,14 +31,15 @@ Install-PackageFromURL($Package)
 # I could install pip packages fine.
 
 Remove-Item -ErrorAction Ignore -WarningAction SilentlyContinue -Path ( Join-Path ( Join-Path (Join-Path $Env:Basedir $OMEGA_CONF.sysdir) $Package.name ) "python36._pth" )
-Remove-Item -ErrorAction Ignore -WarningAction SilentlyContinue -Path ( Join-Path ( Join-Path (Join-Path $Env:Basedir $OMEGA_CONF.sysdir) $Package.name ) "python36._pth~" ) -ErrorAction Cot
+Remove-Item -ErrorAction Ignore -WarningAction SilentlyContinue -Path ( Join-Path ( Join-Path (Join-Path $Env:Basedir $OMEGA_CONF.sysdir) $Package.name ) "python36._pth~" )
 
 # YOU __MAY__ HAVE TO EXTRACT THE python36.zip into /Lib/
 # YOU MAY have to copy an older version of lib2to3 and libimport from an installed version into your site-packages
 
 ########################################
 ################ STEP 3 ################
-# ADD TO PATH - MUST BE ADMIN
+########################################
+# ! ADD TO PATH - MUST BE ADMIN
 ########################################
 Update-SystemPath ( Join-Path (Join-Path $Env:Basedir $OMEGA_CONF.sysdir) $Package.name )
 
@@ -51,7 +48,7 @@ Update-SystemPath ( Join-Path (Join-Path $Env:Basedir $OMEGA_CONF.sysdir) $Packa
 ########################################
 # https://pip.pypa.io/en/latest/installing/
 
-Start-BitsTransfer -Source "https://bootstrap.pypa.io/get-pip.py" -Destination $env:TEMP
+(new-object System.Net.WebClient).DownloadFile( "https://bootstrap.pypa.io/get-pip.py", ( Join-Path $env:TEMP "get-pip.py" ) )
 python $env:TEMP\get-pip.py
 
 
