@@ -28,6 +28,9 @@ pip3 install matlibplot
 pip3 install pandas
 
 
+<!-- numpy was satisfied -->
+<!-- scipy - The binary wheel was required -->
+pip3 install scikit-learn
 
 
 

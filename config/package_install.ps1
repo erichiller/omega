@@ -1,38 +1,42 @@
 function Install-PackageFromURL ($Package) {
-	$concat = $Package.installParams.searchPath[0]
-	$matchPath = New-Object System.Collections.ArrayList
-	$matchPath.add($Package.installParams.searchPath[0])
-	$d = 1
+	[String] $concat = $Package.installParams.searchPath[0]
+	$matchPath = @($Package.installParams.searchPath[0])
+	$matchFilter = @{}
 	for ( $i = 1; $i -lt $Package.installParams.searchPath.Length; $i++) {
-		Write-Debug "i=$i of $($Package.installParams.searchPath.Length); d=$d"
+		Write-Debug "i=$i of $($Package.installParams.searchPath.Length)"
 		Write-Debug "requesting $concat"
-		$filename = ( ((Invoke-WebRequest -UseBasicParsing -Uri $concat).Links | Where-Object { $_.href -match $Package.installParams.searchPath[$i] }).href | Sort-Object | Select-Object -Last $d ) | Select-Object -Index 0
-	
-		$concat += $filename
-		$matchPath.Add($filename)
-		
-		Write-Debug "Append Filename: $filename"
-		Write-Debug "New Search Path(concat): $concat"
-
+		$filename = ( ((Invoke-WebRequest -UseBasicParsing -Uri $concat).Links | Where-Object { $_.href -match $Package.installParams.searchPath[$i] } | Where-Object { $_.href -notin $matchFilter[$i] }).href | Sort-Object )
 		if ( -not $filename ) {
 			Debug-Variable $matchPath "matchPath"
-			Write-Warning "Filename not found, dropping i, raising d"
+			Write-Warning "Filename not found, dropping i to recurse at the lower hierarchy"
 			$i-=2;
-			Write-Host -BackgroundColor Red $matchPath.Count
-			$matchPath.RemoveRange($matchPath.Count - 2,1)
+
+			$matchPath = $matchPath[0..($matchPath.length - 2)]
+
 			Debug-Variable $matchPath "matchPath"
 
 			$concat = $matchPath -join ""
 			Write-Host -BackgroundColor White "Concat reverted to: $concat"
-			$d++
-			continue;
 		} else {
-			$d=1
+			if ( $filename.getType().BaseType.toString() -eq "System.Array" ) {
+				Write-Host -BackgroundColor Yellow "Is Array"
+				$filename = $filename | Select-Object -Last 1
+			}
+			$concat += $filename
+			$matchPath += $filename
+			if( $matchFilter.Count -eq 0 ){
+				$matchFilter[$i] = @()
+			}
+			$matchFilter[$i] += $filename
+			Debug-Variable $matchFilter "matchFilter"
+
+			Write-Debug "Append Filename: $filename"
+			Write-Debug "New Search Path(concat): $concat"
 		}
 	}
 	Write-Debug "Found Filename: $filename"
 	Write-Debug "Final Path(concat): $concat"
-
+	
 	$version = ( $filename | Select-String -Pattern $Package.installParams.versionPattern | ForEach-Object {"$($_.matches.groups[1])"} )
 	Write-Debug "Found Version: $version"
 
@@ -57,12 +61,8 @@ function Install-DeployToOmegaSystem {
 	Write-Debug "Filename: $filename"
 	Write-Debug "Extension:'$([IO.Path]::GetExtension($filename))'"
 
-	Write-Information "omega opkg install version $version of $($Package.installParams.searchPath)($filename)"
+	Write-Information "omega opkg install version $version of $($Package.name) ($filename)"
 	(new-object System.Net.WebClient).DownloadFile( $sourcefile, $outFile )
-	###
-	exit
-	###
-
 	# deploy is where the Package will be _INSTALLED_
 	$deploy = ( Join-Path (Join-Path $Env:Basedir $OMEGA_CONF.sysdir) $Package.name )
 	Write-Debug "Deploy (installation directory): $deploy"
