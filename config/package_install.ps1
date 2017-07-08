@@ -16,7 +16,7 @@ function Install-PackageFromURL ($Package) {
 			Debug-Variable $matchPath "matchPath"
 
 			$concat = $matchPath -join ""
-			Write-Host -BackgroundColor White "Concat reverted to: $concat"
+			Debug-Title -BackgroundColor White "Concat reverted to: $concat"
 		} else {
 			if ( $filename.getType().BaseType.toString() -eq "System.Array" ) {
 				Write-Host -BackgroundColor Yellow "Is Array"
