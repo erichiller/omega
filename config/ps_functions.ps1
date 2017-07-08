@@ -411,6 +411,20 @@ function Debug-Variable {
     Write-Debug "<<<<<<<<<<<<<<<<<<<< END-VARIABLE-DEBUG >>>>>>>>>>>>>>>>>>>>"
 }
 
+function Debug-Title {
+	param(
+		[Parameter(Mandatory = $False)] [System.ConsoleColor] $ForegroundColor = $host.PrivateData.DebugBackgroundColor,
+		[Parameter(Mandatory = $False)] [System.ConsoleColor] $BackgroundColor = $host.PrivateData.DebugForegroundColor,
+		[Parameter(Mandatory = $True, Position=1)] $Print
+	)
+	if ( $DebugPreference -ne "SilentlyContinue" ){
+		if ($Print.getType() -eq [String] ) {
+			$Print = $Print.PadLeft($Print.length+20," ").PadRight($Print.length+40," ")
+		}
+		Write-Host $Print -ForegroundColor $ForegroundColor -BackgroundColor $BackgroundColor
+	}
+}
+
 function mv {
 	param(
 	[Parameter(Mandatory=$True,Position=1,
