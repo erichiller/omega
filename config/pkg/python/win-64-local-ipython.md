@@ -24,13 +24,15 @@ ext install jupyter
 see [pip package index here](https://pypi.python.org/pypi)
 
 pip3 install jupyter
-pip3 install matlibplot
+pip3 install matplotlib
 pip3 install pandas
 
 
-<!-- numpy was satisfied -->
+<!-- EVEN THOUGH NUMPY CAN BE INSTALLED WITH PIP3; I NEED
+numpy+mkl ; WHICH IS THE INTEL MATH-KERNEL LIBRARY -->
 <!-- scipy - The binary wheel was required -->
 pip3 install scikit-learn
+pip3 install tensorflow
 
 
 
