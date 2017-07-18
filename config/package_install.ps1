@@ -89,10 +89,10 @@ function Install-DeployToOmegaSystem {
 	# Is there 
 	Write-Debug ( "Are any files within the deploy (installation) path named the same as the parent? (possible the directory needs to be raised one level); True=Yes(boolean): " + ( $( ( Get-ChildItem $deploy | Where-Object { $_.Name -eq [IO.Path]::GetFileNameWithoutExtension($filename) } )) -eq "" ) )
 	
-	Write-Debug $(( ( Get-ChildItem $deploy).Count -eq 1 ) -and ( ( Get-ChildItem  $deploy | Where { $_.Name -eq [IO.Path]::GetFileNameWithoutExtension($filename)  } )))
+	Write-Debug $(( ( Get-ChildItem $deploy).Count -eq 1 ) -and ( ( Get-ChildItem  $deploy | Where-Object { $_.Name -eq [IO.Path]::GetFileNameWithoutExtension($filename)  } )))
 	if (( ( Get-ChildItem -Attributes directory $deploy).Count ) -eq ( ( Get-ChildItem  $deploy).Count ) -and 
 		# Check if there is a single child-item, and if that single child-item has the same name as the file we just downloaded
-		( ( Get-ChildItem $deploy).Count -eq 1 ) -and ( ( Get-ChildItem  $deploy | Where { $_.Name -eq [IO.Path]::GetFileNameWithoutExtension($filename) } )) ) {
+		( ( Get-ChildItem $deploy).Count -eq 1 ) -and ( ( Get-ChildItem  $deploy | Where-Object { $_.Name -eq [IO.Path]::GetFileNameWithoutExtension($filename) } )) ) {
 		$tempPath = ( Join-Path $env:TEMP $Package.name )
 		Write-Debug "temporarily moving the package from:'$deploy' to:'$tempPath'"
 		Move-Item $deploy -Destination $tempPath -Force

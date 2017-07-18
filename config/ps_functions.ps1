@@ -68,7 +68,7 @@ function Show-Path {
 	if ( $Objects ) {
 		$obj = @()
 		foreach ( $dirAsStr in $PathToPrint.Split(";") ) {
-			if (Test-Path $dirAsStr) {
+			if ( $dirAsStr -and ( Test-Path $dirAsStr) ) {
 				$obj += Get-Item -Path $dirAsStr
 			} else { Write-Warning "$dirAsStr DOES NOT EXIST! Not adding to new path." }
 		}
