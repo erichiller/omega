@@ -211,7 +211,7 @@ Set-Alias -Name psr -Value Enter-PSSession
 
 # Use the Silver Searcher to do 
 # Find File; -g finds files
-function ff { & "${env:basedir}\bin\ag.exe" -g $args }
+function ff { & "${env:basedir}\bin\ag.exe" -i -g $args }
 
 
 #################################################
