@@ -206,9 +206,12 @@ Set-Alias -Name grep -Value "${env:basedir}\system\git\usr\bin\grep.exe"
 # sed
 Set-Alias -Name sed -Value "${env:basedir}\system\git\usr\bin\sed.exe"
 
+# psr "PowerShell Remoting" -> Enter-PSSession 
+Set-Alias -Name psr -Value Enter-PSSession
+
 # Use the Silver Searcher to do 
 # Find File; -g finds files
-function ff { & "${env:basedir}\bin\ag.exe" -g $args }
+function ff { & "${env:basedir}\bin\ag.exe" -i -g $args }
 
 
 #################################################
@@ -266,5 +269,4 @@ function kb {
 }
 Set-RegisterCommandAvailable kb		# see Omega-CommandsAvailable for more information
 
-Invoke-Expression ((gulp --completion=powershell) -join [System.Environment]::NewLine)
 

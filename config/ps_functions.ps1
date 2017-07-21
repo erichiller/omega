@@ -68,7 +68,7 @@ function Show-Path {
 	if ( $Objects ) {
 		$obj = @()
 		foreach ( $dirAsStr in $PathToPrint.Split(";") ) {
-			if (Test-Path $dirAsStr) {
+			if ( $dirAsStr -and ( Test-Path $dirAsStr) ) {
 				$obj += Get-Item -Path $dirAsStr
 			} else { Write-Warning "$dirAsStr DOES NOT EXIST! Not adding to new path." }
 		}
@@ -409,6 +409,20 @@ function Debug-Variable {
         "<<<<<<<<<<<<<<<<<<<< START-VARIABLE-DEBUG >>>>>>>>>>>>>>>>>>>>$name`nType:$($var.getType())`n(VALUES FOLLOW)`n$( $var | Format-Table -AutoSize -Wrap | Out-String )" 
 	) | Write-Debug
     Write-Debug "<<<<<<<<<<<<<<<<<<<< END-VARIABLE-DEBUG >>>>>>>>>>>>>>>>>>>>"
+}
+
+function Debug-Title {
+	param(
+		[Parameter(Mandatory = $False)] [System.ConsoleColor] $ForegroundColor = $host.PrivateData.DebugBackgroundColor,
+		[Parameter(Mandatory = $False)] [System.ConsoleColor] $BackgroundColor = $host.PrivateData.DebugForegroundColor,
+		[Parameter(Mandatory = $True, Position=1)] $Print
+	)
+	if ( $DebugPreference -ne "SilentlyContinue" ){
+		if ($Print.getType() -eq [String] ) {
+			$Print = $Print.PadLeft($Print.length+20," ").PadRight($Print.length+40," ")
+		}
+		Write-Host $Print -ForegroundColor $ForegroundColor -BackgroundColor $BackgroundColor
+	}
 }
 
 function mv {

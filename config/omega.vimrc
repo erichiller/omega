@@ -20,7 +20,7 @@ set scrolloff=5                 " number of screen lines to keep above and below
 set ttyfast                     " force faster redraw
 
 " Path to Python 3.5 -- python35.dll is sought
-let $PYTHONPATH=$VIM."\\..\\system\\python35"
+let $PYTHONPATH=$VIM."\\..\\system\\python36"
 " Path needs to be edited so that ViM can reach lua
 let $PATH.=";".$VIM."\\..\\..\\bin"
 
