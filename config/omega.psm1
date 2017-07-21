@@ -42,7 +42,7 @@ function Write-Theme
     Pop-CursorPosition
 
     # Write the prompt
-    Write-Prompt -Object " $($sl.PromptSymbols.StartSymbol) " -ForegroundColor $sl.Colors.PromptForegroundColor -BackgroundColor $sl.Colors.SessionInfoBackgroundColor
+    Write-Prompt -Object "$($sl.PromptSymbols.StartSymbol)" -ForegroundColor $sl.Colors.PromptForegroundColor -BackgroundColor $sl.Colors.SessionInfoBackgroundColor
 
     #check the last command state and indicate if failed
     If ($lastCommandFailed)
@@ -160,9 +160,11 @@ $colors.ErrorBackgroundColor = $MASTER_BACKGROUND
 
 $sl = $global:ThemeSettings #local settings
 
-$sl.PromptSymbols.StartSymbol                       = [char]::ConvertFromUtf32(0x03a9)     # greek omega , b1 is alpha
+# $sl.PromptSymbols.StartSymbol                       = [char]::ConvertFromUtf32(0x03a9)     # greek omega , b1 is alpha
+$sl.PromptSymbols.StartSymbol                       = [char]::ConvertFromUtf32(0xf0e7)     # revolution fist
 
-$sl.PromptSymbols.ElevatedSymbol                    = [char]::ConvertFromUtf32(0x26A1)      # Octicons "zap"
+# $sl.PromptSymbols.ElevatedSymbol                    = [char]::ConvertFromUtf32(0x26A1)      # Octicons "zap"
+$sl.PromptSymbols.ElevatedSymbol                    = [char]::ConvertFromUtf32(0xf0ea)      # lightning fist
 $sl.PromptSymbols.FailedCommandSymbol               = [char]::ConvertFromUtf32(0xf081)      # Octicons "x"
 
 $sl.PromptSymbols.SegmentForwardSymbol              = [char]::ConvertFromUtf32(0xE0B0)
