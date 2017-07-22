@@ -219,7 +219,7 @@ function ff { & "${env:basedir}\bin\ag.exe" -i -g $args }
 #################################################
 # Ultimately this should be its own usr file
 function gh { Set-Location "${env:Home}\Dev\src\github.com\erichiller\$($args[0])" }
-function om { Set-Location ${env:Basedir} }
+function om { Set-Location ( Join-Path $env:Basedir $args[0] ) }
 <#
 .Synopsis
  Search Knowledge Base files for text using Silver Surfer
