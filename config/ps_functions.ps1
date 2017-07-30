@@ -1134,8 +1134,14 @@ function Get-PrettyPath {
 	param (
 	[System.Management.Automation.PathInfo] $dir
 	)
-	if ( -not $dir ){ $dir = Get-Location }
-	$provider = (Get-Item $dir).PSProvider.Name
+	#### IT IS GIVING ME A STRING!!!!!
+	if( -not $dir ){ $dir = Get-Location }
+	if( -not ( $dir | Get-Member -Name "Provider" ) ){
+		throw
+		return "?!?"
+		# somehow this does not have a Provider?
+	}
+	$provider = $dir.Provider.Name
 	if($provider -eq 'FileSystem'){
 		$result = @()
 		$currentDir = Get-Item $dir.path
