@@ -11,7 +11,7 @@
     safecrlf     = true
     autocrlf     = false
 
-    whitespace=fix,-indent-with-non-tab,trailing-space,cr-at-eol
+    #whitespace=fix,-indent-with-non-tab,trailing-space,cr-at-eol
 
 [color]
     ui = true
