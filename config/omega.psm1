@@ -135,8 +135,8 @@ $console.BackgroundColor = $MASTER_BACKGROUND
     #>
 
 $colors = $host.PrivateData
-$colors.DebugForegroundColor = [ConsoleColor]::Blue
-$colors.DebugBackgroundColor = $MASTER_BACKGROUND
+$colors.DebugForegroundColor	= [ConsoleColor]::Blue
+$colors.DebugBackgroundColor	= $MASTER_BACKGROUND
 $colors.ProgressForegroundColor = [ConsoleColor]::Yellow
 $colors.ProgressBackgroundColor = $MASTER_BACKGROUND
 
