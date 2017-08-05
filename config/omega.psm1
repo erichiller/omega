@@ -7,6 +7,7 @@ default theme for omega command suite
 *****
 Eric Hiller
 16 October 2016
+MXP update 2017 August 3
 *****
 
 #>
@@ -41,19 +42,25 @@ function Write-Theme
 
     Pop-CursorPosition
 
-    # Write the prompt
-    Write-Prompt -Object "$($sl.PromptSymbols.StartSymbol)" -ForegroundColor $sl.Colors.PromptForegroundColor -BackgroundColor $sl.Colors.SessionInfoBackgroundColor
+	# Write the prompt
+	# Check for elevated prompt
+	# same as Test-Admin function in ps_functions but this loaded first.
+	# once a module, UNIFY THIS
+    If (([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator'))
+    {
+		# if is admin, write the admin power symbol
+		# Write-Prompt -Object "$($sl.PromptSymbols.ElevatedSymbol) " -ForegroundColor $sl.Colors.AdminIconForegroundColor -BackgroundColor $sl.Colors.SessionInfoBackgroundColor
+		$sl.Colors.SessionInfoBackgroundColor = $sl.Colors.AdminSessionInfoBackgroundColor
+		Write-Prompt -Object "$($sl.PromptSymbols.ElevatedSymbol) " -ForegroundColor $sl.Colors.AdminIconForegroundColor -BackgroundColor $sl.Colors.SessionInfoBackgroundColor
+	} else {
+		# else normal prompt
+    	Write-Prompt -Object "$($sl.PromptSymbols.StartSymbol)" -ForegroundColor $sl.Colors.PromptForegroundColor -BackgroundColor $sl.Colors.SessionInfoBackgroundColor
+	}
 
     #check the last command state and indicate if failed
     If ($lastCommandFailed)
     {
         Write-Prompt -Object "$($sl.PromptSymbols.FailedCommandSymbol) " -ForegroundColor $sl.Colors.CommandFailedIconForegroundColor -BackgroundColor $sl.Colors.SessionInfoBackgroundColor
-    }
-
-    # Check for elevated prompt
-    If (([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator'))
-    {
-        Write-Prompt -Object "$($sl.PromptSymbols.ElevatedSymbol) " -ForegroundColor $sl.Colors.AdminIconForegroundColor -BackgroundColor $sl.Colors.SessionInfoBackgroundColor
     }
 
     #$user = [Environment]::UserName
@@ -183,7 +190,8 @@ $sl.Colors.SessionInfoBackgroundColor        = [ConsoleColor]::DarkGreen
     
 $sl.Colors.SessionInfoForegroundColor        = [ConsoleColor]::White
 $sl.Colors.CommandFailedIconForegroundColor  = [ConsoleColor]::DarkRed
-$sl.Colors.AdminIconForegroundColor          = [ConsoleColor]::DarkYellow
+$sl.Colors.AdminSessionInfoBackgroundColor   = [ConsoleColor]::Black
+$sl.Colors.AdminIconForegroundColor          = [ConsoleColor]::White
 
 $sl.Colors.DriveForegroundColor              = [ConsoleColor]::DarkBlue
 
