@@ -225,47 +225,54 @@ function om { Set-Location ( Join-Path $env:Basedir $args[0] ) }
  Search Knowledge Base files for text using Silver Surfer
 #>
 function kb {
-    param (
-        [Parameter(Mandatory = $false, Position=1)]
+	param (
+		[Parameter(Mandatory = $false, Position=1)]
 		[string] $Term,
 
-        [Parameter(Mandatory = $false, HelpMessage = "The Path can not have a trailing slash.")]
-        [string] $Path = (Join-Path ${env:Home} "\Google Drive\Documents\Knowledge Base"),
+		[Parameter(Mandatory = $false, HelpMessage = "The Path can not have a trailing slash.")]
+		[string] $Path = (Join-Path ${env:Home} "\Google Drive\Documents\Knowledge Base"),
 
-        [Parameter(Mandatory = $false, HelpMessage = "Opens a new vscode window into your kb folder.")]
-        [switch] $Create,
+		[Parameter(Mandatory = $false, HelpMessage = "Opens a new vscode window into your kb folder.")]
+		[switch] $Create,
 
-        [Parameter(Mandatory = $false, HelpMessage = "Open file, Read-only.")]
-        [Alias("o")][switch] $Open,
-
+		[Parameter(Mandatory = $false, HelpMessage = "Open file, Read-only.")]
+		[Alias("o")][switch] $Open,
+		
 		[Parameter(Mandatory = $false, HelpMessage = "Search in filenames only, not contents.")]
-        [Alias("f")][switch] $Filenames,
+		[Alias("f")][switch] $SearchFilenames,
 
-        [Alias("h", "?")][switch] $help
-    )
-    if ( $help ) { Get-Help $MyInvocation.MyCommand; return; } # Call help on self and exit
+		[Parameter(Mandatory = $false, HelpMessage = "Display filenames only, not contents.")]
+		[Alias("l")][switch] $DisplayFilenames,
+
+		[Alias("h", "?" )][switch] $help
+	)
 	# NOTE: THE PATH CAN _NOT_ HAVE A TRAILING SLASH , but we will make it safe just in case nobody listens
 	# replace the last character ONLY IF IT IS / or \
-    $path = $path -replace "[\\/]$"
+	$path = $path -replace "[\\/]$"
 	if ($Create) {
-        # https://code.visualstudio.com/docs/editor/command-line
+		# https://code.visualstudio.com/docs/editor/command-line
 		code $path
 	#### -$Edit HERE
-        # code file:line[:character]	
+		# code file:line[:character]	
 
-    }
-    elseif ( $Term ) {
-		# if ( $File ){
-        #     & "${env:basedir}\bin\ag.exe" -g --stats --ignore-case $Term $Path 
-		# }
-        & "${env:basedir}\bin\ag.exe" --all-text --stats --ignore-case $Term $Path 
+	} elseif ( $Term ) {
+		if( $Term -eq "--help" ){
+			$help = $True
+		} else {
+			# if ( $File ){
+			#     & "${env:basedir}\bin\ag.exe" -g --stats --ignore-case $Term $Path 
+			# }
+			& "${env:basedir}\bin\ag.exe" --all-text --stats --ignore-case --color-win-ansi  (&{If($DisplayFilenames) {"--count"}}) $Term $Path 
+		}
 	} else {
 		Write-Warning "Please enter search text"
 		
-        Write-Output "---kb---help---start---"
-        Get-Help $MyInvocation.MyCommand
-        Write-Output "---kb---help---end---"
+		Write-Output "---kb---help---start---"
+		Get-Help $MyInvocation.MyCommand
+		Write-Output "---kb---help---end---"
 	}
+	if ( $help ) { Get-Help $MyInvocation.MyCommand; return; } # Call help on self and exit
+	
 }
 Set-RegisterCommandAvailable kb		# see Omega-CommandsAvailable for more information
 
