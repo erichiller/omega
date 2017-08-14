@@ -103,11 +103,14 @@ try {
 
 try {
 	# https://github.com/samneirinck/posh-docker
-	if(Get-Module posh-docker){ Import-Module posh-docker }
+	# if(Get-Module posh-docker){ 
+	Import-Module posh-docker -ErrorAction Stop >$null
+	# }
 } catch {
 	Write-Warning "Posh-Docker module failed to load. Either not installed or there was an error. Docker autocomplete commands will not function."
 	Write-Warning "It can be installed in an admin console with:"
-	Write-Warning "Install-Module -Scope CurrentUser posh-docker -Force"
+	Write-Warning "Save-Module posh-docker -path $env:basedir\system\psmodules"
+	
 }
 
 # go is going to have to be a module too
@@ -150,7 +153,7 @@ try {
 
 	}
 } catch {
-	Write-Warning "GO not found. Either not installed or there was an error. Directory and console coloring will be limited."
+	Write-Warning "GO not found. Either not installed or there was an error. Go and related commands will be unavailable."
 }
 
 # Set config for ViM
@@ -194,7 +197,7 @@ if (alias mv   -ErrorAction SilentlyContinue) { Remove-Item alias:mv   }
 # new curl
 if (alias wget -ErrorAction SilentlyContinue) { Remove-Item alias:wget }
 
-# new wget
+# new curl
 if (alias curl -ErrorAction SilentlyContinue) { Remove-Item alias:curl }
 
 # less
@@ -205,6 +208,9 @@ Set-Alias -Name grep -Value "${env:basedir}\system\git\usr\bin\grep.exe"
 
 # sed
 Set-Alias -Name sed -Value "${env:basedir}\system\git\usr\bin\sed.exe"
+
+# hexdump
+if (-not (Get-Command hexdump.exe -ErrorAction ignore )) { Set-Alias -Name hexdump -Value "Format-Hex" }
 
 # psr "PowerShell Remoting" -> Enter-PSSession 
 Set-Alias -Name psr -Value Enter-PSSession

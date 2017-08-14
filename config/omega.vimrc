@@ -28,6 +28,9 @@ let $PATH.=";".$VIM."\\..\\..\\bin"
 " the following is for preserving files and settings
 " see :help swap
 """""""""""""""""""""""""""""""""""""""""""""""""""""
+if !isdirectory($TEMP . "/vimfiles")
+	execute mkdir($TEMP . "\\vimfiles")
+endif
 if !isdirectory($TEMP . "/vimfiles/swap")
 	execute mkdir($TEMP . "\\vimfiles\\swap")
 endif 
@@ -289,14 +292,10 @@ if !has("gui_running")
     " issue with scrolling
     " https://github.com/Maximus5/ConEmu/issues/1007
     set mouse=a
-    inoremap <Esc>[62~ <C-X><C-E>
-    inoremap <Esc>[63~ <C-X><C-Y>
-    nnoremap <Esc>[62~ <C-E>
-    nnoremap <Esc>[63~ <C-Y>
 
     " this fixes backspace when in xterm
-    inoremap <Char-0x07F> <BS>
-    nnoremap <Char-0x07F> <BS>
+    " inoremap <Char-0x07F> <BS>
+    " nnoremap <Char-0x07F> <BS>
     " may need map instead to fix backspace in the : command mode
 endif
 

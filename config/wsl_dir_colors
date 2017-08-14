@@ -1,0 +1,104 @@
+# Eric  Hiller
+# 2017 August 12
+# PSColor -> WSL dircolors
+
+COLOR tty
+
+TERM xterm
+TERM xterm-16color
+TERM xterm-256color
+TERM xterm-88color
+TERM xterm-color
+TERM xterm-debian
+TERM color-xterm
+
+# Reset to normal color
+RESET 0
+
+
+
+
+#### Default ####
+LINK 01;37
+BLK 01;37
+FIFO 01;37
+CHR 01;37
+DOOR 01;37
+NORMAL 01;37
+ORPHAN 01;37
+SOCK 01;37
+MISSING 01;37
+FILE 01;37
+# PSColor.File.Default has no associated filetypes
+
+
+#### Code ####
+# PSColor.File.Code has no equivalent mapping in dircolors
+*java 01;35
+*c 01;35
+*cpp 01;35
+*cs 01;35
+*js 01;35
+*css 01;35
+*html 01;35
+
+
+
+#### Compressed ####
+# PSColor.File.Compressed has no equivalent mapping in dircolors
+*zip 01;32
+*tar 01;32
+*gz 01;32
+*rar 01;32
+*jar 01;32
+*war 01;32
+
+
+
+#### Directory ####
+DIR 01;36
+OTHER_WRITABLE 01;36
+# PSColor.File.Directory has no associated filetypes
+
+
+#### Hidden ####
+# PSColor.File.Hidden has no equivalent mapping in dircolors
+# PSColor.File.Hidden has no associated filetypes
+
+
+#### Text ####
+# PSColor.File.Text has no equivalent mapping in dircolors
+*txt 01;33
+*cfg 01;33
+*conf 01;33
+*ini 01;33
+*csv 01;33
+*log 01;33
+*config 01;33
+*xml 01;33
+*yml 01;33
+*md 01;33
+*markdown 01;33
+
+
+
+#### Executable ####
+EXEC 01;31
+*exe 01;31
+*bat 01;31
+*cmd 01;31
+*py 01;31
+*pl 01;31
+*ps1 01;31
+*psm1 01;31
+*vbs 01;31
+*rb 01;31
+*reg 01;31
+
+
+
+#### System Defaults - Override these in PSColor ####
+*.py 32
+*.ps1 36
+*.python_history 40
+

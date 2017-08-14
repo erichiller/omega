@@ -42,20 +42,20 @@ function Write-Theme
 
     Pop-CursorPosition
 
-	# Write the prompt
-	# Check for elevated prompt
-	# same as Test-Admin function in ps_functions but this loaded first.
-	# once a module, UNIFY THIS
+    # Write the prompt
+    # Check for elevated prompt
+    # same as Test-Admin function in ps_functions but this loaded first.
+    # once a module, UNIFY THIS
     If (([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator'))
     {
-		# if is admin, write the admin power symbol
-		# Write-Prompt -Object "$($sl.PromptSymbols.ElevatedSymbol) " -ForegroundColor $sl.Colors.AdminIconForegroundColor -BackgroundColor $sl.Colors.SessionInfoBackgroundColor
-		$sl.Colors.SessionInfoBackgroundColor = $sl.Colors.AdminSessionInfoBackgroundColor
-		Write-Prompt -Object "$($sl.PromptSymbols.ElevatedSymbol) " -ForegroundColor $sl.Colors.AdminIconForegroundColor -BackgroundColor $sl.Colors.SessionInfoBackgroundColor
-	} else {
-		# else normal prompt
-    	Write-Prompt -Object "$($sl.PromptSymbols.StartSymbol)" -ForegroundColor $sl.Colors.PromptForegroundColor -BackgroundColor $sl.Colors.SessionInfoBackgroundColor
-	}
+        # if is admin, write the admin power symbol
+        # Write-Prompt -Object "$($sl.PromptSymbols.ElevatedSymbol) " -ForegroundColor $sl.Colors.AdminIconForegroundColor -BackgroundColor $sl.Colors.SessionInfoBackgroundColor
+        $sl.Colors.SessionInfoBackgroundColor = $sl.Colors.AdminSessionInfoBackgroundColor
+        Write-Prompt -Object "$($sl.PromptSymbols.ElevatedSymbol) " -ForegroundColor $sl.Colors.AdminIconForegroundColor -BackgroundColor $sl.Colors.SessionInfoBackgroundColor
+    } else {
+        # else normal prompt
+        Write-Prompt -Object "$($sl.PromptSymbols.StartSymbol)" -ForegroundColor $sl.Colors.PromptForegroundColor -BackgroundColor $sl.Colors.SessionInfoBackgroundColor
+    }
 
     #check the last command state and indicate if failed
     If ($lastCommandFailed)
@@ -92,8 +92,32 @@ function Write-Theme
     # Writes the postfix to the prompt
     Write-Prompt -Object $sl.PromptSymbols.SegmentForwardSymbol -BackgroundColor $host.UI.RawUI.BackgroundColor -ForegroundColor $lastColor
 
+
+
     # Set ConEmu Tab Title (if in ConEmu)
     $host.ui.RawUI.WindowTitle = $(Get-PrettyPath -dir $pwd)
+
+    # Simple check for ConEmu existance and ANSI emulation enabled
+    if ($env:ConEmuANSI -eq "ON") {
+        # Let ConEmu know when the prompt ends, to select typed
+        # command properly with "Shift+Home", to change cursor
+        # position in the prompt by simple mouse click, etc.
+        $ansi_out = "$([char]27)]9;12$([char]7)"
+        Write-Host $ansi_out -NoNewline
+
+        # And current working directory (FileSystem)
+        # ConEmu may show full path or just current folder name
+        # in the Tab label (check Tab templates)
+        # Also this knowledge is crucial to process hyperlinks clicks
+        # on files in the output from compilers and source control
+        # systems (git, hg, ...)
+        if ($loc.Provider.Name -eq "FileSystem") {
+            Write-Host "$([char]27)]9;9;`"$($loc.Path)`"$([char]7)" -NoNewline
+        }
+    }
+
+
+
     
     #Show-Glyphs
 }
