@@ -1,17 +1,30 @@
 # For information on configuring git, see
 # https://git-scm.com/docs/git-config
 
-# this is the global gitconfig overrides file
-# it is specified in basedir\bin\git.bat
+# This is the global gitconfig overrides file
+# and is specified in basedir\bin\git.bat
+# Which also specifies:
+# a global .gitignore -> omega.gitignore
+# the editor is set to windows vim.exe
+# NOTE: the local user ~\.gitconfig file WILL also be read
+
+########## NOTE FOR LOCAL USER ##########
+# At a minimum it is recommended to include in your ~\.gitconfig
+# [user]
+#     # Please adapt and uncomment the following lines:
+#     name = First Last
+#     email = me@domain.tld
+# [credential "https://github.com"]
+#     username = myusernamehere
 
 [core]
+    excludesFile = .gitignore_master
     symlinks     = true
     filemode     = false
     eol          = lf
     safecrlf     = true
     autocrlf     = false
-
-    #whitespace=fix,-indent-with-non-tab,trailing-space,cr-at-eol
+    whitespace   = fix,-indent-with-non-tab
 
 [color]
     ui = true

@@ -12,7 +12,7 @@ syntax on                       " turn syntax highlighting on by default
 set nocompatible                " basic starting point for usability
 set vb t_vb=                    " remove the flash and the beep
 set ruler                       " show the cursor position all the time
-set backspace=indent,eol,start  " make that backspace key work the way it should
+set backspace=indent,eol,start  " make the backspace key work the way it should
 set showmode                    " show the current mode
 set wrapmargin=1                " space around frame for wrapping
 set textwidth=0                 " wrap based on the window, not a static value
@@ -294,8 +294,8 @@ if !has("gui_running")
     set mouse=a
 
     " this fixes backspace when in xterm
-    " inoremap <Char-0x07F> <BS>
-    " nnoremap <Char-0x07F> <BS>
+    inoremap <Char-0x07F> <BS>
+    nnoremap <Char-0x07F> <BS>
     " may need map instead to fix backspace in the : command mode
 endif
 
