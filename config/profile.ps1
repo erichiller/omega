@@ -246,9 +246,15 @@ function kb {
 		
 		[Parameter(Mandatory = $false, HelpMessage = "Search in filenames only, not contents.")]
 		[Alias("f")][switch] $SearchFilenames,
-
+		
 		[Parameter(Mandatory = $false, HelpMessage = "Display filenames only, not contents.")]
 		[Alias("l")][switch] $DisplayFilenames,
+
+		[Parameter(Mandatory = $false, HelpMessage = "Ignore Filename/Path pattern. Can take *.ext or Filename.ext as item,comma,list")]
+		[Alias("i")][string[]] $IgnorePath = "*.ipynb",
+		
+		[Parameter(Mandatory = $false, HelpMessage = "Disable Filename/Path pattern.")]
+		[Alias("n")][switch] $NoIgnorePath,
 
 		[Alias("h", "?" )][switch] $help
 	)
@@ -259,7 +265,7 @@ function kb {
 		# https://code.visualstudio.com/docs/editor/command-line
 		code $path
 	#### -$Edit HERE
-		# code file:line[:character]	
+		# code file:line[:character]
 
 	} elseif ( $Term ) {
 		if( $Term -eq "--help" ){
@@ -268,7 +274,26 @@ function kb {
 			# if ( $File ){
 			#     & "${env:basedir}\bin\ag.exe" -g --stats --ignore-case $Term $Path 
 			# }
-			& "${env:basedir}\bin\ag.exe" --all-text --stats --ignore-case --color-win-ansi  (&{If($DisplayFilenames) {"--count"}}) $Term $Path 
+			$Modifiers = @(	"--stats",
+							"--smart-case",
+							"--color-win-ansi", 
+							"--pager", "more" )
+			If($DisplayFilenames) {
+				$Modifiers += "--count"
+			}
+			$IgnorePathSplat = @()			
+			if ( $NoIgnorePath -eq $False ) {
+				$IgnorePath | ForEach-Object { $IgnorePathSplat += "--ignore"; $IgnorePathSplat += "$_" }
+			}
+			$Params = $Term , $Path
+			If ($PSCmdlet.MyInvocation.BoundParameters["Debug"].IsPresent) { $exe = "EchoArgs.exe" } else { $exe = "ag.exe" }
+				# "--ignore","*.ipynb","--ignore","ConEmu.md"
+			# & "${env:basedir}\bin\ag.exe" --stats --smart-case @IgnorePathSplat --color-win-ansi --pager more (&{If($DisplayFilenames) {"--count"}}) $Term $Path 
+			# & "${env:basedir}\bin\ag.exe" @modifiers @IgnorePathSplat @Params
+			& "${env:basedir}\bin\$exe" @Modifiers @IgnorePathSplat @Params
+
+			
+
 		}
 	} else {
 		Write-Warning "Please enter search text"
