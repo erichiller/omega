@@ -209,6 +209,10 @@ Set-Alias -Name grep -Value "${env:basedir}\system\git\usr\bin\grep.exe"
 # sed
 Set-Alias -Name sed -Value "${env:basedir}\system\git\usr\bin\sed.exe"
 
+# File hashes for md5sum and sha256sum
+function md5sum { Get-FileHash -Algorithm "md5" -Path $args }
+function sha256sum { Get-FileHash -Algorithm "sha256" -Path $args }
+
 # hexdump
 if (-not (Get-Command hexdump.exe -ErrorAction ignore )) { Set-Alias -Name hexdump -Value "Format-Hex" }
 
@@ -260,14 +264,10 @@ function kb {
 		code $path
 	#### -$Edit HERE
 		# code file:line[:character]	
-
 	} elseif ( $Term ) {
 		if( $Term -eq "--help" ){
 			$help = $True
 		} else {
-			# if ( $File ){
-			#     & "${env:basedir}\bin\ag.exe" -g --stats --ignore-case $Term $Path 
-			# }
 			& "${env:basedir}\bin\ag.exe" --all-text --stats --ignore-case --color-win-ansi  (&{If($DisplayFilenames) {"--count"}}) $Term $Path 
 		}
 	} else {

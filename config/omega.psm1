@@ -186,8 +186,7 @@ $colors.ErrorBackgroundColor = $MASTER_BACKGROUND
 <# END #>
 
 # Clear-Host is required to apply these properties
-#Clear-Host
-
+# other useful Unicode symbols start at U+F000
 
 $sl = $global:ThemeSettings #local settings
 
