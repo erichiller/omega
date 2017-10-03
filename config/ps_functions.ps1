@@ -8,8 +8,8 @@ function Omega-Help {
 	### change this to user help system!!!
 	### md -> manpages /// xml help?
 
-	Get-Content ( Join-Path $OMEGA_CONF.help "omega.install.md" )
-	Get-Content ( Join-Path $OMEGA_CONF.help "ps.cmdline_tips.md" )
+	Get-Content ( Join-Path ( Join-Path $env:basedir $OMEGA_CONF.helpdir ) "omega.install.md" )
+	Get-Content ( Join-Path ( Join-Path $env:basedir $OMEGA_CONF.helpdir ) "ps.cmdline_tips.md" )
 }
 
 <#
