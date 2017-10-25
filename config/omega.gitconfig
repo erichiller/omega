@@ -25,6 +25,7 @@
     safecrlf     = true
     autocrlf     = false
     whitespace   = fix,-indent-with-non-tab
+	editor       = code -w
 
 [color]
     ui = true

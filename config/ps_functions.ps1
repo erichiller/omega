@@ -1182,3 +1182,33 @@ function Get-DirectoryDiff {
 		Compare-Object -ReferenceObject $(Get-Content .\$shortName) -DifferenceObject $(Get-Content $b\$shortName)
 	}
 }
+
+<#
+.SYNOPSIS
+Wrapper for GNU grep which allows for setting default parameters. Defaults here are --color=auto and --ignore-case
+It accepts pipeline input.
+#>
+function grep {
+	[CmdletBinding()]
+	Param(
+		[Parameter(
+			Mandatory=$False,
+			ValueFromPipeline=$True)]
+		$pipelineInput,
+		[Parameter(Mandatory=$True, Position=0)]
+			[string]$needle,
+		[parameter(mandatory=$false, position=1, ValueFromRemainingArguments=$true)]$Remaining
+	)
+	Begin {
+		Write-Verbose "in grep, searching ${pipelineInput} for ${needle}"
+	}
+	Process {
+		ForEach ($input in $pipelineInput) {
+			Write-Verbose -ForegroundColor Yellow "input item=>${input}"
+			$op = $env:PATH
+			$env:PATH = ";${env:basedir}\system\git\usr\bin\"
+			$input| Out-String | grep.exe --ignore-case --color=auto @Remaining $needle
+			$env:PATH = $op
+		}
+	}
+}

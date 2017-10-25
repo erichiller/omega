@@ -212,9 +212,6 @@ if (alias curl -ErrorAction SilentlyContinue) { Remove-Item alias:curl }
 # less
 Set-Alias -Name "less" -Value "${env:basedir}\system\git\usr\bin\less.exe"
 
-# grep
-Set-Alias -Name grep -Value "${env:basedir}\system\git\usr\bin\grep.exe"
-
 # sed
 Set-Alias -Name sed -Value "${env:basedir}\system\git\usr\bin\sed.exe"
 

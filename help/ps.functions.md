@@ -32,6 +32,14 @@ This example shows how to define whether a parameter is
 #....
 ```
 
+### Remainder Parameters
+
+Remainder parameters are incredibly useful and are akin to `*args` in Python.
+Simply declare in `Param()` like:
+```powershell
+[parameter(mandatory=$false, position=1, ValueFromRemainingArguments=$true)]$Remaining
+```
+
 
 ### Dynamic Parameters
 
