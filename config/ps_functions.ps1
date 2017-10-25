@@ -8,8 +8,8 @@ function Omega-Help {
 	### change this to user help system!!!
 	### md -> manpages /// xml help?
 
-	Get-Content ( Join-Path $OMEGA_CONF.help "omega.install.md" )
-	Get-Content ( Join-Path $OMEGA_CONF.help "ps.cmdline_tips.md" )
+	Get-Content ( Join-Path ( Join-Path $env:basedir $OMEGA_CONF.helpdir ) "omega.install.md" )
+	Get-Content ( Join-Path ( Join-Path $env:basedir $OMEGA_CONF.helpdir ) "ps.cmdline_tips.md" )
 }
 
 <#
@@ -1180,5 +1180,35 @@ function Get-DirectoryDiff {
 		$shortName = ($_.Path | Split-Path -Leaf)
 		($_.Path | Split-Path -Leaf).PadRight(30, " ") + $_.Hash.Substring($_.Hash.Length - 8) + " ".PadRight(10, " ") + (Get-FileHash $b\$($_.Path | Split-Path -Leaf)).Hash | Write-Host 
 		Compare-Object -ReferenceObject $(Get-Content .\$shortName) -DifferenceObject $(Get-Content $b\$shortName)
+	}
+}
+
+<#
+.SYNOPSIS
+Wrapper for GNU grep which allows for setting default parameters. Defaults here are --color=auto and --ignore-case
+It accepts pipeline input.
+#>
+function grep {
+	[CmdletBinding()]
+	Param(
+		[Parameter(
+			Mandatory=$False,
+			ValueFromPipeline=$True)]
+		$pipelineInput,
+		[Parameter(Mandatory=$True, Position=0)]
+			[string]$needle,
+		[parameter(mandatory=$false, position=1, ValueFromRemainingArguments=$true)]$Remaining
+	)
+	Begin {
+		Write-Verbose "in grep, searching ${pipelineInput} for ${needle}"
+	}
+	Process {
+		ForEach ($input in $pipelineInput) {
+			Write-Verbose -ForegroundColor Yellow "input item=>${input}"
+			$op = $env:PATH
+			$env:PATH = ";${env:basedir}\system\git\usr\bin\"
+			$input| Out-String | grep.exe --ignore-case --color=auto @Remaining $needle
+			$env:PATH = $op
+		}
 	}
 }

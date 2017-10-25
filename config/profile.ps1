@@ -6,7 +6,7 @@
 ############### October 18 2016 #################
 #################################################>
 
-
+# set-psdebug -trace 2
 # set THIS as the PROFILE for the user
 $PROFILE = $script:MyInvocation.MyCommand.Path;
 
@@ -17,6 +17,9 @@ if(!$PSScriptRoot) {
 
 # Set basedir for omega
 $env:BaseDir = Resolve-Path ( Join-Path ( Split-Path $Script:MyInvocation.MyCommand.Path ) ".." )
+
+# Set the terminal type for Powershell OpenSSH
+$env:TERM = "xterm"
 
 # load the functions first
 . $PSScriptRoot\ps_functions.ps1
@@ -57,6 +60,7 @@ $global:UserModuleBasePath = $local:ModulePath
 ######        STEP #2: IMPORT MODULES       #####
 #################################################
 
+# 8.3 sec
 try {
 	# test for git
 	Import-Module -Name "posh-git" -ErrorAction Stop >$null
@@ -73,6 +77,7 @@ try {
 	$gitStatus = $false
 }
 
+# 0.6 sec
 # load GitStatusCachePoshClient
 # see: https://github.com/cmarcusreid/git-status-cache-posh-client
 try {
@@ -81,6 +86,7 @@ try {
 	Write-Warning "The GitStatusCachePoshClient module could not be found & imported, large directories may take significantly longer without it."
 }
 
+# 4.2 sec
 try {
 	Import-Module oh-my-posh -ErrorAction Stop >$null
 	$global:ThemeSettings.MyThemesLocation = "$env:BaseDir\config\"
@@ -89,18 +95,21 @@ try {
 	Write-Warning "oh-my-posh module failed to load. Either not installed or there was an error. Modules styling will not be present."
 }
 
+# 2.5 sec
 try {
 	Import-Module PSSudo -ErrorAction Stop >$null
 } catch {
 	Write-Warning "PSSudo module failed to load. Either not installed or there was an error."
 }
 
+# 4.4 sec
 try {
 	Import-Module PSColor -ErrorAction Stop >$null
 } catch {
 	Write-Warning "PSColor module failed to load. Either not installed or there was an error. Directory and console coloring will be limited."
 }
 
+# 1.2 sec
 try {
 	# https://github.com/samneirinck/posh-docker
 	# if(Get-Module posh-docker){ 
@@ -203,11 +212,12 @@ if (alias curl -ErrorAction SilentlyContinue) { Remove-Item alias:curl }
 # less
 Set-Alias -Name "less" -Value "${env:basedir}\system\git\usr\bin\less.exe"
 
-# grep
-Set-Alias -Name grep -Value "${env:basedir}\system\git\usr\bin\grep.exe"
-
 # sed
 Set-Alias -Name sed -Value "${env:basedir}\system\git\usr\bin\sed.exe"
+
+# File hashes for md5sum and sha256sum
+function md5sum { Get-FileHash -Algorithm "md5" -Path $args }
+function sha256sum { Get-FileHash -Algorithm "sha256" -Path $args }
 
 # hexdump
 if (-not (Get-Command hexdump.exe -ErrorAction ignore )) { Set-Alias -Name hexdump -Value "Format-Hex" }
@@ -319,6 +329,10 @@ function kb {
 	if ( $help ) { Get-Help $MyInvocation.MyCommand; return; } # Call help on self and exit
 	
 }
+
+# Register Commands we want to announce to the Client
 Set-RegisterCommandAvailable kb		# see Omega-CommandsAvailable for more information
+Set-RegisterCommandAvailable Add-DirToPath		# see Omega-CommandsAvailable for more information
+
 
 

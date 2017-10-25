@@ -2,4 +2,4 @@
 
 # VimScript
 
-[quick guide](http://ricostacruz.com/cheatsheets/vimscript.html)
+[quick guide](https://devhints.io/vimscript)

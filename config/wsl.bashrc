@@ -5,7 +5,7 @@
 ConEmuDir=$(pwd)
 BaseDir=$(dirname $( dirname $ConEmuDir))
 alias om='cd $BaseDir'
-HOME=/mnt/c/Users/ehiller/
+HOME=/mnt/c/Users/$USER
 cd ~
 
 

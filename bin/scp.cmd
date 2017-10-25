@@ -12,6 +12,6 @@
 
 
 @rem Spoof terminal environment for git color.
-@set TERM=cygwin
+@set TERM=xterm
 
 @scp.exe %*

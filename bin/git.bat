@@ -28,10 +28,5 @@
 @REM see git documentation for more infromation
 @REM https://git-scm.com/docs/git
 
-@REM reverse the formatting of the editor's path, VIM
-@REM change from \ backslash to / forwardslash
-@REM as git will not accept WINDOWS-style PATHS
-@set "editor=%BaseDir%\system\vim\vim.exe"
-@set editor=%editor:\=/%
 
-@git.exe -c include.path="%BaseDir%\config\omega.gitconfig" -c core.editor="%editor%" -c core.excludesFile="%BaseDir%\config\omega.gitignore" %*
+@git.exe -c include.path="%BaseDir%\config\omega.gitconfig" -c core.excludesFile="%BaseDir%\config\omega.gitignore" %*

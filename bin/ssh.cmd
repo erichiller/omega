@@ -15,6 +15,6 @@
 @set config=%config:\=/%
 
 @rem Spoof terminal environment for git color.
-@set TERM=cygwin
+@set TERM=xterm
 
 @ssh.exe -F "%config%" %*
