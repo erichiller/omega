@@ -73,7 +73,7 @@ try {
 	# posh-git change name of tab // remove annoying
 	$GitPromptSettings.EnableWindowTitle = "git:"
 	# set git's pager to Windows' native `more` ; because git's `less` is unstable on Windows in ConEmu
-	$env:GIT_PAGER="'$(${env:basedir}.replace('\','\\'))\\bin\\less.exe' -c -d"
+	$env:GIT_PAGER="'less' -c -d"
 } catch {
 	Write-Warning "Missing git support, install posh-git with 'Install-Module posh-git' and restart terminal (ConEmu,Omega)."
 	$gitStatus = $false
