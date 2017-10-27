@@ -2,7 +2,7 @@
     "bindir": "\\bin",
     "sysdir": "\\system",
 	"confdir": "\\config",
-	"helpdir": "\\help",
+	"helpdir": "\\docs",
     "system_environment_key": "Registry::HKLM\\System\\CurrentControlSet\\Control\\Session Manager\\Environment",
     "user_environment_key": "Registry::HKEY_CURRENT_USER\\Environment",
     "app_paths_key": "Registry::HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths",
