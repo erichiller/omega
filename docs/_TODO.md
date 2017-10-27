@@ -10,6 +10,7 @@
 * `scp` functionality?
 	- hack - use ssh like ~ `tar -c dir/ | gzip | gpg -c | ssh user@remote 'dd of=dir.tar.gz.gpg'`
 * seperate developers branch with `.vscode` and full `system/` directory (and any **build** scripts if they exist)
+* structured environment variables; `mxpBase` , `GIT_CONFIG`, `SSH_AUTH_SOCK`
 
 
 # Intermediate

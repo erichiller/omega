@@ -1,5 +1,18 @@
 
 
+# must be admin
+
+# set mxpBase
+$env:mxpBase="${env:LOCALAPPDATA}\omega"
+setx mxpBase /m "${env:mxpBase}"
+
+# set SSH_AUTH_SOCK, primarily for Git
+$env:SSH_AUTH_SOCK="${env:TEMP}\KeeAgent.sock"
+setx SSH_AUTH_SOCK /m "${env:SSH_AUTH_SOCK}"
+
+# set GIT_CONFIG
+$env:GIT_CONFIG="${env:mxpBase}\config\omega.gitconfig"
+setx GIT_CONFIG /m "${env:GIT_CONFIG}"
 
 ## save modules to psmodules
 ## clone github dirs

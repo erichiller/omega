@@ -1,12 +1,13 @@
 # For information on configuring git, see
 # https://git-scm.com/docs/git-config
 
-# This is the global gitconfig overrides file
-# and is specified in basedir\bin\git.bat
+# This file is the effective global gitconfig
+# and is specified in GIT_CONFIG
 # Which also specifies:
 # a global .gitignore -> omega.gitignore
 # the editor is set to windows vim.exe
 # NOTE: the local user ~\.gitconfig file WILL also be read
+# to diagnose git config oddities use: git config --show-origin --list
 
 ########## NOTE FOR LOCAL USER ##########
 # At a minimum it is recommended to include in your ~\.gitconfig
@@ -25,7 +26,8 @@
     safecrlf     = true
     autocrlf     = false
     whitespace   = fix,-indent-with-non-tab
-	editor       = code -w
+    # editor is set in profile with GIT_EDITOR
+    # pager is set in profile with GIT_PAGER
 
 [color]
     ui = true

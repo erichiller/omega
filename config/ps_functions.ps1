@@ -153,6 +153,7 @@ function Add-DirToPath($dir) {
 
 function Show-Env { Write-Output (Get-ChildItem Env:) }
 
+
 function Update-Config {
 	$global:OMEGA_CONF = ( Get-Content (Join-Path $PSScriptRoot "\config.json" ) | ConvertFrom-Json )
 }
@@ -1204,7 +1205,7 @@ function grep {
 	}
 	Process {
 		ForEach ($input in $pipelineInput) {
-			Write-Verbose -ForegroundColor Yellow "input item=>${input}"
+			Write-Verbose "input item=>${input}"
 			$op = $env:PATH
 			$env:PATH = ";${env:basedir}\system\git\usr\bin\"
 			$input| Out-String | grep.exe --ignore-case --color=auto @Remaining $needle
@@ -1212,3 +1213,16 @@ function grep {
 		}
 	}
 }
+
+<#
+.SYNOPSIS
+Swap \ for / ; windows directories to linux style
+#>
+function Convert-DirectoryStringtoUnix {
+	param (
+	[Parameter(Position=1,Mandatory=$True)]
+	[String] $path
+	)
+	return $path.Replace("\", "/")
+}
+

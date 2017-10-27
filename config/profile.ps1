@@ -72,6 +72,8 @@ try {
 	# $env:ConEmuDir\system\psmodules\posh-git\GitPrompt.ps1
 	# posh-git change name of tab // remove annoying
 	$GitPromptSettings.EnableWindowTitle = "git:"
+	# set git's pager to Windows' native `more` ; because git's `less` is unstable on Windows in ConEmu
+	$env:GIT_PAGER="'$(${env:basedir}.replace('\','\\'))\\bin\\less.exe' -c -d"
 } catch {
 	Write-Warning "Missing git support, install posh-git with 'Install-Module posh-git' and restart terminal (ConEmu,Omega)."
 	$gitStatus = $false
@@ -167,6 +169,7 @@ try {
 
 # Set config for ViM
 if ( Test-Path $env:BaseDir/system/vim/vim.exe ) {
+	$env:GIT_EDITOR=Convert-DirectoryStringtoUnix "${env:BaseDir}/system/vim/vim.exe"
 	$env:VIMINIT='source $VIM/../../config/omega.vimrc'
 	Set-Alias -Name "vim" -Value "${env:BaseDir}\system\vim\vim.exe"
 }
@@ -317,8 +320,11 @@ function kb {
 }
 
 # Register Commands we want to announce to the Client
-Set-RegisterCommandAvailable kb		# see Omega-CommandsAvailable for more information
+Set-RegisterCommandAvailable kb					# see Omega-CommandsAvailable for more information
 Set-RegisterCommandAvailable Add-DirToPath		# see Omega-CommandsAvailable for more information
+Set-RegisterCommandAvailable Show-Env			# see Omega-CommandsAvailable for more information
+Set-RegisterCommandAvailable Get-DirectoryDiff
+Set-RegisterCommandAvailable Convert-DirectoryStringtoUnix
 
 
 
