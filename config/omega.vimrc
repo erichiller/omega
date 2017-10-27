@@ -17,6 +17,7 @@ set showmode                    " show the current mode
 set wrapmargin=1                " space around frame for wrapping
 set textwidth=0                 " wrap based on the window, not a static value
 set scrolloff=5                 " number of screen lines to keep above and below the cursor
+set backup                      " backups are nice ...
 set ttyfast                     " force faster redraw
 
 " Path to Python 3.5 -- python35.dll is sought
@@ -33,8 +34,12 @@ if !isdirectory($TEMP . "/vimfiles")
 endif
 if !isdirectory($TEMP . "/vimfiles/swap")
 	execute mkdir($TEMP . "\\vimfiles\\swap")
-endif 
+endif
+if !isdirectory($TEMP . "/vimfiles/backup")
+	execute mkdir($TEMP . "\\vimfiles\\backup")
+endif
 set directory=$TEMP/vimfiles/swap
+set backupdir=$TEMP/vimfiles/backup
 " make windows function much as *nix
 if has('win32') || has('win64')
     set runtimepath=$VIM/../vimfiles
@@ -422,7 +427,6 @@ let g:mundo_close_on_revert = 1
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 """ these settings are ViM standard Undo settings """
 """""""""""""""""""""""""""""""""""""""""""""""""""""
-set backup 						                    " backups are nice ...
 set undofile					                    " so it's persistent undo ...
 set undolevels=1000                                 " maximum number of changes that can be undone
 set undoreload=10000                                " maximum number lines to save for undo on a buffer reload
