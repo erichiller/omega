@@ -270,17 +270,17 @@ Set-PSReadlineKeyHandler -Key UpArrow   -Function HistorySearchBackward
 Set-PSReadlineKeyHandler -Key DownArrow -Function HistorySearchForward
 
 
-
-Set-PSReadlineOption -TokenKind comment   -BackgroundColor $MASTER_BACKGROUND
-Set-PSReadlineOption -TokenKind none      -BackgroundColor $MASTER_BACKGROUND
-Set-PSReadlineOption -TokenKind command   -BackgroundColor $MASTER_BACKGROUND
-Set-PSReadlineOption -TokenKind parameter -BackgroundColor $MASTER_BACKGROUND
-Set-PSReadlineOption -TokenKind variable  -BackgroundColor $MASTER_BACKGROUND
-Set-PSReadlineOption -TokenKind type      -BackgroundColor $MASTER_BACKGROUND
-Set-PSReadlineOption -TokenKind number    -BackgroundColor $MASTER_BACKGROUND
-Set-PSReadlineOption -TokenKind string    -BackgroundColor $MASTER_BACKGROUND
-Set-PSReadlineOption -TokenKind operator  -BackgroundColor $MASTER_BACKGROUND
-Set-PSReadlineOption -TokenKind member    -BackgroundColor $MASTER_BACKGROUND
+# PSReadline version 2.0 does not support -Backgroundcolor & since I was only setting it to default, commenting it out is fine.
+# Set-PSReadlineOption -TokenKind comment   -BackgroundColor $MASTER_BACKGROUND
+# Set-PSReadlineOption -TokenKind none      -BackgroundColor $MASTER_BACKGROUND
+# Set-PSReadlineOption -TokenKind command   -BackgroundColor $MASTER_BACKGROUND
+# Set-PSReadlineOption -TokenKind parameter -BackgroundColor $MASTER_BACKGROUND
+# Set-PSReadlineOption -TokenKind variable  -BackgroundColor $MASTER_BACKGROUND
+# Set-PSReadlineOption -TokenKind type      -BackgroundColor $MASTER_BACKGROUND
+# Set-PSReadlineOption -TokenKind number    -BackgroundColor $MASTER_BACKGROUND
+# Set-PSReadlineOption -TokenKind string    -BackgroundColor $MASTER_BACKGROUND
+# Set-PSReadlineOption -TokenKind operator  -BackgroundColor $MASTER_BACKGROUND
+# Set-PSReadlineOption -TokenKind member    -BackgroundColor $MASTER_BACKGROUND
 
 
 

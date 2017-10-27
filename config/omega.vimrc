@@ -286,6 +286,7 @@ if !has("gui_running")
     set t_Co=256
     let &t_AB="\e[48;5;%dm"
     let &t_AF="\e[38;5;%dm"
+    
     """"""""""""""""""""""""""""""""""""""
     "" mouse wheel scroll file contents ""
     """"""""""""""""""""""""""""""""""""""
@@ -299,8 +300,10 @@ if !has("gui_running")
     " may need map instead to fix backspace in the : command mode
 endif
 
-set mousefocus " The window that the mouse pointer is on is automatically activated.
-set mousehide " Hide mouse when typing
+" The window that the mouse pointer is on is automatically activated.
+set mousefocus
+" Hide mouse when typing
+set mousehide
 set showtabline=1
 
 
@@ -399,7 +402,7 @@ let g:NERDMenuMode = 0
 let g:NERDSpaceDelims = 1
 let g:NERDCreateDefaultMappings = 0
 " CTRL+/ now comments the current line
-map <C-/> <plug>NERDCommenterToggle
+map <C-/> <plug>NERDCommenterToggle<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 """"""""""""""""""""" vim-mundo """""""""""""""""""""

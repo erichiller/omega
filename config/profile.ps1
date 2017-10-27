@@ -239,6 +239,20 @@ function ff { & "${env:basedir}\bin\ag.exe" -i -g $args }
 # Ultimately this should be its own usr file
 function gh { Set-Location "${env:Home}\Dev\src\github.com\erichiller\$($args[0])" }
 function om { Set-Location ( Join-Path $env:Basedir $args[0] ) }
+
+<#
+.Synopsis
+Tail follows file updates and prints to screen as they occur
+#>
+function tail { 
+	param(
+		[Parameter(Mandatory = $true, Position=1)]
+		[Alias("f")]
+		[string] $file
+	)
+	Get-Content -Tail 10 -Wait -Path $file
+}
+Set-RegisterCommandAvailable tail
 <#
 .Synopsis
  Search Knowledge Base files for text using Silver Surfer

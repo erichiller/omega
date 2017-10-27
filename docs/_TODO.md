@@ -27,7 +27,6 @@
 	- [redirection syntax](http://ss64.com/ps/syntax-redirection.html)
 	- [about_redirection](https://technet.microsoft.com/en-us/library/hh847746.aspx)
 	- [Tee Object](https://technet.microsoft.com/en-us/library/hh849937.aspx)
-	- [tail like method in powershell](http://stackoverflow.com/questions/4426442/unix-tail-equivalent-command-in-windows-powershell)
 
 
 ```powershell

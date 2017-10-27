@@ -32,9 +32,7 @@ man() {
         LESS_TERMCAP_us=$(printf "\e[1;32m") \
             man "$@"
 }
-# for grep coloring
-export GREP_OPTIONS="--color=always"
-export LESS="-R"
+
 
 # for terminal line coloring
 # test UTF-8 hex codes with `echo ∴ | hexdump -C`
@@ -52,11 +50,21 @@ xterm*|rxvt*|cygwin)
     ;;
 esac
 
+# search history by start of the current line
+bind '"\eOA": history-search-backward'
+bind '"\e[A": history-search-backward'
+bind '"\eOB": history-search-forward'
+bind '"\e[B": history-search-forward'
+
 # ls dir coloring
 export LS_OPTIONS='--color=auto'
 eval "`dircolors -b $BaseDir/config/wsl_dir_colors`"
 alias ls='ls $LS_OPTIONS -lA'
 alias pathprint='echo $PATH | tr \: \\n'
+
+# for grep coloring
+alias grep='grep --color=always'
+alias less='less -R'
 
 # alias vim if we are on ConEmu
 if [ -f $ConEmuDir/config/.vimrc ] ; then
