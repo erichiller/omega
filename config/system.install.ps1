@@ -14,6 +14,12 @@ setx SSH_AUTH_SOCK /m "${env:SSH_AUTH_SOCK}"
 $env:GIT_CONFIG="${env:mxpBase}\config\omega.gitconfig"
 setx GIT_CONFIG /m "${env:GIT_CONFIG}"
 
+####
+# UPDATE PATHS FOR BINARIES AS NECESSARY:
+# >>>> git
+###
+
+
 ## save modules to psmodules
 ## clone github dirs
 

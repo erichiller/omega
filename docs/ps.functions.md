@@ -32,6 +32,27 @@ This example shows how to define whether a parameter is
 #....
 ```
 
+### Parameter _Attributes_
+
+All attributes are _Optional_
+
+Parameter Name                      | Date Type | Notes
+---                                 | ---       | ---
+Mandatory                           | Boolean   | If a required parameter is not provided when the cmdlet is invoked, Windows PowerShell prompts the user for a parameter value
+ParameterSetName                    | String    | Specifies the parameter set that this cmdlet parameter belongs to
+Position                            | Interger  | When you specify positional parameters, limit the number of positional parameters in a parameter set to **less than five**. 
+ _(Position continued)_               |           | And, positional parameters do not have to be contiguous. Positions **5, 100, and 250 work the same as positions 0, 1, and 2.**
+ValueFromPipeline                   | Boolean   | 
+ValueFromPipelineByPropertyName     | Boolean   | 
+ValueFromRemainingArguments         | Boolean   | 
+HelpMessage                         | String    | This must be a **constant**, thus use `'` single quotes
+HelpMessageBaseName                 |           |
+HelpMessageResourceId               |           | 
+
+
+[Official Documentation: Parameter Attribute Declaration](https://msdn.microsoft.com/en-us/library/ms714348(v=vs.85).aspx)
+
+
 ### Remainder Parameters
 
 Remainder parameters are incredibly useful and are akin to `*args` in Python.
@@ -86,6 +107,8 @@ if ( $DebugPreference -eq "Continue" ) {
     echo "Debug is turned on in the profiles"
 }
 ```
+
+For `-Debug` , `-Verbose` and other `CommonParamers` see the excellent article [Using Common Parameters](https://nancyhidywilson.wordpress.com/2011/11/21/powershell-using-common-parameters/).
 
 ## Stack
 

@@ -12,3 +12,4 @@ desktop.ini
 system/**/
 !system/fonts
 .vscode
+/omega.log
