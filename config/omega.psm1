@@ -289,7 +289,7 @@ Set-PSReadlineKeyHandler -Key DownArrow -Function HistorySearchForward
 
 #################################################################################
 # Eric D Hiller                                                                 #
-# 2017 March 25                                                                 #
+# 2017 October 29                                                                 #
 #################################################################################
 # Smart Insert, Bracing functions                                               #
 #################################################################################
@@ -299,6 +299,7 @@ Set-PSReadlineKeyHandler -Key DownArrow -Function HistorySearchForward
 # parens, and braces a nicer experience.  I'd like to include functions
 # in the module that do this, but this implementation still isn't as smart
 # as ReSharper, so I'm just providing it as a sample.
+# Updaded again in October 2017 to provide auto-off for pasting
 ################################################################################
 
 Set-PSReadlineKeyHandler -Key '"',"'" `
@@ -309,14 +310,26 @@ Set-PSReadlineKeyHandler -Key '"',"'" `
 
     $line = $null
     $cursor = $null
+    # GetBufferState is a PSReadline public function.
+    # See https://github.com/lzybkr/PSReadLine/blob/master/PSReadLine/en-US/about_PSReadline.help.txt
     [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
+    # line despite its name now contains ALL input LINES (if this is a multi-line input (ie. [SHIFT] + [ENTER])
 
     $quoteNumber = Select-String -InputObject $line -Pattern $key.KeyChar -AllMatches
-    
+
+    # check the clipboard, if all text up until now is the same as what is in the clipboard
+    # this is almost certainly a paste action, do not do any auto-action
+    if ( ((Get-Clipboard -Raw ) -replace "[\s]") -like ("$line*" -replace "[\s]") ){
+        # still need to insert the appropriate character
+        [Microsoft.PowerShell.PSConsoleReadline]::Insert($key.KeyChar)
+        If ( $DebugPreference -eq "Continue" ) { Write-Log "KeyHandler for >>$($key.KeyChar.ToString())<<: Text on line identical to that in clipboard`nText: $line" }
+        # done
+        return
+    }
     # if already on a quote character, don't do anything, just move over it.
     if ($line[$cursor] -eq $key.KeyChar) {
         [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($cursor + 1)
-    } 
+    }
     # insert a SINGLE quote if 
     #   1) there is an ODD number of quotes on the line currently
     #   2) There is a character to the immediate right of the cursor
@@ -353,17 +366,32 @@ Set-PSReadlineKeyHandler -Key '(','{','[' `
     [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
     #"LINE=$line;CURSOR=$cursor;CHAR=$line[$cursor];-1=" + $line[$cursor-1] + ";+1=" + $line[$cursor+1] >> diagnostic_log.txt
 
-    # insert the entered character itself
-    [Microsoft.PowerShell.PSConsoleReadLine]::Insert("$($key.KeyChar)")
-    # If there isn't another character to the immediate right, insert matching braces
-    if ($line[$cursor] -eq $key.KeyChar) {
-        [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($cursor + 1)
-    } 
-    elseif ([string]::IsNullOrWhiteSpace($line[$cursor + 1])) {
-        [Microsoft.PowerShell.PSConsoleReadLine]::Insert("$closeChar")
-        [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
-        [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($cursor - 1)
-    }      
+    # ((Get-Clipboard -Raw ) -replace "[\s]") | Write-Log "CLIPBOARD CONTENTS: " -DebugString
+    # ($line -replace "[\s]") | Write-Log "LINE CONTENTS: " -DebugString
+    
+    # check the clipboard, if all text up until now is the same as what is in the clipboard
+    # this is almost certainly a paste action, do not do any auto-action
+    # if ( $(Get-Clipboard -Format text).Substring(0, $line.Length).ToLower() -eq $line ) {
+    if ( ((Get-Clipboard -Raw ) -replace "[\s]") -like ("$line*" -replace "[\s]") ){
+            
+        If ( $DebugPreference -eq "Continue" ) { Write-Log "KeyHandler for >>$($key.KeyChar.ToString())<<: Text on line identical to that in clipboard`nText: `n----`n$line`n----`n" }
+        # insert must occur AFTER check
+        [Microsoft.PowerShell.PSConsoleReadLine]::Insert("$($key.KeyChar)")
+        # return
+    } else {
+        If ( $DebugPreference -eq "Continue" ) { Write-Log "---NO--- KeyHandler for >>$($key.KeyChar.ToString())<<: Text on line identical to that in clipboard`nText: `n----`n$line`n----`n" }
+        [Microsoft.PowerShell.PSConsoleReadLine]::Insert("$($key.KeyChar)")
+        
+        # If there isn't another character to the immediate right, insert matching braces    
+        if ($line[$cursor] -eq $key.KeyChar) {
+            [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($cursor + 1)
+        } 
+        elseif ([string]::IsNullOrWhiteSpace($line[$cursor + 1])) {
+            [Microsoft.PowerShell.PSConsoleReadLine]::Insert("$closeChar")
+            [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
+            [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($cursor - 1)
+        }
+    }
 }
 
 Set-PSReadlineKeyHandler -Key ')',']','}' `
@@ -376,12 +404,19 @@ Set-PSReadlineKeyHandler -Key ')',']','}' `
     $cursor = $null
     [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
 
-    if ($line[$cursor] -eq $key.KeyChar)
-    {
+    # check the clipboard, if all text up until now is the same as what is in the clipboard
+    # this is almost certainly a paste action, do not do any auto-action
+    if ( ((Get-Clipboard -Raw ) -replace "[\s]") -like ("$line*" -replace "[\s]") ){
+        [Microsoft.PowerShell.PSConsoleReadLine]::Insert("$($key.KeyChar)")
+        If ( $DebugPreference -eq "Continue" ) { Write-Log "KeyHandler for >>$($key.KeyChar.ToString())<<: Text on line identical to that in clipboard`nText: `n----`n$line`n----`n" }
+        return
+    }
+
+    # if already on a closing character, don't do anything, just move over it.
+    if ($line[$cursor] -eq $key.KeyChar) {
         [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($cursor + 1)
     }
-    else
-    {
+    else {
         [Microsoft.PowerShell.PSConsoleReadLine]::Insert("$($key.KeyChar)")
     }
 }
@@ -406,13 +441,17 @@ Set-PSReadlineKeyHandler -Key 'Alt+(' `
     $line = $null
     $cursor = $null
     [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
-    if ($selectionStart -ne -1)
-    {
+    
+    # check the clipboard, if all text up until now is the same as what is in the clipboard
+    # this is almost certainly a paste action, do not do any auto-action
+    if ( ((Get-Clipboard -Raw ) -replace "[\s]") -like ("$line*" -replace "[\s]") ){
+        If ( $DebugPreference -eq "Continue" ) { Write-Log "KeyHandler for >>$($key.KeyChar.ToString())<<: Text on line identical to that in clipboard`nText: $line" }
+    }
+    elseif ($selectionStart -ne -1){
         [Microsoft.PowerShell.PSConsoleReadLine]::Replace($selectionStart, $selectionLength, '(' + $line.SubString($selectionStart, $selectionLength) + ')')
         [Microsoft.PowerShell.PSConsoleReadLine]::SetCursorPosition($selectionStart + $selectionLength + 2)
     }
-    else
-    {
+    else {
         [Microsoft.PowerShell.PSConsoleReadLine]::Replace(0, $line.Length, '(' + $line + ')')
         [Microsoft.PowerShell.PSConsoleReadLine]::EndOfLine()
     }

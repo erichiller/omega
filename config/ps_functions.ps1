@@ -1248,6 +1248,74 @@ function ssh {
 	}
 	End {
 		$env:PATH = $op
+
+<#
+.SYNOPSIS
+Write log entries to omega logfile
+#>
+function Write-Log {
+	[CmdletBinding()]
+	Param(
+		[Parameter(
+			Mandatory=$False,
+			ValueFromPipeline=$True)]
+		$pipelineInput,
+		[Parameter(Mandatory=$False, Position=0)]
+			[string]$Message,
+		[Parameter(Mandatory=$False, HelpMessage='Activating Clear will erase the file BEFORE writing your new contents of this run, thus these new messages will start at the beginning of the log')]
+			[switch]$Clear,
+		[Parameter(Mandatory=$False, HelpMessage='Echo LogPath to the console')]
+			[switch]$ShowFilePath,
+		[Parameter(Mandatory=$False, HelpMessage='Show Chars and Values (only on Piped input)')]
+			[switch]$DebugString,
+		[Parameter(Mandatory=$False)]
+		[Alias('h', '?')]
+			[switch] $help
+	)
+	Begin {
+		if ($OMEGA_CONF -ne $null) {
+			$logpath = ( Join-Path $env:basedir $OMEGA_CONF.logpath )
+		} else {
+			$logpath = "C:\Users\ehiller\AppData\Local\omega\omega.log"
+		}
+		if ( $help ){
+			get-help $MyInvocation.MyCommand
+			return;
+		}
+		if ( $ShowFilePath -eq $True ) {
+			Write-Information $logpath
+			return
+		}
+		$Level = ""
+		if ($PSCmdlet.MyInvocation.BoundParameters["Debug"].IsPresent) 
+		{
+			 $Level = "[DEBUG] "
+		}
+		if ( $message -ne '' ) {
+			Write-Output "$(Get-Date -UFormat '%b-%d %R:%S') $Level>> $Message" | Add-Content -Path $logpath
+		}
+	}
+	Process {
+		if ( $Clear -eq $True ) {
+			Clear-Content -Path $logpath
+		}
+		ForEach ($pipelineMessage in $pipelineInput) {
+			Write-Verbose "processing pipeline message=>${pipelineMessage}"
+			if ( $DebugString -eq $True ) {
+				$char = $pipelineMessage.toCharArray()
+				$pipelineMessage = ""
+				$count = 0
+				$char | foreach-object {
+					if ($count % 10 -eq 0) {
+						$pipelineMessage += "`n"
+					}
+					$count++
+					$int = [int[]]$_
+					$pipelineMessage += " $_ : $int ".PadRight(10, " ")
+				}
+			}
+			Write-Output "$(Get-Date -UFormat "%b-%d %R:%S") $Level>> $pipelineMessage" | Add-Content -Path $logpath
+		}
 	}
 }
 
