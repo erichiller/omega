@@ -1196,21 +1196,26 @@ function grep {
 			Mandatory=$False,
 			ValueFromPipeline=$True)]
 		$pipelineInput,
-		[Parameter(Mandatory=$True, Position=0)]
-			[string]$needle,
+		[Parameter(Position=0)]
+			[string]$needle="--help",
 		[parameter(mandatory=$false, position=1, ValueFromRemainingArguments=$true)]$Remaining
 	)
 	Begin {
+		$op = $env:PATH
+		$env:PATH = ";${env:basedir}\system\git\usr\bin\"
 		Write-Verbose "in grep, searching ${pipelineInput} for ${needle}"
 	}
 	Process {
+		if ( $pipelineInput -eq $Null ){
+			grep.exe --ignore-case --color=auto @Remaining $needle
+		}
 		ForEach ($input in $pipelineInput) {
 			Write-Verbose "input item=>${input}"
-			$op = $env:PATH
-			$env:PATH = ";${env:basedir}\system\git\usr\bin\"
 			$input| Out-String | grep.exe --ignore-case --color=auto @Remaining $needle
-			$env:PATH = $op
 		}
+	}
+	End {
+		$env:PATH = $op
 	}
 }
 
@@ -1224,5 +1229,25 @@ function Convert-DirectoryStringtoUnix {
 	[String] $path
 	)
 	return $path.Replace("\", "/")
+}
+
+<#
+.SYNOPSIS
+Proxy function for ssh.exe
+#>
+function ssh {
+	[CmdletBinding()]
+	Param([parameter(mandatory=$false, position=1, ValueFromRemainingArguments=$true)]$Remaining)
+	Begin {
+		$op = $env:PATH
+		$env:PATH	= ";${env:basedir}\system\git\usr\bin\"
+		$env:TERM	=	"xterm"
+	}
+	Process {
+		ssh.exe -F $env:BaseDir\config\omega.ssh.conf @Remaining
+	}
+	End {
+		$env:PATH = $op
+	}
 }
 
