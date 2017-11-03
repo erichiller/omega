@@ -1248,6 +1248,8 @@ function ssh {
 	}
 	End {
 		$env:PATH = $op
+	}
+}
 
 <#
 .SYNOPSIS
