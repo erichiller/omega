@@ -1200,11 +1200,11 @@ function grep {
 			[string]$needle="--help",
 		[parameter(mandatory=$false, position=1, ValueFromRemainingArguments=$true)]$Remaining
 	)
-	Begin {
-		$op = $env:PATH
-		$env:PATH = ";${env:basedir}\system\git\usr\bin\"
-		Write-Verbose "in grep, searching ${pipelineInput} for ${needle}"
-	}
+	# Begin {
+	# 	$op = $env:PATH
+	# 	$env:PATH = ";${env:basedir}\system\git\usr\bin\"
+	# 	Write-Verbose "in grep, searching ${pipelineInput} for ${needle}"
+	# }
 	Process {
 		if ( $pipelineInput -eq $Null ){
 			grep.exe --ignore-case --color=auto @Remaining $needle
@@ -1214,9 +1214,9 @@ function grep {
 			$input| Out-String | grep.exe --ignore-case --color=auto @Remaining $needle
 		}
 	}
-	End {
-		$env:PATH = $op
-	}
+	# End {
+	# 	$env:PATH = $op
+	# }
 }
 
 <#
@@ -1231,6 +1231,31 @@ function Convert-DirectoryStringtoUnix {
 	return $path.Replace("\", "/")
 }
 
+
+<#
+.SYNOPSIS
+Retrieve Directory Sizes as per their contained items
+.DESCRIPTION
+Similar to linux's `du` utility
+.LINK
+https://technet.microsoft.com/en-us/library/ff730945.aspx
+.LINK
+https://technet.microsoft.com/en-us/library/ee692795.aspx
+#>
+function Get-DirectorySize {
+	Get-ChildItem |
+	Where-Object { $_.PSIsContainer } |
+	ForEach-Object {
+		$_.Name + ": " + (
+			Get-ChildItem $_ -Recurse |
+			Measure-Object Length -Sum -ErrorAction SilentlyContinue
+		).Sum
+	}
+	Get-ChildItem | Where-Object { $_.PSIsContainer } | ForEach-Object { $_.Name + ": " + "{0:N2}" -f ((Get-ChildItem $_ -Recurse | Measure-Object Length -Sum -ErrorAction SilentlyContinue).Sum / 1MB) + " MB" }
+	
+}
+
+
 <#
 .SYNOPSIS
 Proxy function for ssh.exe
@@ -1239,15 +1264,17 @@ function ssh {
 	[CmdletBinding()]
 	Param([parameter(mandatory=$false, position=1, ValueFromRemainingArguments=$true)]$Remaining)
 	Begin {
-		$op = $env:PATH
-		$env:PATH	= ";${env:basedir}\system\git\usr\bin\"
+		# $op = $env:PATH
+		# $env:PATH	= ";"
 		$env:TERM	=	"xterm"
 	}
 	Process {
-		ssh.exe -F $env:BaseDir\config\omega.ssh.conf @Remaining
+		Invoke-Expression "${env:basedir}\system\git\usr\bin\ssh.exe" -F $env:BaseDir\config\omega.ssh.conf @Remaining
 	}
 	End {
-		$env:PATH = $op
+		# $env:PATH = $op
+	}
+}
 
 <#
 .SYNOPSIS
