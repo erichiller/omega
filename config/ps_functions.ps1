@@ -1272,7 +1272,7 @@ function ssh {
 		Invoke-Expression "${env:basedir}\system\git\usr\bin\ssh.exe" -F $env:BaseDir\config\omega.ssh.conf @Remaining
 	}
 	End {
-		# $env:PATH = $op
+		$env:PATH = $op
 	}
 }
 
