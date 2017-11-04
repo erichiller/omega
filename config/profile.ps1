@@ -18,9 +18,6 @@ if(!$PSScriptRoot) {
 # Set basedir for omega
 $env:BaseDir = Resolve-Path ( Join-Path ( Split-Path $Script:MyInvocation.MyCommand.Path ) ".." )
 
-# Set the terminal type for Powershell OpenSSH
-$env:TERM = "xterm"
-
 # load the functions first
 . $PSScriptRoot\ps_functions.ps1
 
@@ -313,6 +310,9 @@ function kb {
 				$IgnorePath | ForEach-Object { $IgnorePathSplat += "--ignore"; $IgnorePathSplat += "$_" }
 			}
 			$Params = $Term , $Path
+			if ( $SearchFilenames -eq $True ){
+				$Params = "--filename-pattern" , $Params
+			}
 			If ($PSCmdlet.MyInvocation.BoundParameters["Debug"].IsPresent) { $exe = "EchoArgs.exe" } else { $exe = "ag.exe" }
 				# "--ignore","*.ipynb","--ignore","ConEmu.md"
 			# & "${env:basedir}\bin\ag.exe" --stats --smart-case @IgnorePathSplat --color-win-ansi --pager more (&{If($DisplayFilenames) {"--count"}}) $Term $Path 

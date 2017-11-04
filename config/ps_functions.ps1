@@ -1200,11 +1200,11 @@ function grep {
 			[string]$needle="--help",
 		[parameter(mandatory=$false, position=1, ValueFromRemainingArguments=$true)]$Remaining
 	)
-	# Begin {
-	# 	$op = $env:PATH
-	# 	$env:PATH = ";${env:basedir}\system\git\usr\bin\"
-	# 	Write-Verbose "in grep, searching ${pipelineInput} for ${needle}"
-	# }
+	Begin {
+		$op = $env:PATH
+		$env:PATH += ";${env:basedir}\system\git\usr\bin\"
+		Write-Verbose "in grep, searching ${pipelineInput} for ${needle}"
+	}
 	Process {
 		if ( $pipelineInput -eq $Null ){
 			grep.exe --ignore-case --color=auto @Remaining $needle
@@ -1214,10 +1214,88 @@ function grep {
 			$input| Out-String | grep.exe --ignore-case --color=auto @Remaining $needle
 		}
 	}
-	# End {
-	# 	$env:PATH = $op
-	# }
+	End {
+		$env:PATH = $op
+	}
 }
+
+
+<#
+.SYNOPSIS
+Proxy function for ssh.exe
+#>
+function ssh {
+	[CmdletBinding()]
+	Param(
+		[Parameter(
+			Mandatory=$False,
+			ValueFromPipeline=$True)]
+		$pipelineInput,
+		[parameter(mandatory=$false, position=1, ValueFromRemainingArguments=$true)]$Remaining
+	)
+	Begin {
+		$op = $env:PATH
+		$env:PATH	+= ";${env:basedir}\system\git\usr\bin\"
+		# $env:TERM	=	"xterm"
+	}
+	Process {
+		if ( $pipelineInput -eq $Null ){
+			ssh.exe -F $env:BaseDir\config\omega.ssh.conf @Remaining
+		}
+		ForEach ($input in $pipelineInput) {
+			$input| Out-String | ssh.exe -F $env:BaseDir\config\omega.ssh.conf @Remaining
+		}
+	}
+	End {
+		$env:PATH = $op
+	}
+}
+
+
+<#
+.SYNOPSIS
+Proxy function for (git's) scp.exe
+.DESCRIPTION
+scp [-1246BCpqrv] [-c cipher] [-F ssh_config] [-i identity_file] [-l limit] [-o ssh_option] [-P port] [-S program] [user@]host1:]file1 [user@]host2:]file2
+Description
+.PARAMETER source
+File(s) which to send
+.Parameter destination
+File location in which the file(s) should be put
+#>
+function scp {
+	[CmdletBinding()]
+	Param(
+		[Parameter(
+			Mandatory=$False,
+			ValueFromPipeline=$True)]
+		$pipelineInput,
+		[Parameter(Position=0, Mandatory=$True)]
+			[string] $source,
+		[Parameter(Position=1, Mandatory=$True)]
+			[string] $destination,
+		[parameter(mandatory=$false, position=2, ValueFromRemainingArguments=$true)]$Remaining
+	)
+	Begin {
+		$op = $env:PATH
+		$env:PATH	+= ";${env:basedir}\system\git\usr\bin\"
+		# $env:TERM	=	"xterm"
+	}
+	Process {
+		if ( $pipelineInput -eq $Null ){
+			scp.exe -F $env:BaseDir\config\omega.ssh.conf @Remaining ( Convert-DirectoryStringtoUnix $source ) ( Convert-DirectoryStringtoUnix $destination )
+		}
+		ForEach ($input in $pipelineInput) {
+			$input| Out-String | scp.exe -F $env:BaseDir\config\omega.ssh.conf @Remaining ( Convert-DirectoryStringtoUnix $source ) ( Convert-DirectoryStringtoUnix $destination )
+		}
+	}
+	End {
+		$env:PATH = $op
+	}
+}
+
+
+
 
 <#
 .SYNOPSIS
@@ -1229,51 +1307,6 @@ function Convert-DirectoryStringtoUnix {
 	[String] $path
 	)
 	return $path.Replace("\", "/")
-}
-
-
-<#
-.SYNOPSIS
-Retrieve Directory Sizes as per their contained items
-.DESCRIPTION
-Similar to linux's `du` utility
-.LINK
-https://technet.microsoft.com/en-us/library/ff730945.aspx
-.LINK
-https://technet.microsoft.com/en-us/library/ee692795.aspx
-#>
-function Get-DirectorySize {
-	Get-ChildItem |
-	Where-Object { $_.PSIsContainer } |
-	ForEach-Object {
-		$_.Name + ": " + (
-			Get-ChildItem $_ -Recurse |
-			Measure-Object Length -Sum -ErrorAction SilentlyContinue
-		).Sum
-	}
-	Get-ChildItem | Where-Object { $_.PSIsContainer } | ForEach-Object { $_.Name + ": " + "{0:N2}" -f ((Get-ChildItem $_ -Recurse | Measure-Object Length -Sum -ErrorAction SilentlyContinue).Sum / 1MB) + " MB" }
-	
-}
-
-
-<#
-.SYNOPSIS
-Proxy function for ssh.exe
-#>
-function ssh {
-	[CmdletBinding()]
-	Param([parameter(mandatory=$false, position=1, ValueFromRemainingArguments=$true)]$Remaining)
-	Begin {
-		# $op = $env:PATH
-		# $env:PATH	= ";"
-		$env:TERM	=	"xterm"
-	}
-	Process {
-		Invoke-Expression "${env:basedir}\system\git\usr\bin\ssh.exe" -F $env:BaseDir\config\omega.ssh.conf @Remaining
-	}
-	End {
-		$env:PATH = $op
-	}
 }
 
 <#
@@ -1344,5 +1377,28 @@ function Write-Log {
 			Write-Output "$(Get-Date -UFormat "%b-%d %R:%S") $Level>> $pipelineMessage" | Add-Content -Path $logpath
 		}
 	}
+}
+
+<#
+.SYNOPSIS
+Retrieve Directory Sizes as per their contained items
+.DESCRIPTION
+Similar to linux's `du` utility
+.LINK
+https://technet.microsoft.com/en-us/library/ff730945.aspx
+.LINK
+https://technet.microsoft.com/en-us/library/ee692795.aspx
+#>
+function Get-DirectorySize {
+	Get-ChildItem |
+	Where-Object { $_.PSIsContainer } |
+	ForEach-Object {
+		$_.Name + ": " + (
+			Get-ChildItem $_ -Recurse |
+			Measure-Object Length -Sum -ErrorAction SilentlyContinue
+		).Sum
+	}
+	Get-ChildItem | Where-Object { $_.PSIsContainer } | ForEach-Object { $_.Name + ": " + "{0:N2}" -f ((Get-ChildItem $_ -Recurse | Measure-Object Length -Sum -ErrorAction SilentlyContinue).Sum / 1MB) + " MB" }
+	
 }
 
