@@ -1390,14 +1390,14 @@ https://technet.microsoft.com/en-us/library/ff730945.aspx
 https://technet.microsoft.com/en-us/library/ee692795.aspx
 #>
 function Get-DirectorySize {
-	Get-ChildItem |
-	Where-Object { $_.PSIsContainer } |
-	ForEach-Object {
-		$_.Name + ": " + (
-			Get-ChildItem $_ -Recurse |
-			Measure-Object Length -Sum -ErrorAction SilentlyContinue
-		).Sum
-	}
+	# Get-ChildItem |
+	# Where-Object { $_.PSIsContainer } |
+	# ForEach-Object {
+	# 	$_.Name + ": " + (
+	# 		Get-ChildItem $_ -Recurse |
+	# 		Measure-Object Length -Sum -ErrorAction SilentlyContinue
+	# 	).Sum
+	# }
 	Get-ChildItem | Where-Object { $_.PSIsContainer } | ForEach-Object { $_.Name + ": " + "{0:N2}" -f ((Get-ChildItem $_ -Recurse | Measure-Object Length -Sum -ErrorAction SilentlyContinue).Sum / 1MB) + " MB" }
 	
 }
