@@ -1235,8 +1235,10 @@ function ssh {
 	)
 	Begin {
 		$op = $env:PATH
+		$ot = $env:TERM
 		$env:PATH	+= ";${env:basedir}\system\git\usr\bin\"
-		# $env:TERM	=	"xterm"
+		# Let OpenSSH send its default TERM
+		$env:TERM	=	""
 	}
 	Process {
 		if ( $pipelineInput -eq $Null ){
@@ -1247,6 +1249,7 @@ function ssh {
 		}
 	}
 	End {
+		$env:TERM = $ot
 		$env:PATH = $op
 	}
 }
