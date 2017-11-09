@@ -319,7 +319,7 @@ Set-PSReadlineKeyHandler -Key '"',"'" `
 
     # check the clipboard, if all text up until now is the same as what is in the clipboard
     # this is almost certainly a paste action, do not do any auto-action
-    if ( ((Get-Clipboard -Raw ) -replace "[\s]") -like ("$line*" -replace "[\s]") ){
+	if ( ( ( Get-Clipboard -Raw ) -replace "[\W]") -like ( $line -replace '[\W]')+"*" ){
         # still need to insert the appropriate character
         [Microsoft.PowerShell.PSConsoleReadline]::Insert($key.KeyChar)
         If ( $DebugPreference -eq "Continue" ) { Write-Log "KeyHandler for >>$($key.KeyChar.ToString())<<: Text on line identical to that in clipboard`nText: $line" }
@@ -372,7 +372,7 @@ Set-PSReadlineKeyHandler -Key '(','{','[' `
     # check the clipboard, if all text up until now is the same as what is in the clipboard
     # this is almost certainly a paste action, do not do any auto-action
     # if ( $(Get-Clipboard -Format text).Substring(0, $line.Length).ToLower() -eq $line ) {
-    if ( ((Get-Clipboard -Raw ) -replace "[\s]") -like ("$line*" -replace "[\s]") ){
+	if ( ( ( Get-Clipboard -Raw ) -replace "[\W]") -like ( $line -replace '[\W]')+"*" ){
             
         If ( $DebugPreference -eq "Continue" ) { Write-Log "KeyHandler for >>$($key.KeyChar.ToString())<<: Text on line identical to that in clipboard`nText: `n----`n$line`n----`n" }
         # insert must occur AFTER check
@@ -406,7 +406,7 @@ Set-PSReadlineKeyHandler -Key ')',']','}' `
 
     # check the clipboard, if all text up until now is the same as what is in the clipboard
     # this is almost certainly a paste action, do not do any auto-action
-    if ( ((Get-Clipboard -Raw ) -replace "[\s]") -like ("$line*" -replace "[\s]") ){
+	if ( ( ( Get-Clipboard -Raw ) -replace "[\W]") -like ( $line -replace '[\W]')+"*" ){
         [Microsoft.PowerShell.PSConsoleReadLine]::Insert("$($key.KeyChar)")
         If ( $DebugPreference -eq "Continue" ) { Write-Log "KeyHandler for >>$($key.KeyChar.ToString())<<: Text on line identical to that in clipboard`nText: `n----`n$line`n----`n" }
         return
@@ -444,7 +444,7 @@ Set-PSReadlineKeyHandler -Key 'Alt+(' `
     
     # check the clipboard, if all text up until now is the same as what is in the clipboard
     # this is almost certainly a paste action, do not do any auto-action
-    if ( ((Get-Clipboard -Raw ) -replace "[\s]") -like ("$line*" -replace "[\s]") ){
+	if ( ( ( Get-Clipboard -Raw ) -replace "[\W]") -like ( $line -replace '[\W]')+"*" ){
         If ( $DebugPreference -eq "Continue" ) { Write-Log "KeyHandler for >>$($key.KeyChar.ToString())<<: Text on line identical to that in clipboard`nText: $line" }
     }
     elseif ($selectionStart -ne -1){
