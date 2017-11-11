@@ -319,8 +319,6 @@ function kb {
 			# & "${env:basedir}\bin\ag.exe" @modifiers @IgnorePathSplat @Params
 			& "${env:basedir}\bin\$exe" @Modifiers @IgnorePathSplat @Params
 
-			
-
 		}
 	} else {
 		Write-Warning "Please enter search text"
@@ -330,8 +328,35 @@ function kb {
 		Write-Output "---kb---help---end---"
 	}
 	if ( $help ) { Get-Help $MyInvocation.MyCommand; return; } # Call help on self and exit
-	
 }
+
+<#
+.Synopsis
+Complete hosts for ssh
+#>
+Register-ArgumentCompleter -Native -CommandName ssh -ScriptBlock {
+	param($wordToComplete, $commandAst, $cursorPosition)
+	$known_hosts_path = Join-Path $env:HOME ".ssh\known_hosts"
+	if ( Test-Path $known_hosts_path ){
+		$matches = select-string $known_hosts_path -pattern "^[\d\w.:]*" -AllMatches
+		$matches += select-string $known_hosts_path -pattern "(?<=,)([\w.:]*)" -AllMatches
+
+		$matches | Where-Object { 
+			$_.matches.Value -like "$wordToComplete*"
+		} | Sort-Object | 
+		Foreach-Object { 
+			$CompletionText = $_.matches.Value 
+			$ListItemText   = $_.matches.Value 
+			$ResultType     = 'ParameterValue'
+			$ToolTip        = $_.matches.Value 
+			[System.Management.Automation.CompletionResult]::new($CompletionText, $ListItemText, $ResultType, $ToolTip)
+			Write-Debug $_.matches.Value 
+		}
+	} else {
+		Write-Debug "$known_hosts_path not found"
+	}
+}
+
 
 # Register Commands we want to announce to the Client
 Set-RegisterCommandAvailable kb					# see Omega-CommandsAvailable for more information
