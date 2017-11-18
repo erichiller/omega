@@ -1231,7 +1231,7 @@ function ssh {
 			Mandatory=$False,
 			ValueFromPipeline=$True)]
 		$pipelineInput,
-		[parameter(mandatory=$false, position=1, ValueFromRemainingArguments=$true)]$Remaining
+		[parameter(Mandatory=$False,Position=0,ValueFromRemainingArguments=$True)][Object[]] $Remaining
 	)
 	Begin {
 		$op = $env:PATH
