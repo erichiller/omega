@@ -1,9 +1,8 @@
-# Powershell PS-Readline HotKeys
+# PowerShell PS-Readline HotKeys
 
-View these with
+View PSReadline actions with the command
 
 `Get-PSReadlineKeyHandler`
-
 
 | Key             | Key       |     | Action                      |
 | --------------- | --------- | --- | --------------------------- |
@@ -14,16 +13,9 @@ View these with
 | CTRL            | BACKSPACE |     | DELETE WORD LEFT            |
 
 
-# Omega - ConEmu HotKeys/Modifiers
-
-| Key   | Key   | Key  | Action                          |
-| ----- | ----- | ---- | ------------------------------- |
-| SHIFT | ENTER |      | Make Window **FULLSCREEN**      |
-| CTRL  | ALT   | <UP> | Open new tab as _administrator_ |
-
 # See Also
 
-Omega-CommandsAvailable
+`Omega-CommandsAvailable`
 
 
 

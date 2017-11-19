@@ -4,11 +4,11 @@
 
 1. Go through all options of PSReadLine
 2. Go through interesting functions/additions contained in my notes.
-3. Create 'keyspace' ; what's for (applications) powershell, vim, etc; what's for the terminal (ConEmu)
+3. Create 'keyspace' ; what's for (applications) PowerShell, vim, etc; what's for the terminal (ConEmu)
     - try to align applications with vim
     - and terminal with bash
     !!!! But not at the expense of usability !
-apps key or right alt? ;;; or left alt for conemu overrides the normal alt which will work for right alt.
+apps key or right alt? ;;; or left alt for ConEmu overrides the normal alt which will work for right alt.
 
 
 https://github.com/lzybkr/PSReadLine/blob/8e851bfadbbe7cd5d898b2f01eb6cf010f684a71/PSReadLine/en-US/about_PSReadline.help.txt
@@ -16,6 +16,22 @@ https://github.com/lzybkr/PSReadLine/blob/8e851bfadbbe7cd5d898b2f01eb6cf010f684a
 https://github.com/lzybkr/PSReadLine/blob/master/PSReadLine/SamplePSReadlineProfile.ps1
 
 ====
+
+## Options in ConEmu
+
+(1) of **any non-modifier**
+(up to 3) modifiers:
+ - Win
+ - Apps
+ - CTRL
+    - LCtrl
+    - RCtrl
+ - ALT
+    - LAlt
+    - RAlt
+ - Shift
+    - LShift
+    - RShift
 
 
 Ensure
@@ -28,7 +44,7 @@ Remap:
 // Or if not start & end, use arrow keys
 !! Check interference with ConEmu
 !! # I need "key spaces"; x is for apps; y is for ConEmu
-    ---- apps: powershell, vim, ssh
+    ---- apps: PowerShell, vim, SSH
           Ctrl, Alt, Shift
     ---- ConEmu
            Apps Key?

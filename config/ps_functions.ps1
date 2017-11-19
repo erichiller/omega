@@ -7,8 +7,15 @@ function Omega-Help {
 	### change this to user help system!!!
 	### md -> manpages /// xml help?
 
-	Get-Content ( Join-Path ( Join-Path $env:basedir $OMEGA_CONF.helpdir ) "omega.install.md" )
-	Get-Content ( Join-Path ( Join-Path $env:basedir $OMEGA_CONF.helpdir ) "ps.cmdline_tips.md" )
+
+	Write-Host -ForegroundColor Cyan "PowerShell Version" $PSVersionTable.PSVerson
+	Write-Host -ForegroundColor Cyan "Windows Version" $PSVersionTable.BuildVersion
+	Write-Host -ForegroundColor Magenta "See More with `$PSVersionTable"
+
+	Write-Host -ForegroundColor DarkGray ( Get-Content ( ( Join-Path $env:BaseDir $OMEGA_CONF.helpdir | Join-Path -ChildPath "user" | Join-Path -ChildPath "omega.install.md" ) ) )
+
+	Get-Content ( ( Join-Path $env:BaseDir $OMEGA_CONF.helpdir | Join-Path -ChildPath "user" | Join-Path -ChildPath "ps.cmdline_tips.md" ) )
+	Get-Content -encoding UTF8 ( ( Join-Path $env:BaseDir $OMEGA_CONF.helpdir | Join-Path -ChildPath "user" | Join-Path -ChildPath "keys.conemu.md" ) )
 }
 
 <#

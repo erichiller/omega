@@ -280,6 +280,8 @@ function kb {
 		[Parameter(Mandatory = $false, HelpMessage = "Disable Filename/Path pattern.")]
 		[Alias("n")][switch] $NoIgnorePath,
 
+		[Parameter(Mandatory = $False)][string] $Editor = "code",
+
 		[Alias("h", "?" )][switch] $help
 	)
 	# NOTE: THE PATH CAN _NOT_ HAVE A TRAILING SLASH , but we will make it safe just in case nobody listens
@@ -287,7 +289,7 @@ function kb {
 	$path = $path -replace "[\\/]$"
 	if ($Create) {
 		# https://code.visualstudio.com/docs/editor/command-line
-		code $path
+		. $Editor $path
 	#### -$Edit HERE
 		# code file:line[:character]
 
@@ -317,7 +319,21 @@ function kb {
 				# "--ignore","*.ipynb","--ignore","ConEmu.md"
 			# & "${env:basedir}\bin\ag.exe" --stats --smart-case @IgnorePathSplat --color-win-ansi --pager more (&{If($DisplayFilenames) {"--count"}}) $Term $Path 
 			# & "${env:basedir}\bin\ag.exe" @modifiers @IgnorePathSplat @Params
-			& "${env:basedir}\bin\$exe" @Modifiers @IgnorePathSplat @Params
+			$output = & "${env:basedir}\bin\$exe" @Modifiers @IgnorePathSplat @Params
+			$output	# in the future, this could be prettied-up
+			if ( $Open -eq $True ){
+				# .  ( $output | Select-String -Pattern "\w:\\[\w\\\s\/.]*" )
+				Write-Host -ForegroundColor Magenta ( $output | select-string -Pattern "\w:\\[\w\\\/. /]*" ).Matches
+				
+				
+				( $output | select-string -Pattern "\w:\\[\w\\\/. /]*" ).Matches | ForEach-Object  {
+					if ( Enter-UserConfirm -dialog "Open $_ in editor?"  ){
+						. $Editor $_
+					}
+				}
+			}
+
+
 
 		}
 	} else {
