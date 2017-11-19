@@ -1219,87 +1219,6 @@ function grep {
 	}
 }
 
-
-<#
-.SYNOPSIS
-Proxy function for ssh.exe
-#>
-function ssh {
-	[CmdletBinding()]
-	Param(
-		[Parameter(
-			Mandatory=$False,
-			ValueFromPipeline=$True)]
-		$pipelineInput,
-		[parameter(mandatory=$false, position=1, ValueFromRemainingArguments=$true)]$Remaining
-	)
-	Begin {
-		$op = $env:PATH
-		$ot = $env:TERM
-		$env:PATH	+= ";${env:basedir}\system\git\usr\bin\"
-		# Let OpenSSH send its default TERM
-		$env:TERM	=	""
-	}
-	Process {
-		if ( $pipelineInput -eq $Null ){
-			ssh.exe -F $env:BaseDir\config\omega.ssh.conf @Remaining
-		}
-		ForEach ($input in $pipelineInput) {
-			$input| Out-String | ssh.exe -F $env:BaseDir\config\omega.ssh.conf @Remaining
-		}
-	}
-	End {
-		$env:TERM = $ot
-		$env:PATH = $op
-	}
-}
-
-
-<#
-.SYNOPSIS
-Proxy function for (git's) scp.exe
-.DESCRIPTION
-scp [-1246BCpqrv] [-c cipher] [-F ssh_config] [-i identity_file] [-l limit] [-o ssh_option] [-P port] [-S program] [user@]host1:]file1 [user@]host2:]file2
-Description
-.PARAMETER source
-File(s) which to send
-.Parameter destination
-File location in which the file(s) should be put
-#>
-function scp {
-	[CmdletBinding()]
-	Param(
-		[Parameter(
-			Mandatory=$False,
-			ValueFromPipeline=$True)]
-		$pipelineInput,
-		[Parameter(Position=0, Mandatory=$True)]
-			[string] $source,
-		[Parameter(Position=1, Mandatory=$True)]
-			[string] $destination,
-		[parameter(mandatory=$false, position=2, ValueFromRemainingArguments=$true)]$Remaining
-	)
-	Begin {
-		$op = $env:PATH
-		$env:PATH	+= ";${env:basedir}\system\git\usr\bin\"
-		# $env:TERM	=	"xterm"
-	}
-	Process {
-		if ( $pipelineInput -eq $Null ){
-			scp.exe -F $env:BaseDir\config\omega.ssh.conf @Remaining ( Convert-DirectoryStringtoUnix $source ) ( Convert-DirectoryStringtoUnix $destination )
-		}
-		ForEach ($input in $pipelineInput) {
-			$input| Out-String | scp.exe -F $env:BaseDir\config\omega.ssh.conf @Remaining ( Convert-DirectoryStringtoUnix $source ) ( Convert-DirectoryStringtoUnix $destination )
-		}
-	}
-	End {
-		$env:PATH = $op
-	}
-}
-
-
-
-
 <#
 .SYNOPSIS
 Swap \ for / ; windows directories to linux style
@@ -1404,4 +1323,3 @@ function Get-DirectorySize {
 	Get-ChildItem | Where-Object { $_.PSIsContainer } | ForEach-Object { $_.Name + ": " + "{0:N2}" -f ((Get-ChildItem $_ -Recurse | Measure-Object Length -Sum -ErrorAction SilentlyContinue).Sum / 1MB) + " MB" }
 	
 }
-

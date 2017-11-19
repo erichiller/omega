@@ -37,11 +37,11 @@ Default load locations
 
 ## Console Status State
 
-Can expore the snap-ins, and aliases present with [console-export](https://technet.microsoft.com/en-us/library/hh849706.aspx)
+Can explore the snap-ins, and aliases present with [console-export](https://technet.microsoft.com/en-us/library/hh849706.aspx)
 
 ## Alias commands
 
-See properties of an alias; readonly can not be changed with a simple `Set-Alias <alias> <command>` nor removed with `Remote-Item alias:<alias>`
+See properties of an alias; read-only can not be changed with a simple `Set-Alias <alias> <command>` nor removed with `Remote-Item alias:<alias>`
 
 ```powershell
 (get-alias curl).Options

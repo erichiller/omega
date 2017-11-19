@@ -94,7 +94,10 @@ $bar.field_2 = "value_zzz";
 
 Errors can be seen with the `$error` variable.
 
-Errors can be redirected, see [Stack Overflow - How to handle errors thrown](http://stackoverflow.com/questions/17420474/how-to-capture-error-messages-thrown-by-a-command)
+Errors can be redirected, see 
+* [Stack Overflow - How to handle errors thrown](http://stackoverflow.com/questions/17420474/how-to-capture-error-messages-thrown-by-a-command)
+* [About Redirection](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_redirection?view=powershell-5.1&viewFallbackFrom=powershell-Microsoft.PowerShell.Core)
+
 
 [Introduction to error handling](https://blogs.msdn.microsoft.com/kebab/2013/06/09/an-introduction-to-error-handling-in-powershell/)
 

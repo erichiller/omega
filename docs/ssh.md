@@ -18,3 +18,10 @@ SSH included is OpenSSH based, man files can be found here: <https://www.openssh
 ## Windows SSH Server
 
 Windows OpenSSH implementation requires `TERM=xterm`
+
+## Omega's `ArgumentCompleter`
+
+Omega has an ArgumentCompleter for ssh when run within Powershell that will complete hostnames that are in `known_hosts`.
+For more on `ArgumentCompleter`s see:
+- https://docs.microsoft.com/en-us/dotnet/api/system.management.automation.completionresult.-ctor?view=powershellsdk-1.1.0#System_Management_Automation_CompletionResult__ctor_System_String_System_String_System_Management_Automation_CompletionResultType_System_String_
+- 

@@ -350,7 +350,6 @@ Register-ArgumentCompleter -Native -CommandName ssh -ScriptBlock {
 			$ResultType     = 'ParameterValue'
 			$ToolTip        = $_.matches.Value 
 			[System.Management.Automation.CompletionResult]::new($CompletionText, $ListItemText, $ResultType, $ToolTip)
-			Write-Debug $_.matches.Value 
 		}
 	} else {
 		Write-Debug "$known_hosts_path not found"

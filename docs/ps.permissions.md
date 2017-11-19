@@ -20,7 +20,23 @@ function isadmin
 }
 ```
 
-## Etc.
+## Execution Policy
+
+**Levels**:  
+1. **Restricted** is the default unless otherwise configured
+2. **AllSigned** - Requires that all scripts and configuration files be signed by a trusted publisher, including scripts that you write on the local computer.
+3. **RemoteSigned** - Requires a digital signature from a trusted publisher on scripts and configuration files that are downloaded from the Internet (including e-mail and instant messaging programs).
+4. **Unrestricted** - Unsigned scripts can run. 
+5. **Bypass** - Nothing is blocked and there are no warnings or prompts.
+ - _Undefined_ - if the policy is undefined, it is effectively **Restricted**
+
+See [About Execution Policies](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_execution_policies?view=powershell-5.1)
+
+`Get-ExecutionPolicy`
+
+
+
+## File Permissions
 
 [Module to manage NTFS file permissions](https://gallery.technet.microsoft.com/1abd77a5-9c0b-4a2b-acef-90dbb2b84e85)
 
