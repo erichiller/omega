@@ -1,6 +1,5 @@
-
-
 <#
+.Synopsis
  Helper Functions
 #>
 
