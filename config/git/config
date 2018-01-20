@@ -2,7 +2,7 @@
 # https://git-scm.com/docs/git-config
 
 # This file is the effective global gitconfig
-# and is specified in GIT_CONFIG
+# and is specified in XDG_CONFIG_HOME
 # Which also specifies:
 # a global .gitignore -> omega.gitignore
 # the editor is set to windows vim.exe
@@ -58,3 +58,5 @@
     plog = log --graph --decorate --pretty=oneline --abbrev-commit
     # detailed log
     alog = log --graph --decorate --pretty=oneline --abbrev-commit --all
+[user]
+	name = Eric D. Hiller

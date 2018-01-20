@@ -55,6 +55,7 @@ $global:UserModuleBasePath = $local:ModulePath
 
 #################################################
 ######        STEP #2: IMPORT MODULES       #####
+######        -----> mandatory <-----       #####
 #################################################
 
 # 8.3 sec
@@ -65,6 +66,7 @@ try {
 	$gitStatus = $true
 	# if git is loaded, this means ssh is most likely available, lets check for KeeAgent's socket too and set if present
 	if ( Test-Path ( Join-Path $env:TEMP "KeeAgent.sock" ) ) { $env:SSH_AUTH_SOCK = Join-Path $env:TEMP "KeeAgent.sock" }
+	else { Write-Verbose "KeeAgent.sock was not found in ${env:TEMP}, it will not be used as ssh-agent" }
 	# For information on Git display variables, see:
 	# $env:ConEmuDir\system\psmodules\posh-git\GitPrompt.ps1
 	# posh-git change name of tab // remove annoying
@@ -94,13 +96,6 @@ try {
 	Write-Warning "oh-my-posh module failed to load. Either not installed or there was an error. Modules styling will not be present."
 }
 
-# 2.5 sec
-try {
-	Import-Module PSSudo -ErrorAction Stop >$null
-} catch {
-	Write-Warning "PSSudo module failed to load. Either not installed or there was an error."
-}
-
 # 4.4 sec
 try {
 	Import-Module PSColor -ErrorAction Stop >$null
@@ -108,61 +103,18 @@ try {
 	Write-Warning "PSColor module failed to load. Either not installed or there was an error. Directory and console coloring will be limited."
 }
 
-# 1.2 sec
-try {
-	# https://github.com/samneirinck/posh-docker
-	# if(Get-Module posh-docker){ 
-	Import-Module posh-docker -ErrorAction Stop >$null
-	# }
-} catch {
-	Write-Warning "Posh-Docker module failed to load. Either not installed or there was an error. Docker autocomplete commands will not function."
-	Write-Warning "It can be installed in an admin console with:"
-	Write-Warning "Save-Module posh-docker -path $env:basedir\system\psmodules"
-	
-}
 
-# go is going to have to be a module too
-try {
-	$env:GOPATH = Resolve-Path $OMEGA_CONF.gopath
-	if( ( Test-Path $env:GOPATH ) `
-		-and ( Test-Path ( Join-Path $env:GOPATH "bin" ) ) `
-		-and ( Test-Path ( Join-Path $env:GOPATH "pkg" ) ) `
-		-and ( Test-Path ( Join-Path $env:GOPATH "src" ) ) `
-	){
-		Add-DirToPath ( Join-Path $env:GOPATH "bin" )
-	} else {
-		# if GOROOT wasn't found, remove the environment variable;
-		# this keeps the environment clean of garbage
-		Write-Warning "${$env:GOPATH} (GOPATH) is not present"
-		Remove-Item Env:\GOPATH
-	}
-	$env:GOROOT = Join-Path $env:BaseDir "\system\go\"
-	if( ( Test-Path $env:GOROOT ) `
-		-and ( Test-Path ( Join-Path $env:GOROOT "bin" ) ) `
-		-and ( Test-Path ( Join-Path $env:GOROOT "pkg" ) ) `
-		-and ( Test-Path ( Join-Path $env:GOROOT "src" ) ) `
-		-and ( Test-Path ( Join-Path $env:GOROOT "misc" ) ) `
-		-and ( Test-Path ( Join-Path $env:GOROOT "lib" ) ) `
-	){
-		Add-DirToPath ( Join-Path $env:GOROOT "bin" )
-	} else {
-		# if GOROOT wasn't found, remove the environment variable;
-		# this keeps the environment clean of garbage
-		Write-Warning "${$env:GOROOT} (GOROOT) is not present"
-		Remove-Item Env:\GOROOT
-	}
+#################################################
+######       continued IMPORT MODULES       #####
+######       ------> optional <------       #####
+######        do not error for these        #####
+#################################################
 
-	# get msys2 , msys64 here: https://sourceforge.net/projects/msys2/files/Base/x86_64/
-	$unixesq = Join-Path $env:BaseDir $OMEGA_CONF.unixesq
-	if( ( Test-Path $unixesq ) `
-		-and ( Test-Path ( Join-Path $unixesq "mingw64\bin" ) ) `
-		-and ( Test-Path ( Join-Path $unixesq "mingw64\bin\gcc.exe" ) ) `
-	){
-
-	}
-} catch {
-	Write-Warning "GO not found. Either not installed or there was an error. Go and related commands will be unavailable."
-}
+# can install
+# - GO
+# - posh-docker
+# - vim
+# - pssudo
 
 # Set config for ViM
 if ( Test-Path $env:BaseDir/system/vim/vim.exe ) {
@@ -196,9 +148,33 @@ Set-Alias -Name "7z" -Value "${env:ProgramFiles}\7-zip\7z.exe"
 
 # where whereis which
 # probably a bad idea to reset where, it breaks a decent number of things.
-#Set-Alias -Name where -Value "${env:windir}\System32\where.exe" -Force -Option AllScope
-Set-Alias -Name "whereis" -Value "${env:windir}\System32\where.exe"
 Set-Alias -Name "which" -Value "${env:windir}\System32\where.exe"
+<#
+.SYNOPSIS
+Where-Is is a replacement and expansion of *nix's where. It can locate a command in the file hierarchy, as well as return its containing directory.
+.PARAMETER command
+The name of the command to search for
+.PARAMETER directory
+A switch, its presence will return the containing directory rather than the path to the command itself.
+.EXAMPLE
+Where-Is notepad.exe
+.NOTES
+Often aliased to `whereis`
+#>
+function Where-Is {
+	param (
+		[Parameter(Mandatory = $true)]
+		[string] $command,
+		[Parameter(Mandatory = $false)]
+		[switch] $directory
+	)
+	if($directory -eq $true){
+		Split-Path (Get-Command $command | Select-Object -ExpandProperty Definition) -parent
+	} else {
+		Get-Command $command -ExpandProperty Definition
+	}
+}
+Set-Alias -Name "whereis" -Value Where-Is
 
 # new mv
 if (alias mv   -ErrorAction SilentlyContinue) { Remove-Item alias:mv   }
@@ -377,8 +353,15 @@ Register-ArgumentCompleter -Native -CommandName ssh -ScriptBlock {
 Set-RegisterCommandAvailable kb					# see Omega-CommandsAvailable for more information
 Set-RegisterCommandAvailable Add-DirToPath		# see Omega-CommandsAvailable for more information
 Set-RegisterCommandAvailable Show-Env			# see Omega-CommandsAvailable for more information
+Set-RegisterCommandAvailable Show-Path			# see Omega-CommandsAvailable for more information
 Set-RegisterCommandAvailable Get-DirectoryDiff
 Set-RegisterCommandAvailable Convert-DirectoryStringtoUnix
+Set-RegisterCommandAvailable Add-DirToPath
+Set-RegisterCommandAvailable Remove-DirFromPath
+Set-RegisterCommandAvailable Send-LinuxConfig
+Set-RegisterCommandAvailable Get-DirectorySize
+Set-RegisterCommandAvailable Where-Is 
+
 
 
 

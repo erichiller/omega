@@ -254,7 +254,7 @@ function New-OmegaShortcut {
 
 <#
 .SYNOPSIS
-Register-Omega-Shortcut creates an entry for Omega in the App Paths registry folder to index omega in windows start search
+Register-App creates an entry for Omega in the App Paths registry folder to index omega in windows start search
 New-Shortcut must have been run prior.
 .PARAMETER appName 
 appName is the name of the application that will be indexed
@@ -649,7 +649,7 @@ function opkg {
 				# http://stackoverflow.com/questions/8609204/union-and-intersection-in-powershell
 				if( -not (Compare-Object -PassThru -IncludeEqual -ExcludeDifferent $links $OMEGA_EXT_BINARIES_fullpath)){
 					Write-Information "$bin is a hardlink and is NOT in an array... removing...."
-					rm -Force $bin
+					Remove-Item -Force $bin
 				}
 			}
 
@@ -908,7 +908,13 @@ function Update-SystemPath {
 	# All Tests Passed, the trials are complete, you, noble directory, can be added (or kept) on the system's path
 	Write-Debug "All validity tests have passed, '$Directory' is now on '$Path'"
 	# Set the path
-	if( -not (& setx PATH /m $Path) ){ return $false }
+	# if( -not (& setx PATH /m $Path) ){ return $false }
+	try {
+		Set-ItemProperty -Path "$($OMEGA_CONF.system_environment_key)" -Name PATH -Value $Path
+	} catch {
+		Write-Error "There was an issue updating the system registry."
+		return $false
+	}
 
 	if( -not $ENV:Path.Contains($testDir) ){
 		Write-Debug "$testDir is being added to the Environment Path as well as the System Path will only refresh for new windows"
@@ -978,7 +984,7 @@ function Search-FrequentDirectory {
 			try {
 				# since the matches index can change, and a hashtable.count is not a valid way to find the index...
 				# I need this to figure out the highest integer index
-				$lowestDirectory = $matches[($matches.keys | sort -Descending | Select-Object -First 1)]
+				$lowestDirectory = $matches[($matches.keys | Sort-Object -Descending | Select-Object -First 1)]
 				$fullPath = $matches[1]
 				if($searchHistory.keys -notcontains $matches[1]){
 					$searchHistory.Add($matches[1],$lowestDirectory)

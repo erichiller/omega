@@ -1,4 +1,5 @@
 
+$local:final_status_message = @{}
 
 # must be admin
 
@@ -9,10 +10,28 @@ setx mxpBase /m "${env:mxpBase}"
 # set SSH_AUTH_SOCK, primarily for Git
 $env:SSH_AUTH_SOCK="${env:TEMP}\KeeAgent.sock"
 setx SSH_AUTH_SOCK /m "${env:SSH_AUTH_SOCK}"
+$local:final_status_message += "Be sure to set KeePass's KeeAgent AuthSock path to '${env:SSH_AUTH_SOCK}'"
 
 # set GIT_CONFIG
-$env:GIT_CONFIG="${env:mxpBase}\config\omega.gitconfig"
-setx GIT_CONFIG /m "${env:GIT_CONFIG}"
+$env:XDG_CONFIG_HOME=( Join-Path "${env:basedir}" "config" )
+$env:GIT_CONFIG_NOSYSTEM=1
+setx GIT_CONFIG_NOSYSTEM /m "1"
+setx XDG_CONFIG_HOME /m "${env:XDG_CONFIG_HOME}"
+
+
+# Install posh-git
+Install-Module posh-git
+Install-Module oh-my-posh
+Install-Module PSColor
+
+
+New-OmegaShortcut
+Register-App
+
+# End of program, display final_status_message (s)
+
+Write-Output $local:final_status_message
+
 
 ####
 # UPDATE PATHS FOR BINARIES AS NECESSARY:
