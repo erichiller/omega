@@ -171,7 +171,7 @@ function Where-Is {
 	if($directory -eq $true){
 		Split-Path (Get-Command $command | Select-Object -ExpandProperty Definition) -parent
 	} else {
-		Get-Command $command -ExpandProperty Definition
+		$(Get-Command $command).source
 	}
 }
 Set-Alias -Name "whereis" -Value Where-Is
