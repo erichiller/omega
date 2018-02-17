@@ -17,4 +17,10 @@
 @rem Spoof terminal environment for git color.
 @REM @set TERM=xterm
 
-@ssh.exe -F "%config%" %*
+@rem we are going to call the cygwin connector if available.
+@IF DEFINED ConEmuBaseDirShort (
+	@set CHERE_INVOKING=1
+	@%ConEmuBaseDirShort%\conemu-msys2-64.exe -cur_console:p ssh.exe -F "%config%" %*
+) else (	
+	@ssh.exe -F "%config%" %*
+)
