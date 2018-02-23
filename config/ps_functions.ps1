@@ -345,13 +345,13 @@ function Send-LinuxConfig {
 	param(
 		[Parameter(Mandatory = $False , Position = 1)]
 		[string] $ConnectionString,
-	[Alias("h", "?")]
-	[switch] $help
+		[Alias("h", "?")]
+		[switch] $help
 	)
 
 	if ( $help -or -not $ConnectionString){
-	get-help $MyInvocation.MyCommand
-	return;
+		get-help $MyInvocation.MyCommand
+		return;
 	}
 
 	if ( -not ( Get-Command "ssh" -ErrorAction SilentlyContinue )) {
@@ -372,12 +372,14 @@ function Send-LinuxConfig {
 "@
 		Write-Output "Sending Key: $($($line.Split(" ")) | Select-Object -last 1)"
 		# do your thing
-		$line | ssh $ConnectionString $sh
+		$line | & ${env:basedir}\system\git\usr\bin\ssh.exe $ConnectionString $sh
 	}
 	
 	# push bashrc and vimrc
-	$(Invoke-WebRequest -UseBasicParsing $OMEGA_CONF.push_bashrc).Content | ssh $ConnectionString "sed $'s/\r//' > ~/.bashrc"
-	$(Invoke-WebRequest -UseBasicParsing $OMEGA_CONF.push_vimrc).Content | ssh $ConnectionString "sed $'s/\r//' > ~/.vimrc"
+	$(Invoke-WebRequest -UseBasicParsing $OMEGA_CONF.push_bashrc).Content | & ${env:basedir}\system\git\usr\bin\ssh.exe $ConnectionString "sed $'s/\r//' > ~/.bashrc"
+	Write-Output "Sent .bashrc"
+	$(Invoke-WebRequest -UseBasicParsing $OMEGA_CONF.push_vimrc).Content | & ${env:basedir}\system\git\usr\bin\ssh.exe $ConnectionString "sed $'s/\r//' > ~/.vimrc"
+	Write-Output "Sent .vimrc"
 	
 }
 

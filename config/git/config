@@ -60,3 +60,5 @@
     alog = log --graph --decorate --pretty=oneline --abbrev-commit --all
 [user]
 	name = Eric D. Hiller
+[winUpdater]
+	recentlySeenVersion = 2.16.1.windows.4
