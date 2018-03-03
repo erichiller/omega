@@ -3,8 +3,13 @@
 
 # This file is the effective global gitconfig
 # and is specified in XDG_CONFIG_HOME
-# Which also specifies:
-# a global .gitignore -> omega.gitignore
+#
+# The normal git global config which
+# for git-for-windows is stored in
+# \Git\mingw64\etc\gitconfig
+# is ignored
+#
+# Also specified here:
 # the editor is set to windows vim.exe
 # NOTE: the local user ~\.gitconfig file WILL also be read
 # to diagnose git config oddities use: git config --show-origin --list
@@ -17,6 +22,9 @@
 #     email = me@domain.tld
 # [credential "https://github.com"]
 #     username = myusernamehere
+#
+# this can also be easily performed with
+# git config --edit --global
 
 [core]
     excludesFile = .gitignore_master
@@ -28,6 +36,9 @@
     whitespace   = fix,-indent-with-non-tab
     # editor is set in profile with GIT_EDITOR
     # pager is set in profile with GIT_PAGER
+
+[http]
+	sslcainfo = /ssl/certs/ca-bundle.crt
 
 [color]
     ui = true
@@ -58,7 +69,3 @@
     plog = log --graph --decorate --pretty=oneline --abbrev-commit
     # detailed log
     alog = log --graph --decorate --pretty=oneline --abbrev-commit --all
-[user]
-	name = Eric D. Hiller
-[winUpdater]
-	recentlySeenVersion = 2.16.1.windows.4
