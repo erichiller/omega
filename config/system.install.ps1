@@ -31,6 +31,7 @@ Import-Module PowerShellGet -Force
 Uninstall-Module posh-git
 Install-Module -Name posh-git -AllowPrerelease -Force
 Install-Module oh-my-posh
+Install-Module PSColor
 
 
 New-OmegaShortcut
