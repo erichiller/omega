@@ -68,6 +68,7 @@ try {
 	# set status as true
 	$gitStatus = $true
 	# if git is loaded, this means ssh is most likely available, lets check for KeeAgent's socket too and set if present
+	# **NOTE** This must be configured as a CYGWIN compatible socket in KeeAgent
 	if ( Test-Path ( Join-Path $env:TEMP "KeeAgent.sock" ) ) { $env:SSH_AUTH_SOCK = Join-Path $env:TEMP "KeeAgent.sock" }
 	else { Write-Verbose "KeeAgent.sock was not found in ${env:TEMP}, it will not be used as ssh-agent" }
 	# For information on Git display variables, see:
