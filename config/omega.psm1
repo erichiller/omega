@@ -12,55 +12,55 @@ MXP update 2017 August 3
 
 #>
 
-function Write-Theme
-{
+function Write-Theme {
     param(
-        [bool]$lastCommandFailed,
-        [string]$with
+        [bool]
+        $lastCommandFailed,
+        [string]
+        $with
     )
-
     $lastColor = $sl.Colors.PromptBackgroundColor
 
 
     <##### START CLOCK ######>
 
     # Create the right block first, set to 1 line up on the right
-    Save-CursorPosition
+    # Save-CursorPosition
     $date = Get-Date -UFormat %Y-%b-%d
     $timeStamp = Get-Date -UFormat %R 
 
     $leftText = "$($sl.PromptSymbols.SegmentBackwardSymbol) $date $($sl.PromptSymbols.SegmentBackwardSymbol) $timeStamp "
-    Set-CursorUp -lines 1
-    Set-CursorForRightBlockWrite -textLength  ($leftText.Length - 1)  
+    $prompt += Set-CursorUp -lines 1
+    $prompt += Set-CursorForRightBlockWrite -textLength  ($leftText.Length - 1)  
 
-    Write-Prompt -Object "$($sl.PromptSymbols.SegmentBackwardSymbol)" -ForegroundColor $sl.Colors.ClockBackgroundColor 
-    Write-Prompt " $date " -ForegroundColor $sl.Colors.ClockTextColor -BackgroundColor $sl.Colors.ClockBackgroundColor
-    Write-Prompt "$($sl.PromptSymbols.SegmentBackwardSymbol)" -ForegroundColor $sl.Colors.ClockForegroundColor -BackgroundColor $sl.Colors.ClockBackgroundColor
-    Write-Prompt " $timeStamp " -ForegroundColor $sl.Colors.ClockTextColor -BackgroundColor $sl.Colors.ClockForegroundColor 
+    $prompt += Write-Prompt -Object "$($sl.PromptSymbols.SegmentBackwardSymbol)" -ForegroundColor $sl.Colors.ClockBackgroundColor 
+    $prompt += Write-Prompt " $date " -ForegroundColor $sl.Colors.ClockTextColor -BackgroundColor $sl.Colors.ClockBackgroundColor
+    $prompt += Write-Prompt "$($sl.PromptSymbols.SegmentBackwardSymbol)" -ForegroundColor $sl.Colors.ClockForegroundColor -BackgroundColor $sl.Colors.ClockBackgroundColor
+    $prompt += Write-Prompt " $timeStamp " -ForegroundColor $sl.Colors.ClockTextColor -BackgroundColor $sl.Colors.ClockForegroundColor 
     
     <##### END CLOCK ######>
 
-    Pop-CursorPosition
+    # Pop-CursorPosition
+    $prompt += Set-Newline
 
     # Write the prompt
     # Check for elevated prompt
     # same as Test-Admin function in ps_functions but this loaded first.
     # once a module, UNIFY THIS
-    If (([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator'))
-    {
+    If ( Test-Administrator ) {
         # if is admin, write the admin power symbol
         # Write-Prompt -Object "$($sl.PromptSymbols.ElevatedSymbol) " -ForegroundColor $sl.Colors.AdminIconForegroundColor -BackgroundColor $sl.Colors.SessionInfoBackgroundColor
         $sl.Colors.SessionInfoBackgroundColor = $sl.Colors.AdminSessionInfoBackgroundColor
-        Write-Prompt -Object "$($sl.PromptSymbols.ElevatedSymbol) " -ForegroundColor $sl.Colors.AdminIconForegroundColor -BackgroundColor $sl.Colors.SessionInfoBackgroundColor
+        $prompt += Write-Prompt -Object "$($sl.PromptSymbols.ElevatedSymbol) " -ForegroundColor $sl.Colors.AdminIconForegroundColor -BackgroundColor $sl.Colors.SessionInfoBackgroundColor
     } else {
         # else normal prompt
-        Write-Prompt -Object "$($sl.PromptSymbols.StartSymbol)" -ForegroundColor $sl.Colors.PromptForegroundColor -BackgroundColor $sl.Colors.SessionInfoBackgroundColor
+        $prompt += Write-Prompt -Object "$($sl.PromptSymbols.StartSymbol)" -ForegroundColor $sl.Colors.PromptForegroundColor -BackgroundColor $sl.Colors.SessionInfoBackgroundColor
     }
 
     #check the last command state and indicate if failed
     If ($lastCommandFailed)
     {
-        Write-Prompt -Object "$($sl.PromptSymbols.FailedCommandSymbol) " -ForegroundColor $sl.Colors.CommandFailedIconForegroundColor -BackgroundColor $sl.Colors.SessionInfoBackgroundColor
+        $prompt += Write-Prompt -Object "$($sl.PromptSymbols.FailedCommandSymbol) " -ForegroundColor $sl.Colors.CommandFailedIconForegroundColor -BackgroundColor $sl.Colors.SessionInfoBackgroundColor
     }
 
     #$user = [Environment]::UserName
@@ -68,29 +68,29 @@ function Write-Theme
     $path = Get-FullPath -dir $pwd
     
     #Write-Prompt -Object "$user " -ForegroundColor $sl.Colors.SessionInfoForegroundColor -BackgroundColor $sl.Colors.SessionInfoBackgroundColor
-    Write-Prompt -Object "$($sl.PromptSymbols.SegmentForwardSymbol) " -ForegroundColor $sl.Colors.SessionInfoBackgroundColor -BackgroundColor $sl.Colors.PromptBackgroundColor
+    $prompt += Write-Prompt -Object "$($sl.PromptSymbols.SegmentForwardSymbol) " -ForegroundColor $sl.Colors.SessionInfoBackgroundColor -BackgroundColor $sl.Colors.PromptBackgroundColor
 
     # Writes the drive portion
-    Write-Prompt -Object "$path " -ForegroundColor $sl.Colors.PromptForegroundColor -BackgroundColor $sl.Colors.PromptBackgroundColor
+    $prompt += Write-Prompt -Object "$path " -ForegroundColor $sl.Colors.PromptForegroundColor -BackgroundColor $sl.Colors.PromptBackgroundColor
     
     $status = Get-VCSStatus
     if ($status)
     {
         $themeInfo = Get-VcsInfo -status ($status)
         $lastColor = $themeInfo.BackgroundColor
-        Write-Prompt -Object $sl.PromptSymbols.SegmentForwardSymbol -ForegroundColor $sl.Colors.PromptBackgroundColor -BackgroundColor $lastColor
-        Write-Prompt -Object " $($themeInfo.VcInfo) " -BackgroundColor $lastColor -ForegroundColor $sl.Colors.GitForegroundColor      
+        $prompt += Write-Prompt -Object $sl.PromptSymbols.SegmentForwardSymbol -ForegroundColor $sl.Colors.PromptBackgroundColor -BackgroundColor $lastColor
+        $prompt += Write-Prompt -Object " $($themeInfo.VcInfo) " -BackgroundColor $lastColor -ForegroundColor $sl.Colors.GitForegroundColor      
     }
 
     if ($with)
     {
-        Write-Prompt -Object $sl.PromptSymbols.SegmentForwardSymbol -ForegroundColor $lastColor -BackgroundColor $sl.Colors.WithBackgroundColor
-        Write-Prompt -Object " $($with.ToUpper()) " -BackgroundColor $sl.Colors.WithBackgroundColor -ForegroundColor $sl.Colors.WithForegroundColor
+        $prompt += Write-Prompt -Object $sl.PromptSymbols.SegmentForwardSymbol -ForegroundColor $lastColor -BackgroundColor $sl.Colors.WithBackgroundColor
+        $prompt += Write-Prompt -Object " $($with.ToUpper()) " -BackgroundColor $sl.Colors.WithBackgroundColor -ForegroundColor $sl.Colors.WithForegroundColor
         $lastColor = $sl.Colors.WithBackgroundColor
     }
 
     # Writes the postfix to the prompt
-    Write-Prompt -Object $sl.PromptSymbols.SegmentForwardSymbol -BackgroundColor $host.UI.RawUI.BackgroundColor -ForegroundColor $lastColor
+    $prompt += Write-Prompt -Object $sl.PromptSymbols.SegmentForwardSymbol -BackgroundColor $host.UI.RawUI.BackgroundColor -ForegroundColor $lastColor
 
 
 
@@ -116,35 +116,35 @@ function Write-Theme
         }
     }
 
+    $prompt += ' '
+    $prompt
 
-
-    
     #Show-Glyphs
 }
 
 <#
 function Show-Glyphs {
     for($i=0xf400;$i -le 0xF498;$i++){
-        Write-Prompt -Object " $([char]::ConvertFromUtf32($i)) " -ForegroundColor $sl.Colors.PromptForegroundColor -BackgroundColor $sl.Colors.PromptBackgroundColor
+        $prompt += Write-Prompt -Object " $([char]::ConvertFromUtf32($i)) " -ForegroundColor $sl.Colors.PromptForegroundColor -BackgroundColor $sl.Colors.PromptBackgroundColor
     }
 
-    Write-Prompt -Object "     $([char]::ConvertFromUtf32(0xf417)) " -ForegroundColor $sl.Colors.PromptForegroundColor
-    Write-Prompt -Object " $([char]::ConvertFromUtf32(0xf41b))     " -ForegroundColor $sl.Colors.PromptForegroundColor
+    $prompt += Write-Prompt -Object "     $([char]::ConvertFromUtf32(0xf417)) " -ForegroundColor $sl.Colors.PromptForegroundColor
+    $prompt += Write-Prompt -Object " $([char]::ConvertFromUtf32(0xf41b))     " -ForegroundColor $sl.Colors.PromptForegroundColor
 
-    Write-Prompt -Object " $($sl.PromptSymbols.FailedCommandSymbol) " -ForegroundColor $sl.Colors.PromptForegroundColor
-    Write-Prompt -Object " $([char]::ConvertFromUtf32(0xf0a2)) " -ForegroundColor $sl.Colors.PromptForegroundColor 
+    $prompt += Write-Prompt -Object " $($sl.PromptSymbols.FailedCommandSymbol) " -ForegroundColor $sl.Colors.PromptForegroundColor
+    $prompt += Write-Prompt -Object " $([char]::ConvertFromUtf32(0xf0a2)) " -ForegroundColor $sl.Colors.PromptForegroundColor 
     
-    Write-Prompt -Object " $([char]::ConvertFromUtf32(0x2A2F)) " -ForegroundColor $sl.Colors.PromptForegroundColor 
+    $prompt += Write-Prompt -Object " $([char]::ConvertFromUtf32(0x2A2F)) " -ForegroundColor $sl.Colors.PromptForegroundColor 
     
-    Write-Prompt -Object " Untracked=$($sl.GitSymbols.BranchUntrackedSymbol) " -ForegroundColor $sl.Colors.PromptForegroundColor
-    Write-Prompt -Object " $([char]::ConvertFromUtf32(0xf070)) " -ForegroundColor $sl.Colors.PromptForegroundColor 
-    Write-Prompt -Object " Identical=$($sl.GitSymbols.BranchIdenticalStatusToSymbol) " -ForegroundColor $sl.Colors.PromptForegroundColor 
+    $prompt += Write-Prompt -Object " Untracked=$($sl.GitSymbols.BranchUntrackedSymbol) " -ForegroundColor $sl.Colors.PromptForegroundColor
+    $prompt += Write-Prompt -Object " $([char]::ConvertFromUtf32(0xf070)) " -ForegroundColor $sl.Colors.PromptForegroundColor 
+    $prompt += Write-Prompt -Object " Identical=$($sl.GitSymbols.BranchIdenticalStatusToSymbol) " -ForegroundColor $sl.Colors.PromptForegroundColor 
     #Write-Prompt -Object " $([char]::ConvertFromUtf32(0xf42e)) " -ForegroundColor $sl.Colors.PromptForegroundColor 
-    Write-Prompt -Object " $([char]::ConvertFromUtf32(0xf07e)) " -ForegroundColor $sl.Colors.PromptForegroundColor 
-    Write-Prompt -Object " Ahead=$($sl.GitSymbols.BranchAheadStatusSymbol) " -ForegroundColor $sl.Colors.PromptForegroundColor 
-    Write-Prompt -Object " $([char]::ConvertFromUtf32(0xf47c)) " -ForegroundColor $sl.Colors.PromptForegroundColor 
-    Write-Prompt -Object " Behind=$($sl.GitSymbols.BranchBehindStatusSymbol) " -ForegroundColor $sl.Colors.PromptForegroundColor
-    Write-Prompt -Object " $([char]::ConvertFromUtf32(0xf47d)) " -ForegroundColor $sl.Colors.PromptForegroundColor 
+    $prompt += Write-Prompt -Object " $([char]::ConvertFromUtf32(0xf07e)) " -ForegroundColor $sl.Colors.PromptForegroundColor 
+    $prompt += Write-Prompt -Object " Ahead=$($sl.GitSymbols.BranchAheadStatusSymbol) " -ForegroundColor $sl.Colors.PromptForegroundColor 
+    $prompt += Write-Prompt -Object " $([char]::ConvertFromUtf32(0xf47c)) " -ForegroundColor $sl.Colors.PromptForegroundColor 
+    $prompt += Write-Prompt -Object " Behind=$($sl.GitSymbols.BranchBehindStatusSymbol) " -ForegroundColor $sl.Colors.PromptForegroundColor
+    $prompt += Write-Prompt -Object " $([char]::ConvertFromUtf32(0xf47d)) " -ForegroundColor $sl.Colors.PromptForegroundColor 
 }
 #>
 

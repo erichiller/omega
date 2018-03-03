@@ -6,17 +6,18 @@
 ############### October 18 2016 #################
 #################################################>
 
-# set-psdebug -trace 2
+# Compatibility with PS major versions <= 2
+if(!$PSScriptRoot) {
+	$PSScriptRoot = $script:MyInvocation.MyCommand.Path
+}
+
 # set THIS as the PROFILE for the user
 $PROFILE = $script:MyInvocation.MyCommand.Path;
 
-# Compatibility with PS major versions <= 2
-if(!$PSScriptRoot) {
-	$PSScriptRoot = Split-Path $Script:MyInvocation.MyCommand.Path
-}
 
 # Set basedir for omega
-$env:BaseDir = Resolve-Path ( Join-Path ( Split-Path $Script:MyInvocation.MyCommand.Path ) ".." )
+# $env:BaseDir = Resolve-Path ( Join-Path ( Split-Path $PSScriptRoot ) ".." )
+$env:BaseDir = Resolve-Path ( Split-Path $PSScriptRoot )
 
 # load the functions first
 . $PSScriptRoot\ps_functions.ps1
@@ -57,11 +58,13 @@ $global:UserModuleBasePath = $local:ModulePath
 ######        STEP #2: IMPORT MODULES       #####
 ######        -----> mandatory <-----       #####
 #################################################
-
 # 8.3 sec
 try {
 	# test for git
+	$script:DebugPreference_prior = $DebugPreference
+	$DebugPreference = "SilentlyContinue"
 	Import-Module -Name "posh-git" -ErrorAction Stop >$null
+	$DebugPreference = $script:DebugPreference_prior
 	# set status as true
 	$gitStatus = $true
 	# if git is loaded, this means ssh is most likely available, lets check for KeeAgent's socket too and set if present

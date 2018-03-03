@@ -1,7 +1,11 @@
 
 $local:final_status_message = @{}
 
+# load the core
+. .\func.core.ps1
+
 # must be admin
+if ( Test-Admin -warn -not ) { return }
 
 # set mxpBase
 $env:mxpBase="${env:LOCALAPPDATA}\omega"
@@ -19,10 +23,14 @@ setx GIT_CONFIG_NOSYSTEM /m "1"
 setx XDG_CONFIG_HOME /m "${env:XDG_CONFIG_HOME}"
 
 
-# Install posh-git
-Install-Module posh-git
+# Install the newest PowerShellGet
+Install-Module -Name PowerShellGet -Force
+# Import the new version
+Import-Module PowerShellGet -Force
+# Install posh-git we require >= v1
+Uninstall-Module posh-git
+Install-Module -Name posh-git -AllowPrerelease -Force
 Install-Module oh-my-posh
-Install-Module PSColor
 
 
 New-OmegaShortcut
@@ -36,6 +44,7 @@ Write-Output $local:final_status_message
 ####
 # UPDATE PATHS FOR BINARIES AS NECESSARY:
 # >>>> git
+#       Update-SystemPath $env:basedir\system\git\cmd\
 ###
 
 

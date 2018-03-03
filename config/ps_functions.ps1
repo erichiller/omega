@@ -3,6 +3,16 @@
  Helper Functions
 #>
 
+# Compatibility with PS major versions <= 2
+if(!$PSScriptRoot) {
+	$PSScriptRoot = $script:MyInvocation.MyCommand.Path
+}
+
+# load the core first
+. $PSScriptRoot\func.core.ps1
+
+
+
 function Omega-Help {
 	### change this to user help system!!!
 	### md -> manpages /// xml help?
