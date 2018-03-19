@@ -76,7 +76,7 @@
                         ]
     },
     {
-        "type":  "system-path",
+        "type":  "SystemPath",
         "name":  "nodejs",
         "brief":  "Javascript Desktop Engine",
         "required":  false,

@@ -11,7 +11,7 @@
 @if not exist "%HOME%" @set HOME=%USERPROFILE%
 
 @REM Reverse config path dividers \ to /
-@set "config=%BaseDir%\config\omega.ssh.conf"
+@set "config=%BaseDir%\core\config\omega.ssh.conf"
 @set config=%config:\=/%
 
 @rem Spoof terminal environment for git color.

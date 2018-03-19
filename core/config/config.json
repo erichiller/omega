@@ -1,0 +1,27 @@
+{
+    "bindir": "\\bin",
+    "sysdir": "\\system",
+    "confdir": "\\local",
+    "helpdir": "\\docs",
+    "system_environment_key": "Registry::HKLM\\System\\CurrentControlSet\\Control\\Session Manager\\Environment",
+    "user_environment_key": "Registry::HKEY_CURRENT_USER\\Environment",
+    "app_paths_key": "Registry::HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths",
+    "compression_extensions": [
+        ".7z",
+        ".zip",
+        ".tar.gz",
+        ".gz",
+        ".tar",
+        ".bz2"
+    ],
+    "logpath": "\\omega.log",
+    "Push": {
+        "bashrc": "https://gist.githubusercontent.com/erichiller/ac3be5b4a562a61b255b0baccb3f2da8/raw/.bashrc",
+        "vimrc": "https://gist.githubusercontent.com/erichiller/ac3be5b4a562a61b255b0baccb3f2da8/raw/.vimrc"
+    },
+    "DefaultVerbosity":{
+        "Information": "Continue",
+        "Verbose": "Continue",
+        "Debug": "Continue"
+    }
+}

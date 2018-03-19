@@ -1,0 +1,48 @@
+{
+    "GitUser":  "a",
+    "GitRepoState":  "",
+    "SystemPathAdditions":  [
+                                "C:\\users\\ehiller\\appdata\\local\\omega\\system\\git\\cmd"
+                            ],
+    "Packages":  {
+                     "git":  {
+                                 "UpdateDate":  "2018-Mar-18 12:33",
+                                 "version":  "2.16.2",
+                                 "Name":  "git",
+                                 "Brief":  "Git for Windows 64 bit",
+                                 "Required":  true,
+                                 "Install":  {
+                                                 "Source":  0,
+                                                 "Destination":  "SystemPath",
+                                                 "AdminRequired":  true,
+                                                 "SearchTerm":  "*-64-bit.tar.bz2*",
+                                                 "VersionPattern":  "^Git-(.*)-64-bit\\.tar\\.bz2$",
+                                                 "Org":  "git-for-windows",
+                                                 "Repo":  "git"
+                                             },
+                                 "Provides":  {
+                                                  "Commands":  null,
+                                                  "Binaries":  [
+                                                                   "git"
+                                                               ]
+                                              },
+                                 "System":  {
+                                                "PathAdditions":  [
+                                                                      "$( ( [OmegaConfig]::GetInstance() ).BaseDir)\\system\\git\\cmd"
+                                                                  ],
+                                                "SystemEnvironmentVariables":  {
+                                                                                   "XDG_CONFIG_HOME":  "$( ( [OmegaConfig]::GetInstance() ).BaseDir)\\core",
+                                                                                   "GIT_CONFIG_NOSYSTEM":  "1"
+                                                                               },
+                                                "SymLinks":  null
+                                            }
+                             }
+                 },
+    "RegisteredCommands":  null,
+    "Verbosity":  {
+                      "Information":  "Continue",
+                      "Verbose":  "Continue",
+                      "Debug":  "Continue"
+                  },
+    "Push":  null
+}

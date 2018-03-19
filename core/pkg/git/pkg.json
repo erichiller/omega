@@ -1,0 +1,28 @@
+{
+    "Name": "git",
+    "Brief": "Git for Windows 64 bit",
+    "Required": true,
+    "Install": {
+        "Source": "GitRelease",
+        "Destination": "SystemPath",
+        "AdminRequired": true,
+        "SearchTerm": "*-64-bit.tar.bz2*",
+        "VersionPattern": "^Git-(.*)-64-bit\\.tar\\.bz2$",
+        "Org": "git-for-windows",
+        "Repo": "git"
+    },
+    "System": {
+        "PathAdditions": [
+            "$( ( [OmegaConfig]::GetInstance() ).BaseDir)\\system\\git\\cmd"
+        ],
+        "SystemEnvironmentVariables": {
+            "XDG_CONFIG_HOME": "$( ( [OmegaConfig]::GetInstance() ).BaseDir)\\core",
+            "GIT_CONFIG_NOSYSTEM": "1"
+        }
+    },
+    "Provides": {
+        "Binaries": [
+            "git"
+        ]
+    }
+}

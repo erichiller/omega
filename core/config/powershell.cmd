@@ -1,0 +1,1 @@
+PowerShell -ExecutionPolicy Bypass -NoLogo -NoProfile -NoExit -File "%ConEmuDir%\..\..\core\profile.ps1" -new_console:d:"%USERPROFILE%":C:"%ConEmuDir%\..\..\icons\powershell_32.ico"

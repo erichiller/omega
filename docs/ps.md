@@ -72,3 +72,29 @@ In order to use SSL/TLS connections, you must set SecurityProtocol before using 
 ```powershell
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 ```
+
+
+## Automatic Variables
+
+[Automatic Variables](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_automatic_variables?view=powershell-5.1) include variables for items such as `$?` for the last error code and `$args` or `$PSBoundParameters` for function parameters. These are meant to be read-only core values.
+
+## Common Parameters
+
+
+### `-WhatIf`
+
+`-WhatIf` can be supplied to flag the function to output only what it _would_ do, rather than take any action. `-WhatIf` requires the function to have specific code to operate.
+
+**Allow the function to accept `-WhatIf` by appending the following to the opening lines of the function.**
+```powershell
+# SupportsShouldProcess=$true required for WhatIf
+[cmdletBinding(SupportsShouldProcess=$true)]
+
+```
+
+**Test for `-WhatIf` being supplied to the function with:**
+```powershell
+if ( $WhatIfPreference.IsPresent ){
+        Write-Information "WhatIf is present... this is what I would do"
+}
+```

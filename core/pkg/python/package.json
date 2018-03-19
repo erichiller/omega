@@ -1,0 +1,16 @@
+{
+	"type":  "SystemPath",
+	"name":  "python",
+	"brief":  "Python Language Interpreter",
+	"required":  false,
+	"installMethod":  "http-directory-search",
+	"installParams": {
+		"searchPath": [
+			"https://www.python.org/ftp/python/",
+			"[0-9]\\.[0-9]\\.[0-9]",
+			"^python-([0-9]\\.[0-9]\\.[0-9])-embed-amd64\\.zip$"
+		],
+		"versionPattern": "^python-([0-9]\\.[0-9]\\.[0-9])-embed-amd64.zip",
+		"systempath": true
+	}
+}
