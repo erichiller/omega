@@ -1,0 +1,19 @@
+{
+    "Name": "docker-compose",
+    "Brief": "docker-compose for Windows 64 bit",
+    "Required": false,
+    "Install": {
+        "Source": "GitRelease",
+        "Destination": "BinPath",
+        "AdminRequired": false,
+        "Org": "docker",
+        "Repo": "compose",
+        "SearchTerm": "*-64-bit.tar.bz2*",
+        "VersionPattern": ".*download\/(.*)\/docker-compose-Windows-x86_64\\.exe$"
+    },
+    "Provides": {
+        "Binaries": [
+            "docker-compose"
+        ]
+    }
+}

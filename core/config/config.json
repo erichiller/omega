@@ -14,6 +14,11 @@
         ".tar",
         ".bz2"
     ],
+    "SingleFileExtensions": [
+        ".cmd",
+        ".bat",
+        ".exe"
+    ],
     "logpath": "\\omega.log",
     "Push": {
         "bashrc": "https://gist.githubusercontent.com/erichiller/ac3be5b4a562a61b255b0baccb3f2da8/raw/.bashrc",

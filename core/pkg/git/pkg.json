@@ -7,7 +7,7 @@
         "Destination": "SystemPath",
         "AdminRequired": true,
         "SearchTerm": "*-64-bit.tar.bz2*",
-        "VersionPattern": "^Git-(.*)-64-bit\\.tar\\.bz2$",
+        "VersionPattern": ".*Git-(.*)-64-bit\\.tar\\.bz2$",
         "Org": "git-for-windows",
         "Repo": "git"
     },

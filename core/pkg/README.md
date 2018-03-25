@@ -58,7 +58,7 @@ The `GitRelease` package source downloads a *release* from a github repo.
 | org					| Yes		| org name for the organization the package can be found at
 | repo					| Yes		| repo of org to download from
 | searchTerm			| Yes		| wildcard style search pattern to select appropriate file to download from repo releases
-| versionPattern		| Yes		| regex string to extract the version from the downloaded filename
+| versionPattern		| Yes		| regex string to extract the version from the downloaded (full URL)
 
 
 

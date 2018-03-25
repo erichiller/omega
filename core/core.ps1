@@ -3,6 +3,7 @@
 # these should get the module setup
 # also provides core services for installation
 
+
 <#
 .Synopsis
 Add given directories into $env:Path ( _THIS SESSION ONLY_ )
@@ -250,7 +251,7 @@ function Set-RegisterCommandAvailable ($command) {
         $command = $((Get-PSCallStack)[1].Command)
     }
     # put the name and synopsis into the table
-    ([User]::GetInstance()).RegisteredCommands += (Get-Help $command | Select-Object Name, Synopsis,"local")
+    ([User]::GetInstance()).RegisteredCommands += (Get-Help $command | Select-Object Name, Synopsis)
 }
 
 
