@@ -1,7 +1,8 @@
 {
     "bindir": "\\bin",
     "sysdir": "\\system",
-    "confdir": "\\local",
+    "userdir": "\\local",
+    "confdir": "\\core\\config",
     "helpdir": "\\docs",
     "system_environment_key": "Registry::HKLM\\System\\CurrentControlSet\\Control\\Session Manager\\Environment",
     "user_environment_key": "Registry::HKEY_CURRENT_USER\\Environment",

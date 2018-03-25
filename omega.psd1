@@ -30,24 +30,117 @@
 	# FormatsToProcess = @()
 
 	AliasesToExport   = @(
-        "kb"
-        "tail"
+        "7z"
+        "f"
         "gh"
+        "hexdump"
+        "kb"
+        "less"
+        "om"
+        "powershell"
+        "Print-Path"
+        "psr"
+        "sed"
+        "tail"
+        "whereis"
+        "which"
         ) # all
-	CmdletsToExport   = @(
+	# CmdletsToExport   = @() # all
+	VariablesToExport = @(
+        "GitPromptScriptBlock"
+    ) # all
+	FunctionsToExport = @(
         "Add-DirToPath"
         "Show-Env"
         "Show-Path"
         "Get-DirectoryDiff"
+        "Open-OmegaBaseDirectory"
+        "Open-GitHubDevDirectory"
         "Convert-DirectoryStringtoUnix"
-        "Add-DirToPath"
         "Remove-DirFromPath"
         "Send-LinuxConfig"
         "Get-DirectorySize"
         "Search-Executable"
+        "Write-Prompt"
+        "Get-PrettyPath"
+
     ) # all
-	VariablesToExport = @() # all
-	FunctionsToExport = @() # all 
+
+    #     "Get-ComputerName"
+    #     "Get-Drive"
+    #     "Get-FullPath"
+    #     "Get-ShortPath"
+    #     "Get-Theme"
+    #     "Get-VcsInfo"
+    #     "Get-VCSStatus"
+    #     "Get-VirtualEnvName"
+    #     "Set-CursorForRightBlockWrite"
+    #     "Set-CursorUp"
+    #     "Set-Newline"
+    #     "Set-Theme"
+    #     "Show-Colors"
+    #     "Show-ThemeColors"
+    #     "Show-ThemeSymbols"
+    #     "Test-Administrator"
+    #     "Test-NotDefaultUser"
+    #     "Test-VirtualEnv"
+
+    #     "Update-AllBranches"
+    #     "Write-GitBranchName"
+    #     "Write-GitBranchStatus"
+    #     "Write-GitIndexStatus"
+    #     "Write-GitStashCount"
+    #     "Write-GitStatus"
+    #     "Write-GitWorkingDirStatus"
+    #     "Write-GitWorkingDirStatusSummary"
+
+    #     "Add-PoshGitToProfile"
+
+    #     "Format-GitBranchName"
+    #     "Get-GitBranchStatusColor"
+    #     "Get-GitDirectory"
+    #     "Get-GitStatus"
+    #     "Get-PromptPath"
+    #     "Get-SshAgent"
+    #     "Get-SshPath"
+
+    #     "TabExpansion"
+
+    #     "Omega-Help"
+    #     "Remove-DirFromPath"
+    # "SafeObjectArray"
+    #     "Save-UserConfig"
+    #     "Search-Executable"
+    #     "Search-FrequentDirectory"
+    #     "Search-KnowledgeBase"
+    #     "Send-LinuxConfig"
+    #     "Set-RegisterCommandAvailable"
+    #     "Set-UserRepo"
+    #     "Test-Admin"
+
+    #     "ArrayAddUnique"
+    #     "checkGit"
+    #     "Convert-DirectoryStringtoUnix"
+    #     "Debug-Title"
+    #     "Debug-Variable"
+    #     "Enter-UserConfirm"
+    #     "ff"
+    #     "Get-CommandsAvailable"
+    #     "Get-DirectoryDiff"
+    #     "Get-DirectorySize"
+    #     "Get-FileContentTail"
+    #     "Get-md5sum"
+    #     "Get-sha256sum"
+    #     "grep"
+    #     "Join-Paths"
+    #     "mv"
+    #     "New-UserConfigRepo"
+
+    #     "tgit"
+    #     "Start-SshAgent"
+    #     "Stop-SshAgent"
+    #     "Add-SshKey"
+
     
 
 

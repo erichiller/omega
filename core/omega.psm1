@@ -1,4 +1,4 @@
-. ([ScriptBlock]::Create("using module $($MyInvocation.MyCommand.ScriptBlock.Module.ModuleBase)\objects.ps1"))
+try { . ([ScriptBlock]::Create("using module '$($MyInvocation.MyCommand.ScriptBlock.Module.ModuleBase)\objects.ps1'")); } catch { Write-Verbose $_ }
 
 <#
 ####### OMEGA - init script for PowerShell ######
@@ -88,7 +88,7 @@ try {
         Import-Module oh-my-posh -ErrorAction Stop >$null
     }
 	$global:ThemeSettings.MyThemesLocation = "$($config.basedir)\core\"
-	Set-Theme theme-omega
+    Set-Theme themeOmega
 } catch {
 	Write-Warning "oh-my-posh module failed to load. Either not installed or there was an error. Modules styling will not be present."
 }

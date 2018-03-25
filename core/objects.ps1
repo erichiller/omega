@@ -2,6 +2,11 @@
 Objects, Types
 #>
 
+
+# for some unknown reason, powershell will not load the first definition of this file
+# so make it useless
+class NoType {}
+
 class PushConfig {
 	[string] $bashrc
 	[string] $vimrc
@@ -20,7 +25,8 @@ class OmegaConfig {
     [string] $Name = "Omega"
 	[string] $BinDir
 	[string] $SysDir
-	[string] $ConfDir
+    [string] $ConfDir
+    [string] $UserDir
 	[string] $HelpDir
 	[string] $system_environment_key
 	[string] $user_environment_key

@@ -6,7 +6,7 @@ function New-OmegaShortcut {
 	$arguments = `
 	'/LoadCfgFile "' + ( Join-Path ( Join-Path $conf.Basedir $conf.confdir ) "ConEmu.xml" ) + '" ' + 
 	'/FontDir "' + ( Join-Path (Join-Path $conf.Basedir $conf.sysdir) "fonts" ) + '" ' + 
-	'/Icon "' + ( Join-Path ( Join-Path $conf.Basedir "icons" ) "omega_256.ico" ) + '" /run "@..\..\config\powershell.cmd"'
+	'/Icon "' + ( Join-Path ( Join-Path $conf.Basedir "icons" ) "omega_256.ico" ) + '" /run "@..\..\core\config\powershell.cmd"'
 
 	$shortcutFile = Join-Path $conf.basedir "omega.lnk"
 
@@ -28,6 +28,7 @@ function Register-Module {
         Write-Information "$($conf.name)'s parent directory <$parent> is already on the PSModulePath, no need to add"
     } else {
         New-Item -ItemType Junction -Path "C:\Program Files\WindowsPowerShell\Modules\$($conf.name)" -Value ( Join-Path $conf.basedir $conf.name )
+        New-Item -ItemType Junction -Path "C:\Program Files\PowerShell\Modules\$($conf.name)" -Value ( Join-Path $conf.basedir $conf.name )
     }
 }
 
