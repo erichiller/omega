@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <key name="Software">
 	<key name="ConEmu">
-		<key name=".Vanilla" modified="2018-02-22 14:35:58" build="180206">
+		<key name=".Vanilla" modified="2018-03-25 17:54:23" build="180318">
 			<value name="StartType" type="hex" data="00"/>
 			<value name="CmdLine" type="string" data=""/>
 			<value name="StartTasksFile" type="string" data=""/>
@@ -148,7 +148,7 @@
 			<value name="WindowMode" type="dword" data="0000051f"/>
 			<value name="ConWnd X" type="long" data="1213"/>
 			<value name="ConWnd Y" type="long" data="-3"/>
-			<value name="LastMonitor" type="string" data="0,0,1920,1050"/>
+			<value name="LastMonitor" type="string" data="0,0,2560,1400"/>
 			<value name="ConWnd Width" type="dword" data="00000063"/>
 			<value name="ConWnd Height" type="dword" data="02000064"/>
 			<value name="16bit Height" type="ulong" data="0"/>
@@ -393,7 +393,7 @@
 			<value name="Update.DownloadPath" type="string" data="%TEMP%\ConEmu"/>
 			<value name="Update.LeavePackages" type="hex" data="00"/>
 			<value name="Update.PostUpdateCmd" type="string" data="echo Last successful update&gt;ConEmuUpdate.info &amp;&amp; date /t&gt;&gt;ConEmuUpdate.info &amp;&amp; time /t&gt;&gt;ConEmuUpdate.info"/>
-			<key name="HotKeys" modified="2018-02-22 14:36:17" build="180206">
+			<key name="HotKeys" modified="2018-03-25 17:55:18" build="180318">
 				<value name="KeyMacroVersion" type="hex" data="02"/>
 				<value name="Multi.Modifier" type="dword" data="00000011"/>
 				<value name="Multi.ArrowsModifier" type="dword" data="0000005b"/>
@@ -426,8 +426,8 @@
 				<value name="Multi.SplitFocusD" type="dword" data="00a4a328"/>
 				<value name="Multi.SplitFocusL" type="dword" data="00a4a325"/>
 				<value name="Multi.SplitFocusR" type="dword" data="00a4a327"/>
-				<value name="Multi.Next" type="dword" data="0000a225"/>
-				<value name="Multi.NextShift" type="dword" data="0000a227"/>
+				<value name="Multi.Next" type="dword" data="00001225"/>
+				<value name="Multi.NextShift" type="dword" data="00001227"/>
 				<value name="Multi.Recreate" type="dword" data="00000000"/>
 				<value name="Multi.AltCon" type="dword" data="00000000"/>
 				<value name="Multi.Pause" type="dword" data="80808013"/>
@@ -587,6 +587,7 @@
 				<value name="Multi.GroupInputAll" type="dword" data="00105d47"/>
 				<value name="Multi.GroupInputKey" type="dword" data="00125d47"/>
 				<value name="CloseToRightKey" type="dword" data="00000000"/>
+				<value name="Multi.NewWndConfirm" type="dword" data="00000000"/>
 			</key>
 			<key name="Tasks" modified="2018-02-17 08:28:11" build="180206">
 				<value name="Count" type="long" data="7"/>

@@ -58,7 +58,7 @@ bind '"\e[B": history-search-forward'
 
 # ls dir coloring
 export LS_OPTIONS='--color=auto'
-eval "`dircolors -b $BaseDir/core/wsl/wsl_dir_colors`"
+eval "`dircolors -b $BaseDir/core/wsl/dir_colors`"
 alias ls='ls $LS_OPTIONS -lA'
 alias pathprint='echo $PATH | tr \: \\n'
 
@@ -67,9 +67,9 @@ alias grep='grep --color=always'
 alias less='less -R'
 
 # alias vim if we are on ConEmu
-if [ -f $ConEmuDir/core/.vimrc ] ; then
-    alias vi='vim -u $ConEmuDir/core/.vimrc'
-    alias vim='vim -u $ConEmuDir/core/.vimrc'
+if [ -f $BaseDir/core/config/.vimrc ] ; then
+    alias vi='vim -u $ConEmuDir/core/config/.vimrc'
+    alias vim='vim -u $ConEmuDir/core/config/.vimrc'
 fi
 
 #### REMAINING TO-DO ####
