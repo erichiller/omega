@@ -129,11 +129,11 @@ function Send-LinuxConfig {
 
 	## Send key(s) , and skip if already present
 	# get keys from ssh-agent ; THAT MEANS THIS WORKS WITH keeagent (KeePass) !! _nice_
-	$keys = & $($config.basedir)\system\git\usr\bin\ssh-add.exe -L 
+	$keys = & "$($config.basedir)\system\git\usr\bin\ssh-add.exe" -L 
 	if( -not $keys ){
 		Write-Warning "No keys present in ssh-agent`n Operation can not proceed, exiting."
 	}
-	foreach ( $line in ( & $($config.basedir)\system\git\usr\bin\ssh-add.exe -L ) ) {
+	foreach ( $line in ( & "$($config.basedir)\system\git\usr\bin\ssh-add.exe" -L ) ) {
 		$sh = "cd ; umask 077 ; mkdir -p .ssh; touch .ssh/authorized_keys; grep '" + $line + "' "
 		$sh += `
 @"
@@ -141,13 +141,17 @@ function Send-LinuxConfig {
 "@
 		Write-Output "Sending Key: $($($line.Split(" ")) | Select-Object -last 1)"
 		# do your thing
-		$line | & $($config.basedir)\system\git\usr\bin\ssh.exe $ConnectionString $sh
-	}
+		$line | & "$($config.basedir)\system\git\usr\bin\ssh.exe" $ConnectionString $sh
+    }
+    
+    if ( [string]::IsNullOrEmpty($user.push.bashrc) ){
+        $user.push = ([OmegaConfig]::GetInstance()).Push;
+    }
 	
 	# push bashrc and vimrc
-	$(Invoke-WebRequest -UseBasicParsing $user.push_bashrc).Content | & $($config.basedir)\system\git\usr\bin\ssh.exe $ConnectionString "sed $'s/\r//' > ~/.bashrc"
+	$(Invoke-WebRequest -UseBasicParsing $user.push.bashrc).Content | & "$($config.basedir)\system\git\usr\bin\ssh.exe" $ConnectionString "sed $'s/\r//' > ~/.bashrc"
 	Write-Output "Sent .bashrc"
-	$(Invoke-WebRequest -UseBasicParsing $user.push_vimrc).Content | & $($config.basedir)\system\git\usr\bin\ssh.exe $ConnectionString "sed $'s/\r//' > ~/.vimrc"
+	$(Invoke-WebRequest -UseBasicParsing $user.push.vimrc).Content | & "$($config.basedir)\system\git\usr\bin\ssh.exe" $ConnectionString "sed $'s/\r//' > ~/.vimrc"
 	Write-Output "Sent .vimrc"
 	
 }
