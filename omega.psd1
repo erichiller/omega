@@ -1,6 +1,11 @@
 # Module manifest for MaxPowerShell
 # Eric D Hiller
 # January 2018
+
+<#
+ # For formatting and properties, see:
+ # https://msdn.microsoft.com/en-us/library/dd878337(v=vs.85).aspx
+ #>
 @{
 	Author            = "Eric D Hiller"
 	Description       = "Max Power Shell - Get more out of your command environment."
@@ -25,9 +30,9 @@
 
 	# Script files (.ps1) that are run in the caller's (GLOBAL) environment prior to importing this module
 	#    Having _anything_ present in this field causes it to be present as a *seperate* module in the user's environment
-	# ScriptsToProcess = @()
-	# TypesToProcess   = @()
-	# FormatsToProcess = @()
+	ScriptsToProcess = @()
+	TypesToProcess   = @()
+	FormatsToProcess = @()
 
 	AliasesToExport   = @(
         "7z"
@@ -44,8 +49,8 @@
         "tail"
         "whereis"
         "which"
-        ) # all
-	# CmdletsToExport   = @() # all
+        )
+    CmdletsToExport   = @()
 	VariablesToExport = @(
         "GitPromptScriptBlock"
     ) # all
@@ -64,83 +69,94 @@
         "Write-Prompt"
         "Get-PrettyPath"
 
-    ) # all
 
-    #     "Get-ComputerName"
-    #     "Get-Drive"
-    #     "Get-FullPath"
-    #     "Get-ShortPath"
-    #     "Get-Theme"
-    #     "Get-VcsInfo"
-    #     "Get-VCSStatus"
-    #     "Get-VirtualEnvName"
-    #     "Set-CursorForRightBlockWrite"
-    #     "Set-CursorUp"
-    #     "Set-Newline"
-    #     "Set-Theme"
-    #     "Show-Colors"
-    #     "Show-ThemeColors"
-    #     "Show-ThemeSymbols"
-    #     "Test-Administrator"
-    #     "Test-NotDefaultUser"
-    #     "Test-VirtualEnv"
+## non-omega
+#         "Get-ComputerName"
+#         "Get-Drive"
+#         "Get-FullPath"
+#         "Get-ShortPath"
+#         "Get-Theme"
+#         "Get-VcsInfo"
+#         "Get-VCSStatus"
+#         "Get-VirtualEnvName"
 
-    #     "Update-AllBranches"
-    #     "Write-GitBranchName"
-    #     "Write-GitBranchStatus"
-    #     "Write-GitIndexStatus"
-    #     "Write-GitStashCount"
-    #     "Write-GitStatus"
-    #     "Write-GitWorkingDirStatus"
-    #     "Write-GitWorkingDirStatusSummary"
+#         "ThemeCompletion"
+#         "NewCompletionResult"
 
-    #     "Add-PoshGitToProfile"
+#         "Test-NotDefaultUser"
+#         "Set-CursorForRightBlockWrite"
+#         "Reset-CursorPosition"
+#         "Set-CursorUp"
+#         "Set-Newline"
+#         "Start-Up"
+#         "Set-Prompt"
 
-    #     "Format-GitBranchName"
-    #     "Get-GitBranchStatusColor"
-    #     "Get-GitDirectory"
-    #     "Get-GitStatus"
-    #     "Get-PromptPath"
-    #     "Get-SshAgent"
-    #     "Get-SshPath"
+#         "Set-CursorUp"
+#         "Set-Newline"
+#         "Set-CursorForRightBlockWrite"
+#         "Set-Theme"
+#         "Show-Colors"
+#         "Show-ThemeColors"
+#         "Show-ThemeSymbols"
+#         "Test-Administrator"
+#         "Test-NotDefaultUser"
+#         "Test-VirtualEnv"
 
-    #     "TabExpansion"
+#         "Update-AllBranches"
+#         "Write-GitBranchName"
+#         "Write-GitBranchStatus"
+#         "Write-GitIndexStatus"
+#         "Write-GitStashCount"
+#         "Write-GitStatus"
+#         "Write-GitWorkingDirStatus"
+#         "Write-GitWorkingDirStatusSummary"
 
-    #     "Omega-Help"
-    #     "Remove-DirFromPath"
-    # "SafeObjectArray"
-    #     "Save-UserConfig"
-    #     "Search-Executable"
-    #     "Search-FrequentDirectory"
-    #     "Search-KnowledgeBase"
-    #     "Send-LinuxConfig"
-    #     "Set-RegisterCommandAvailable"
-    #     "Set-UserRepo"
-    #     "Test-Admin"
+#         "Add-PoshGitToProfile"
 
-    #     "ArrayAddUnique"
-    #     "checkGit"
-    #     "Convert-DirectoryStringtoUnix"
-    #     "Debug-Title"
-    #     "Debug-Variable"
-    #     "Enter-UserConfirm"
-    #     "ff"
-    #     "Get-CommandsAvailable"
-    #     "Get-DirectoryDiff"
-    #     "Get-DirectorySize"
-    #     "Get-FileContentTail"
-    #     "Get-md5sum"
-    #     "Get-sha256sum"
-    #     "grep"
-    #     "Join-Paths"
-    #     "mv"
-    #     "New-UserConfigRepo"
+#         "Format-GitBranchName"
+#         "Get-GitBranchStatusColor"
+#         "Get-GitDirectory"
+#         "Get-GitStatus"
+#         "Get-PromptPath"
+#         "Get-SshAgent"
+#         "Get-SshPath"
 
-    #     "tgit"
-    #     "Start-SshAgent"
-    #     "Stop-SshAgent"
-    #     "Add-SshKey"
+#         "TabExpansion"
 
+# ## omega
+#         "Omega-Help"
+#         "Remove-DirFromPath"
+#         "SafeObjectArray"
+#         "Save-UserConfig"
+        "Search-FrequentDirectory"
+        "Search-KnowledgeBase"
+        # "Set-RegisterCommandAvailable"
+#         "Set-UserRepo"
+#         "Test-Admin"
+
+#         "ArrayAddUnique"
+#         "checkGit"
+#         "Convert-DirectoryStringtoUnix"
+#         "Debug-Title"
+#         "Debug-Variable"
+#         "Enter-UserConfirm"
+#         "ff"
+#         "Get-CommandsAvailable"
+#         "Get-DirectoryDiff"
+#         "Get-DirectorySize"
+#         "Get-FileContentTail"
+#         "Get-md5sum"
+#         "Get-sha256sum"
+#         "grep"
+#         "Join-Paths"
+#         "mv"
+#         "New-UserConfigRepo"
+
+#         "tgit"
+#         "Start-SshAgent"
+#         "Stop-SshAgent"
+#         "Add-SshKey"
+    )
     
 
 

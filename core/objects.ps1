@@ -72,7 +72,11 @@ class OmegaConfig {
 
 	OmegaConfig() {
 		Write-Debug "Empty OmegaConfig init --> SHOULD USE ::GetInstance()"
-	}
+    }
+    
+    [string] GetLogPath() {
+        return ( Join-Path $this.BaseDir $this.LogPath )
+    }
 
 
 }

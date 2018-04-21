@@ -9,7 +9,6 @@ try { . ([ScriptBlock]::Create("using module '$($MyInvocation.MyCommand.ScriptBl
 ################################################
 #>
 
-<#
 # PowerShell defaults $VerbosePreference to "SilentlyContinue" which will not display verbose messages
 # Set this to continue to display verbose messages where available
 # See $config.verbosity for these configurations
@@ -87,7 +86,7 @@ try {
     } else {
         Import-Module oh-my-posh -ErrorAction Stop >$null
     }
-	$global:ThemeSettings.MyThemesLocation = "$($config.basedir)\core\"
+	$global:ThemeSettings.MyThemesLocation = "$($config.basedir)\core"
     Set-Theme themeOmega
 } catch {
 	Write-Warning "oh-my-posh module failed to load. Either not installed or there was an error. Modules styling will not be present."

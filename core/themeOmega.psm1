@@ -102,8 +102,7 @@ function Write-Theme {
         # Let ConEmu know when the prompt ends, to select typed
         # command properly with "Shift+Home", to change cursor
         # position in the prompt by simple mouse click, etc.
-        $ansi_out = "$([char]27)]9;12$([char]7)"
-        Write-Host $ansi_out -NoNewline
+        $prompt += Write-Prompt "$([char]27)]9;12$([char]7)"
 
         # And current working directory (FileSystem)
         # ConEmu may show full path or just current folder name
@@ -112,7 +111,7 @@ function Write-Theme {
         # on files in the output from compilers and source control
         # systems (git, hg, ...)
         if ($loc.Provider.Name -eq "FileSystem") {
-            Write-Host "$([char]27)]9;9;`"$($loc.Path)`"$([char]7)" -NoNewline
+            $prompt += Write-Prompt "$([char]27)]9;9;`"$($loc.Path)`"$([char]7)"
         }
     }
 
@@ -149,6 +148,8 @@ function Show-Glyphs {
 #>
 
 
+
+
 $MASTER_BACKGROUND = [ConsoleColor]::Black
 
 $console = $host.UI.RawUI
@@ -165,23 +166,25 @@ $console.BackgroundColor = $MASTER_BACKGROUND
     (Get-Host).PrivateData
     #>
 
-$colors = $host.PrivateData
-$colors.DebugForegroundColor	= [ConsoleColor]::Blue
-$colors.DebugBackgroundColor	= $MASTER_BACKGROUND
-$colors.ProgressForegroundColor = [ConsoleColor]::Yellow
-$colors.ProgressBackgroundColor = $MASTER_BACKGROUND
+if (Get-Member -inputobject $host.PrivateData -name "DebugForegroundColor" -Membertype Properties){
+    $colors = $host.PrivateData
+    $colors.DebugForegroundColor	= [ConsoleColor]::Blue
+    $colors.DebugBackgroundColor	= $MASTER_BACKGROUND
+    $colors.ProgressForegroundColor = [ConsoleColor]::Yellow
+    $colors.ProgressBackgroundColor = $MASTER_BACKGROUND
 
-$colors.VerboseForegroundColor = [ConsoleColor]::Gray
-$colors.VerboseBackgroundColor = $MASTER_BACKGROUND
-$colors.WarningForegroundColor = [ConsoleColor]::Yellow
-$colors.WarningBackgroundColor = $MASTER_BACKGROUND
+    $colors.VerboseForegroundColor = [ConsoleColor]::Gray
+    $colors.VerboseBackgroundColor = $MASTER_BACKGROUND
+    $colors.WarningForegroundColor = [ConsoleColor]::Yellow
+    $colors.WarningBackgroundColor = $MASTER_BACKGROUND
 
-# Most message colors can be set
-# https://technet.microsoft.com/en-us/library/ee692799.aspx
-# Write-Information can not
-# https://blogs.technet.microsoft.com/heyscriptingguy/2015/07/04/weekend-scripter-welcome-to-the-powershell-information-stream/
-$colors.ErrorForegroundColor = [ConsoleColor]::Red
-$colors.ErrorBackgroundColor = $MASTER_BACKGROUND
+    # Most message colors can be set
+    # https://technet.microsoft.com/en-us/library/ee692799.aspx
+    # Write-Information can not
+    # https://blogs.technet.microsoft.com/heyscriptingguy/2015/07/04/weekend-scripter-welcome-to-the-powershell-information-stream/
+    $colors.ErrorForegroundColor = [ConsoleColor]::Red
+    $colors.ErrorBackgroundColor = $MASTER_BACKGROUND
+}
 
 <# END #>
 
@@ -261,10 +264,10 @@ Set-PSReadlineOption -TokenKind Parameter -ForegroundColor Yellow
 #>
 
 # see possible options under "Tab Complete" here: 
-# https://github.com/lzybkr/PSReadLine/blob/master/PSReadLine/en-US/about_PSReadline.help.txt
+# https://github.com/lzybkr/PSReadLine/blob/master/docs/about_PSReadLine.help.txt
 # Note: Ctrl + Space already performs MenuComplete
 # TabCompleteNext , Complete , MenuComplete
-Set-PSReadlineKeyHandler -Key Tab       -Function Complete
+Set-PSReadlineKeyHandler -Key Tab       -Function MenuComplete
 
 Set-PSReadlineKeyHandler -Key UpArrow   -Function HistorySearchBackward
 Set-PSReadlineKeyHandler -Key DownArrow -Function HistorySearchForward
