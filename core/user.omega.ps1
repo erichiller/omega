@@ -141,7 +141,9 @@ function Send-LinuxConfig {
 "@
 		Write-Output "Sending Key: $($($line.Split(" ")) | Select-Object -last 1)"
 		# do your thing
-		$line | & "$($config.basedir)\system\git\usr\bin\ssh.exe" $ConnectionString $sh
+        # $line | & "$($config.basedir)\system\git\usr\bin\ssh.exe" $ConnectionString $sh
+        $env:SSHCallBasic = $True
+        $line | & "$($config.basedir)\bin\ssh.cmd" $ConnectionString $sh
     }
     
     if ( [string]::IsNullOrEmpty($user.push.bashrc) ){
@@ -149,11 +151,11 @@ function Send-LinuxConfig {
     }
 	
 	# push bashrc and vimrc
-	$(Invoke-WebRequest -UseBasicParsing $user.push.bashrc).Content | & "$($config.basedir)\system\git\usr\bin\ssh.exe" $ConnectionString "sed $'s/\r//' > ~/.bashrc"
+	$(Invoke-WebRequest -UseBasicParsing $user.push.bashrc).Content | & "$($config.basedir)\bin\ssh.cmd" $ConnectionString "sed $'s/\r//' > ~/.bashrc"
 	Write-Output "Sent .bashrc"
-	$(Invoke-WebRequest -UseBasicParsing $user.push.vimrc).Content | & "$($config.basedir)\system\git\usr\bin\ssh.exe" $ConnectionString "sed $'s/\r//' > ~/.vimrc"
+	$(Invoke-WebRequest -UseBasicParsing $user.push.vimrc).Content | & "$($config.basedir)\bin\ssh.cmd" $ConnectionString "sed $'s/\r//' > ~/.vimrc"
 	Write-Output "Sent .vimrc"
-	
+    Remove-Item env:SSHCallBasic
 }
 
 
