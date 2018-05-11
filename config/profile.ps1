@@ -150,6 +150,8 @@ Set-Alias -Name "Print-Path" -Value Show-Path
 
 Set-Alias -Name "7z" -Value "${env:ProgramFiles}\7-zip\7z.exe"
 
+Set-Alias -Name "ssh" -Value "${env:BaseDir}\bin\ssh.cmd"
+
 # where whereis which
 # probably a bad idea to reset where, it breaks a decent number of things.
 Set-Alias -Name "which" -Value "${env:windir}\System32\where.exe"
