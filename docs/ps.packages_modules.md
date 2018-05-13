@@ -24,7 +24,7 @@ Install-Package 1poshword
 _To install a package to a custom location you must use:_
 
 ```powershell
-Save-Package -Path 'C:\Users\ehiller\AppData\omega\system\psmodules\' 1poshword
+Save-Package -Path "C:\Users\ehiller\${env:APPDATA}\omega\system\psmodules\" 1poshword
 ```
 
 _And then import it with_

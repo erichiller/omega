@@ -2,7 +2,7 @@
     "GitUser":  "a",
     "GitRepoState":  "",
     "SystemPathAdditions":  [
-                                "C:\\users\\ehiller\\appdata\\local\\omega\\system\\git\\cmd"
+                                "C:\\users\\ehiller\\appdata\\Roaming\\omega\\system\\git\\cmd"
                             ],
     "Packages":  {
                      "git":  {

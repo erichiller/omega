@@ -36,6 +36,7 @@
 
 	AliasesToExport   = @(
         "7z"
+        "curl"
         "f"
         "gh"
         "hexdump"
@@ -47,6 +48,7 @@
         "psr"
         "sed"
         "tail"
+        "wget"
         "whereis"
         "which"
         )
@@ -68,6 +70,8 @@
         "Search-Executable"
         "Write-Prompt"
         "Get-PrettyPath"
+        "New-OmegaShortcut"
+        "mv"
 
 
 ## non-omega
@@ -149,7 +153,6 @@
 #         "Get-sha256sum"
 #         "grep"
 #         "Join-Paths"
-#         "mv"
 #         "New-UserConfigRepo"
 
 #         "tgit"
@@ -184,7 +187,8 @@
 		"core\core.ui.ps1"
 		# "core/system.install.ps1"
 		"core\user.omega.ps1"
-		"core\user.utilities.ps1"
+        "core\user.utilities.ps1"
+		"core\resources.create.ps1"
 	)
 
 	# HelpInfoURI          = ""

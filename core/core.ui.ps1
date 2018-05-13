@@ -80,8 +80,6 @@ function Get-PrettyPath {
 	}
 }
 
-
-Set-Alias -Name "f" -Value Search-FrequentDirectory -ErrorAction Ignore
 <#
 .SYNOPSIS
 Search-FrequentDirectory is a helper function navigating frequently accessed directories
@@ -260,7 +258,7 @@ function Search-FrequentDirectory {
 			# if we reached this point, none of the above worked, it is time to just brute force search,
 			# Not found within the path of another match, so just scan every single directory. Maybe slow, but it should work
 			Write-Debug "We are now going to brute force search, all other methods have failed"
-			$dirsToScan = @(".", $env:HOME, $env:LOCALAPPDATA)
+			$dirsToScan = @(".", $env:HOME, $env:APPDATA)
 			foreach ($dir in $dirsToScan ) {
 				Write-Debug "Scanning: $dir"
 				Get-Childitem -path $dir -recurse -directory -filter "$dirSearch" -ErrorAction SilentlyContinue | ForEach-Object {

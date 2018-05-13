@@ -1,4 +1,3 @@
-using module ".\..\objects.ps1"
 
 function New-OmegaShortcut {
     $conf = [OmegaConfig]::GetInstance()
@@ -41,7 +40,7 @@ New Shortcut is a core function to create a shortcut with arguments to a target
 targetRelPath is the file that will be called when the shortcut is called. Typically an exe.
 .PARAMETER shortcutFile
 shortcutFile is where the resulting shortcut will be placed
-Defaults to C:\Users\ehiller\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\ + <baseName>
+Defaults to C:\Users\ehiller\APPDATA\Microsoft\Windows\Start Menu\Programs\ + <baseName>
 #>
 function New-Shortcut {
 	param(

@@ -179,11 +179,15 @@ Set-Alias -Name "whereis" -Value Search-Executable
 # new mv
 if (alias mv   -ErrorAction SilentlyContinue) { Remove-Item alias:mv   }
 
-# new curl
-if (alias wget -ErrorAction SilentlyContinue) { Remove-Item alias:wget }
+# new wget
+if (alias wget -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:wget }
+if (alias wget -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:wget }
+Set-Alias -Name "wget" -Value "$($config.basedir)\bin\wget.exe"
 
 # new curl
-if (alias curl -ErrorAction SilentlyContinue) { Remove-Item alias:curl }
+if (alias curl -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:curl }
+if (alias curl -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:curl }
+Set-Alias -Name "curl" -Value "$($config.basedir)\bin\curl.cmd"
 
 # less
 Set-Alias -Name "less" -Value "$($config.basedir)\system\git\usr\bin\less.exe"
@@ -201,8 +205,13 @@ if (-not (Get-Command hexdump.exe -ErrorAction ignore )) { Set-Alias -Name hexdu
 # psr "PowerShell Remoting" -> Enter-PSSession 
 Set-Alias -Name psr -Value Enter-PSSession
 
-# Use the Silver Searcher to do 
-# Find File; -g finds files
+# f is Search-FrequentDirectory
+Set-Alias -Name f -Value Search-FrequentDirectory -ErrorAction Ignore
+
+<# Use the Silver Searcher to do
+Find File
+-g finds files
+#>
 function ff { & "$($config.basedir)\bin\ag.exe" -i -g $args }
 
 
@@ -212,7 +221,7 @@ function ff { & "$($config.basedir)\bin\ag.exe" -i -g $args }
 # Ultimately this should be its own usr file
 function Open-GitHubDevDirectory { Set-Location "${env:Home}\Dev\src\github.com\$($user.GitUser)\$($args[0])" }
 set-alias -Name gh -Value Open-GitHubDevDirectory
-function Open-OmegaBaseDirectory { Set-Location ( Join-Path $config.Basedir $args[0] ) }
+function Open-OmegaBaseDirectory { $destination = Join-Path $config.Basedir $args[0] ; Set-Location $destination; return $desination; }
 set-alias -Name om -Value Open-OmegaBaseDirectory
 
 <#
@@ -350,3 +359,31 @@ Register-ArgumentCompleter -Native -CommandName ssh -ScriptBlock {
 		Write-Debug "$known_hosts_path not found"
 	}
 }
+
+<#
+.Synopsis
+Complete paths from history
+.Notes
+`CommandName` can be an ARRAY listed as `Command1 , Command2`
+# #>
+# Register-ArgumentCompleter -CommandName  f -ParameterName Path -ScriptBlock {
+#     param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameter)
+# 	$known_hosts_path = Join-Path $env:HOME ".ssh\known_hosts"
+# 	if ( Test-Path $known_hosts_path ) {
+# 		$matches = select-string $known_hosts_path -pattern "^[\d\w.:]*" -AllMatches
+# 		$matches += select-string $known_hosts_path -pattern "(?<=,)([\w.:]*)" -AllMatches
+
+# 		$matches | Where-Object { 
+# 			$_.matches.Value -like "$wordToComplete*"
+# 		} | Sort-Object | 
+# 			Foreach-Object { 
+# 			$CompletionText = $_.matches.Value 
+# 			$ListItemText = $_.matches.Value 
+# 			$ResultType = 'ParameterValue'
+# 			$ToolTip = $_.matches.Value 
+# 			[System.Management.Automation.CompletionResult]::new($CompletionText, $ListItemText, $ResultType, $ToolTip)
+# 		}
+# 	} else {
+# 		Write-Debug "$known_hosts_path not found"
+# 	}
+# }

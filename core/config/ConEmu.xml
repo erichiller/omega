@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <key name="Software">
 	<key name="ConEmu">
-		<key name=".Vanilla" modified="2018-04-14 10:56:22" build="180411">
+		<key name=".Vanilla" modified="2018-05-10 11:34:36" build="180506">
 			<value name="StartType" type="hex" data="00"/>
 			<value name="CmdLine" type="string" data=""/>
 			<value name="StartTasksFile" type="string" data=""/>
@@ -344,7 +344,7 @@
 			<value name="MinimizeOnLoseFocus" type="hex" data="00"/>
 			<value name="DisableFarFlashing" type="hex" data="00"/>
 			<value name="DisableAllFlashing" type="hex" data="00"/>
-			<value name="FindText" type="string" data="TIMER_SCALE"/>
+			<value name="FindText" type="string" data="-exec"/>
 			<value name="FindMatchCase" type="hex" data="00"/>
 			<value name="FindMatchWholeWords" type="hex" data="00"/>
 			<value name="FindTransparent" type="hex" data="01"/>
@@ -627,7 +627,7 @@
 					<value name="Flags" type="dword" data="00000000"/>
 					<value name="Hotkey" type="dword" data="00001173"/>
 					<value name="GuiArgs" type="string" data='/icon "%ConEmuDir%\..\..\icons\bash_32.ico" /Dir %USERPROFILE%'/>
-					<value name="Cmd1" type="string" data='set basedir=%LOCALAPPDATA%\omega &amp; set CHERE_INVOKING=1 &amp; set MSYSTEM=MINGW32 &amp; set "PATH=%basedir%\system\msys\usr\bin\;%PATH%" &amp; "%basedir%\system\ConEmu\ConEmu\conemu-msys2-32.exe %basedir%\system\msys\usr\bin\bash.exe --login -i"'/>
+					<value name="Cmd1" type="string" data='set basedir=%APPDATA%\omega &amp; set CHERE_INVOKING=1 &amp; set MSYSTEM=MINGW32 &amp; set "PATH=%basedir%\system\msys\usr\bin\;%PATH%" &amp; "%basedir%\system\ConEmu\ConEmu\conemu-msys2-32.exe %basedir%\system\msys\usr\bin\bash.exe --login -i"'/>
 					<value name="Active" type="long" data="0"/>
 					<value name="Count" type="long" data="1"/>
 				</key>

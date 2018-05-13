@@ -331,7 +331,7 @@ function Write-Log {
 		if ($OMEGA_CONF -ne $null) {
 			$logpath = ( Join-Path $env:basedir $OMEGA_CONF.logpath )
 		} else {
-			$logpath = "C:\Users\ehiller\AppData\Local\omega\omega.log"
+			$logpath = "omega.log"
 		}
 		if ( $help ){
 			get-help $MyInvocation.MyCommand

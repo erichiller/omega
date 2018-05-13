@@ -1,5 +1,5 @@
 
-$PSScriptRoot = "c:\users\ehiller\appdata\local\omega\core"
+$PSScriptRoot = Join-Path $env:APPDATA "omega\core"
 
 $host.UI.RawUI.BackgroundColor = 'Black'
 Clear-Host

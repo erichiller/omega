@@ -53,11 +53,11 @@ Converting the Embedded Python into Full
 Embedded Python is using compiled main libraries (apparent by the *.pyc file endings) to convert, remove all of these and use *.py source libraries
 
 
-Get-ChildItem -Recurse "C:\Users\ehiller\AppData\Local\omega\system\python\Lib\" | Where-Object { $_.LastWriteTime -lt (Get-Date -year 2017 -month 7 -day 16)}
+Get-ChildItem -Recurse "C:\Users\ehiller\AppData\omega\system\python\Lib\" | Where-Object { $_.LastWriteTime -lt (Get-Date -year 2017 -month 7 -day 16)}
 
-(Get-ChildItem -Recurse "C:\Users\ehiller\AppData\Local\omega\system\python\Lib\" -include "*.pyc" | Where-Object { $_.Directory.Name.CompareTo("__pycache__") -and $_.Directory.Name.CompareTo("Lib") } ).Directory | Get-Unique | Remove-Item -Recurse -Force
+(Get-ChildItem -Recurse "C:\Users\ehiller\AppData\omega\system\python\Lib\" -include "*.pyc" | Where-Object { $_.Directory.Name.CompareTo("__pycache__") -and $_.Directory.Name.CompareTo("Lib") } ).Directory | Get-Unique | Remove-Item -Recurse -Force
 
-Get-ChildItem -Recurse "C:\Users\ehiller\AppData\Local\omega\system\python\Lib\" -include "*.pyc" | Where-Object { -not $_.Directory.Name.CompareTo("Lib") } | Remove-Item -Recurse -Force
+Get-ChildItem -Recurse "C:\Users\ehiller\AppData\omega\system\python\Lib\" -include "*.pyc" | Where-Object { -not $_.Directory.Name.CompareTo("Lib") } | Remove-Item -Recurse -Force
 
 Simply grab the `.tgz` from the python ftp and copy over the `/Lib` into the windows _Python_ install directory `/Lib`
 

@@ -52,18 +52,18 @@ from <http://www.lfd.uci.edu/~gohlke/pythonlibs/> you'll need to download the wh
 - [NumPy](http://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy)  
       for `numpy‑1.13.0rc1+mkl‑cp36‑cp36m‑win_amd64.whl`
 
-      pip3 install C:\Users\ehiller\AppData\Local\omega\config\pkg\python\binaries\numpy-1.13.0rc1+mkl-cp36-cp36m-win_amd64.whl
+      pip3 install C:\Users\ehiller\AppData\omega\config\pkg\python\binaries\numpy-1.13.0rc1+mkl-cp36-cp36m-win_amd64.whl
 - [SciPy](http://www.lfd.uci.edu/~gohlke/pythonlibs/#scipy)  
       for `scipy‑0.19.0‑cp36‑cp36m‑win_amd64.whl`
 
-      pip3 install C:\Users\ehiller\AppData\Local\omega\config\pkg\python\binaries\scipy-0.19.0-cp36-cp36m-win_amd64.whl
+      pip3 install C:\Users\ehiller\AppData\omega\config\pkg\python\binaries\scipy-0.19.0-cp36-cp36m-win_amd64.whl
 - [scikit-learn, aka sklearn](http://www.lfd.uci.edu/~gohlke/pythonlibs/#scikit-learn)  
       for `scikit_learn‑0.18.1‑cp36‑cp36m‑win_amd64.whl`
 
-      pip3 install C:\Users\ehiller\AppData\Local\omega\config\pkg\python\binaries\scikit_learn-0.18.1-cp36-cp36m-win_amd64.whl
+      pip3 install C:\Users\ehiller\AppData\omega\config\pkg\python\binaries\scikit_learn-0.18.1-cp36-cp36m-win_amd64.whl
 
 - [tensorflow](http://www.lfd.uci.edu/~gohlke/pythonlibs/#tensorflow)  
       for `tensorflow‑1.1.0‑cp36‑cp36m‑win_amd64.whl`
 
-      pip3 install C:\Users\ehiller\AppData\Local\omega\config\pkg\python\binaries\tensorflow-1.1.0-cp36-cp36m-win_amd64.whl
+      pip3 install C:\Users\ehiller\AppData\omega\config\pkg\python\binaries\tensorflow-1.1.0-cp36-cp36m-win_amd64.whl
 
