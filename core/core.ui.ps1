@@ -49,7 +49,8 @@ See omega.psm1 for usage
 #>
 function Get-PrettyPath {
 	param (
-	[System.Management.Automation.PathInfo] $dir
+    [System.Management.Automation.PathInfo] $dir,
+	[switch] $prependBase = $False
 	)
 	#### IT IS GIVING ME A STRING!!!!!
 	if( -not $dir ){ $dir = Get-Location }
@@ -60,21 +61,42 @@ function Get-PrettyPath {
 	}
 	$provider = $dir.Provider.Name
 	if($provider -eq 'FileSystem'){
+        # if it is home, stop all further processing, don't waste time
+        if ($dir.path -eq $HOME) {
+            return '~'
+        }
 		$result = @()
-		$currentDir = Get-Item $dir.path
-		while( ($currentDir.Parent) -And ($currentDir.FullName -ne $HOME) -And ($result.Count -lt 2 ) ) {
+        $currentDir = Get-Item $dir.path
+        if ( $prependBase -eq $True ){
+            # the first is a blank `/` root ; so subtract 1
+            $pathSegmentsLength = (new-object System.Uri(Convert-Path .)).Segments.Length - 1
+            if( $dir.Drive ) {
+                $base = $dir.Drive.Name + ":"
+                # Display the UNC (smb) host if it is one
+            } else { 
+                $base = (new-object System.Uri(Convert-Path .))
+                if( $base.IsUnc ){
+                    $base = "\\" + $base.Host
+                } else {
+                    $base = $base.Host
+                }
+            }
+        }
+		while( ($currentDir.Parent) -And ($result.Count -lt 2 ) -And ($currentDir -ne $base ) ){
 			$result = ,$currentDir.Name + $result
 			$currentDir = $currentDir.Parent
-		}
-		$shortPath =  $result -join $ThemeSettings.PromptSymbols.PathSeparator
-		if ($shortPath) {
-			return "$($sl.PromptSymbols.PathSeparator)$shortPath"
-		} else {
-			if ($dir.path -eq $HOME) {
-				return '~'
-			}
-			return "$($dir.Drive.Name):"
-		}
+        }
+        if ( $prependBase -ne $True ){
+            return $result -join $ThemeSettings.PromptSymbols.PathSeparator
+        }
+        if ( $pathSegmentsLength -gt $result.Length ){
+            # create an indicator for the number of path segments skipped
+            $base = $base + "(" + ($pathSegmentsLength - $result.Length) + ")"
+        }
+		return (,$base + $result) -join $ThemeSettings.PromptSymbols.PathSeparator
+    # for NETWORK SHARES, could also use:
+    # new-object System.Uri(Convert-Path .).Host
+    # 
 	} else {
 		return $dir.path.Replace((Get-Drive -dir $dir), '')
 	}

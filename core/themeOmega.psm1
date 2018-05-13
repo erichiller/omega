@@ -65,7 +65,7 @@ function Write-Theme {
 
     #$user = [Environment]::UserName
     #$computer = $env:computername
-    $path = Get-FullPath -dir $pwd
+    $path = Get-PrettyPath -prependBase -dir $pwd
     
     #Write-Prompt -Object "$user " -ForegroundColor $sl.Colors.SessionInfoForegroundColor -BackgroundColor $sl.Colors.SessionInfoBackgroundColor
     $prompt += Write-Prompt -Object "$($sl.PromptSymbols.SegmentForwardSymbol) " -ForegroundColor $sl.Colors.SessionInfoBackgroundColor -BackgroundColor $sl.Colors.PromptBackgroundColor
