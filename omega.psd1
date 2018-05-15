@@ -38,6 +38,7 @@
         "7z"
         "curl"
         "f"
+        "ff"
         "gh"
         "hexdump"
         "kb"
@@ -47,6 +48,7 @@
         "Print-Path"
         "psr"
         "sed"
+        "ssh"
         "tail"
         "wget"
         "whereis"
@@ -72,6 +74,8 @@
         "Get-PrettyPath"
         "New-OmegaShortcut"
         "mv"
+        "grep"
+
 
 
 ## non-omega

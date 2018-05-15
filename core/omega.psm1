@@ -195,6 +195,9 @@ Set-Alias -Name "less" -Value "$($config.basedir)\system\git\usr\bin\less.exe"
 # sed
 Set-Alias -Name sed -Value "$($config.basedir)\system\git\usr\bin\sed.exe"
 
+# sed
+Set-Alias -Name ssh -Value "$($config.basedir)\bin\ssh.cmd"
+
 # File hashes for md5sum and sha256sum
 function Get-md5sum { Get-FileHash -Algorithm "md5" -Path $args }; Set-Alias -Name md5sum -Value Get-md5sum
 function Get-sha256sum { Get-FileHash -Algorithm "sha256" -Path $args }; Set-Alias -Name sha256sum -Value Get-sha256sum
@@ -333,6 +336,10 @@ function Search-KnowledgeBase {
 	if ( $help ) { Get-Help $MyInvocation.MyCommand; return; } # Call help on self and exit
 }
 Set-Alias -Name kb -Value Search-KnowledgeBase
+
+# function Show-HelpKeyGrid {
+#     Select-Xml -Path "\\nas\users\eric\Documents\WindowsPowerShell\Modules\omega\core\config\ConEmu.xml" -XPath "//key[@name='HotKeys']" |  Select-Object –ExpandProperty "node" | Select-Object -ExpandProperty "value" | foreach { $_.data }
+# }
 
 <#
 .Synopsis
