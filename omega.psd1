@@ -38,7 +38,6 @@
         "7z"
         "curl"
         "f"
-        "ff"
         "gh"
         "hexdump"
         "kb"
@@ -75,6 +74,7 @@
         "New-OmegaShortcut"
         "mv"
         "grep"
+        "ff"
 
 
 
@@ -152,7 +152,7 @@
 #         "Get-CommandsAvailable"
 #         "Get-DirectoryDiff"
 #         "Get-DirectorySize"
-#         "Get-FileContentTail"
+        "Get-FileContentTail"
 #         "Get-md5sum"
 #         "Get-sha256sum"
 #         "grep"

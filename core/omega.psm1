@@ -59,10 +59,8 @@ try {
 	# **NOTE** This must be configured as a CYGWIN compatible socket in KeeAgent
 	if ( Test-Path ( Join-Path $env:TEMP "KeeAgent.sock" ) ) { $env:SSH_AUTH_SOCK = Join-Path $env:TEMP "KeeAgent.sock" }
 	else { Write-Verbose "KeeAgent.sock was not found in ${env:TEMP}, it will not be used as ssh-agent" }
-	# For information on Git display variables, see:
-	# $env:ConEmuDir\system\psmodules\posh-git\GitPrompt.ps1
-	# posh-git change name of tab // remove annoying
-	$GitPromptSettings.EnableWindowTitle = "git:"
+    # For information on Git display / style preference variables, see the [PoshGitPromptSettings] class
+    # https://github.com/dahlbyk/posh-git/blob/master/src/PoshGitTypes.ps1
 	# set git's pager to Windows' native `more` ; because git's `less` is unstable on Windows in ConEmu
 	$env:GIT_PAGER = "'less' -c -d"
 } catch {
@@ -84,10 +82,12 @@ try {
     if ( Get-Module "oh-my-posh" ){
         Write-Verbose "module 'oh-my-posh' already loaded, skipping forced load"
     } else {
-        Import-Module oh-my-posh -ErrorAction Stop >$null
+        if ( $gitStatus -eq $True ){
+            Import-Module oh-my-posh -ErrorAction Stop >$null
+            $global:ThemeSettings.MyThemesLocation = "$($config.basedir)\core"
+            Set-Theme themeOmega
+        }
     }
-	$global:ThemeSettings.MyThemesLocation = "$($config.basedir)\core"
-    Set-Theme themeOmega
 } catch {
 	Write-Warning "oh-my-posh module failed to load. Either not installed or there was an error. Modules styling will not be present."
 }
