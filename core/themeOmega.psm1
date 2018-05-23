@@ -267,7 +267,7 @@ Set-PSReadlineOption -TokenKind Parameter -ForegroundColor Yellow
 # https://github.com/lzybkr/PSReadLine/blob/master/docs/about_PSReadLine.help.txt
 # Note: Ctrl + Space already performs MenuComplete
 # TabCompleteNext , Complete , MenuComplete
-Set-PSReadlineKeyHandler -Key Tab       -Function MenuComplete
+Set-PSReadlineKeyHandler -Key Tab       -Function Complete
 
 Set-PSReadlineKeyHandler -Key UpArrow   -Function HistorySearchBackward
 Set-PSReadlineKeyHandler -Key DownArrow -Function HistorySearchForward
