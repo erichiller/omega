@@ -1,6 +1,15 @@
 @rem Do not use "echo off" to not affect any child calls.
 @setlocal
 
+
+
+@rem we are going to call the cygwin connector if available.
+@IF "%1" == "-v" (
+	@echo ****************************************	
+	@echo Notice: SSH called via Omega/bin/ssh.cmd
+	@echo ****************************************
+)
+
 @rem Get the abolute path to the parent directory, which is assumed to be the
 @rem Git installation root.
 @for /F "delims=" %%I in ("%~dp0..") do @set BaseDir=%%~fI

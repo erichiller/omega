@@ -39,31 +39,43 @@ function Add-DirToPath {
 <#
 .Synopsis
 Select matching directories from $env:Path and remove them from _THIS SESSION ONLY_
-.Parameter dir
+.PARAMETER DirectoryToRemove
 Accepts partials %like
 .LINK
 Add-DirToPath
 .LINK
 Show-Path
 #>
-function Remove-DirFromPath($dir) {
-    $newPath = ""
-    ForEach ( $testDir in $(Show-Path -Objects) ) {
+function Remove-DirFromPath {
+    param(
+        [Parameter(Mandatory = $True, Position = 1)]
+        [ValidateScript( {Test-Path -Path $_ -PathType Container})]
+        [String] $DirectoryToRemove
+    )
+    Write-Verbose "Found Directory to Remove $DirectoryToRemove"
+    $savedPath = $env:Path
+    Try {
+        $newPath = ""
+        ForEach ( $testDir in $(Show-Path -Objects) ) {
 
-        if ( $testdir -match $dir -and $(Enter-UserConfirm("Remove $testdir ?") === $false)) {
-            Write-Warning "removing $testdir"
+            if ( $testdir -like $DirectoryToRemove -and $(Enter-UserConfirm("Remove $testdir ?") === $false)) {
+                Write-Warning "removing $testdir"
+            }
+            else {
+                Write-Output "Re-adding $testdir"
+                $newPath += "$testdir;"
+            }
         }
-        else {
-            Write-Output "Re-adding $testdir"
-            $newPath += "$testdir;"
-        }
+            
+        # remove trailing semi-colon
+        $newPath = $newPath.TrimEnd(";")
+        $env:Path = $newPath
+    } Catch {
+        Write-Error "Error During Path Parsing, Path will not be modified"
+    } Finally {
+        Write-Output "`n`nPath is now:`n$(Show-Path)"
+        Write-Debug "RAW Path String --->`n$($env:Path)"
     }
-
-    # remove trailing semi-colon
-    $newPath = $newPath.TrimEnd(";")
-    Write-Output "`n`nPath is now:`n$(Show-Path $newPath)"
-    Write-Debug "RAW Path String --->`n$newPath"
-    $env:Path = $newPath
 }
 
 
