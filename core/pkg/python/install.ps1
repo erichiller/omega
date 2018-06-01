@@ -39,6 +39,15 @@ Remove-Item -ErrorAction Ignore -WarningAction SilentlyContinue -Path ( Join-Pat
 Remove-Item -ErrorAction Ignore -WarningAction SilentlyContinue -Path ( Join-Path ( Join-Path (Join-Path $conf.basedir $conf.sysdir) $Package.name ) "python36._pth~" )
 
 
+### SKIP ANYTHING ELSE IN STEP #2 THESE ARE THE UP TO DATE INSTRUCTIONS AS OF 2018-05-28 ###
+
+1. Remove the Zip
+2. Simply grab the `.tgz` from the python ftp and copy over the `/Lib` into the windows _Python_ install directory `/Lib`
+
+
+####### END 2018-05-28
+
+
 # YOU __MAY__ HAVE TO EXTRACT THE python36.zip into /Lib/
 # YOU MAY have to copy an older version of lib2to3 and libimport from an installed version into your site-packages
 # You DO HAVE TO UNPACK!!!
@@ -52,15 +61,20 @@ Remove-Item -ErrorAction Ignore -WarningAction SilentlyContinue -Path ( Join-Pat
 Converting the Embedded Python into Full
 Embedded Python is using compiled main libraries (apparent by the *.pyc file endings) to convert, remove all of these and use *.py source libraries
 
-
-Get-ChildItem -Recurse "C:\Users\ehiller\AppData\omega\system\python\Lib\" | Where-Object { $_.LastWriteTime -lt (Get-Date -year 2017 -month 7 -day 16)}
-
-(Get-ChildItem -Recurse "C:\Users\ehiller\AppData\omega\system\python\Lib\" -include "*.pyc" | Where-Object { $_.Directory.Name.CompareTo("__pycache__") -and $_.Directory.Name.CompareTo("Lib") } ).Directory | Get-Unique | Remove-Item -Recurse -Force
-
-Get-ChildItem -Recurse "C:\Users\ehiller\AppData\omega\system\python\Lib\" -include "*.pyc" | Where-Object { -not $_.Directory.Name.CompareTo("Lib") } | Remove-Item -Recurse -Force
-
+```powershell
+
+$basedir = "C:\Users\ehiller\AppData\omega\system"
+$basedir = "\\NAS\users\eric\Documents\WindowsPowerShell\Modules\omega\system"
+
+Get-ChildItem -Recurse "$basedir\python\Lib\" | Where-Object { $_.LastWriteTime -lt (Get-Date -year 2017 -month 7 -day 16)}
+
+(Get-ChildItem -Recurse "$basedir\python\Lib\" -include "*.pyc" | Where-Object { $_.Directory.Name.CompareTo("__pycache__") -and $_.Directory.Name.CompareTo("Lib") } ).Directory | Get-Unique | Remove-Item -Recurse -Force
+
+Get-ChildItem -Recurse "$basedir\python\Lib\" -include "*.pyc" | Where-Object { -not $_.Directory.Name.CompareTo("Lib") } | Remove-Item -Recurse -Force
+
 Simply grab the `.tgz` from the python ftp and copy over the `/Lib` into the windows _Python_ install directory `/Lib`
 
+```
 
 //////
 

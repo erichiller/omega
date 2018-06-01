@@ -4,8 +4,9 @@ function New-OmegaShortcut {
 	#$Shortcut.Arguments = '/LoadCfgFile "%HomePath%\AppData\Local\omega\config\ConEmu.xml" /FontDir "%HomePath%\AppData\Local\omega\system\nerd_hack_font" /Icon "%HomePath%\AppData\Local\omega\icons\omega_256.ico" /run "@%HomePath%\AppData\Local\omega\config\powershell.cmd"'
 	$arguments = `
 	'/LoadCfgFile "' + ( Join-Path ( Join-Path $conf.Basedir $conf.confdir ) "ConEmu.xml" ) + '" ' + 
-	'/FontDir "' + ( Join-Path (Join-Path $conf.Basedir $conf.sysdir) "fonts" ) + '" ' + 
-	'/Icon "' + ( Join-Path ( Join-Path $conf.Basedir "icons" ) "omega_256.ico" ) + '" /run "@..\..\core\config\powershell.cmd"'
+    '/FontDir "' + ( Join-Path (Join-Path $conf.Basedir $conf.sysdir) "fonts" ) + '" ' + 
+    '/NoSingle ' +
+    '/Icon "' + ( Join-Path ( Join-Path $conf.Basedir "icons" ) "omega_256.ico" ) + '" /run "@..\..\core\config\powershell.cmd"'
 
 	$shortcutFile = Join-Path $conf.basedir "omega.lnk"
 

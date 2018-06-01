@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <key name="Software">
 	<key name="ConEmu">
-		<key name=".Vanilla" modified="2018-05-10 11:34:36" build="180506">
+		<key name=".Vanilla" modified="2018-05-31 21:46:41" build="180528">
 			<value name="StartType" type="hex" data="00"/>
 			<value name="CmdLine" type="string" data=""/>
 			<value name="StartTasksFile" type="string" data=""/>
@@ -148,7 +148,7 @@
 			<value name="WindowMode" type="dword" data="0000051f"/>
 			<value name="ConWnd X" type="long" data="1343"/>
 			<value name="ConWnd Y" type="long" data="3"/>
-			<value name="LastMonitor" type="string" data="0,0,2560,1400"/>
+			<value name="LastMonitor" type="string" data="0,0,3840,2120"/>
 			<value name="ConWnd Width" type="dword" data="00000091"/>
 			<value name="ConWnd Height" type="dword" data="02000062"/>
 			<value name="16bit Height" type="ulong" data="0"/>
@@ -393,7 +393,7 @@
 			<value name="Update.DownloadPath" type="string" data="%TEMP%\ConEmu"/>
 			<value name="Update.LeavePackages" type="hex" data="00"/>
 			<value name="Update.PostUpdateCmd" type="string" data="echo Last successful update&gt;ConEmuUpdate.info &amp;&amp; date /t&gt;&gt;ConEmuUpdate.info &amp;&amp; time /t&gt;&gt;ConEmuUpdate.info"/>
-			<key name="HotKeys" modified="2018-04-07 07:55:01" build="180318">
+			<key name="HotKeys" modified="2018-05-31 21:46:41" build="180528">
 				<value name="KeyMacroVersion" type="hex" data="02"/>
 				<value name="Multi.Modifier" type="dword" data="00000011"/>
 				<value name="Multi.ArrowsModifier" type="dword" data="0000005b"/>
@@ -588,6 +588,7 @@
 				<value name="Multi.GroupInputKey" type="dword" data="00125d47"/>
 				<value name="CloseToRightKey" type="dword" data="00000000"/>
 				<value name="Multi.NewWndConfirm" type="dword" data="00000000"/>
+				<value name="CheckUpdates" type="dword" data="00105b55"/>
 			</key>
 			<key name="Tasks" modified="2018-02-17 08:28:11" build="180206">
 				<value name="Count" type="long" data="7"/>
@@ -827,6 +828,7 @@
 			<value name="AnsiExecution" type="hex" data="00"/>
 			<value name="AnsiAllowedCommands" type="multi">
 				<line data="cmd -cur_console:R /cGitShowBranch.cmd"/>
+				<line data="*"/>
 			</value>
 			<value name="KillSshAgent" type="hex" data="01"/>
 			<value name="JumpListAutoUpdate" type="hex" data="01"/>

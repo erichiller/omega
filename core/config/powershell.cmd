@@ -1,1 +1,1 @@
-PowerShell -ExecutionPolicy Bypass -NoLogo -NoProfile -NoExit -Command "& { Import-Module Omega }" -new_console:d:"%USERPROFILE%":C:"%ConEmuDir%\..\..\icons\powershell_32.ico"
+PowerShell -ExecutionPolicy Bypass -NoLogo -NoProfile -NoExit -Command "& { if ( $(get-process 'conemu64').length -gt 1 ) { Write-Output \"Found ConEmu\"; Write-Output \"$([char]27)]9;6;$([char]34)SetOption AlwaysOnTop 1 ;WindowPosSize(00,50,160,60)$([char]34)$([char]7)\" }; Import-Module Omega }" -new_console:d:"%USERPROFILE%":C:"%ConEmuDir%\..\..\icons\powershell_32.ico"
