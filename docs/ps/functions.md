@@ -51,6 +51,7 @@ HelpMessageResourceId               |           |
 
 
 [Official Documentation: Parameter Attribute Declaration](https://msdn.microsoft.com/en-us/library/ms714348(v=vs.85).aspx)
+& newer [PowerShell 6 docs.microsoft.com version of Advanced Function Documentation](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_functions_advanced_parameters?view=powershell-6)
 
 
 ### Remainder Parameters

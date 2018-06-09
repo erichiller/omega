@@ -9,7 +9,7 @@
 @{
 	Author            = "Eric D Hiller"
 	Description       = "Max Power Shell - Get more out of your command environment."
-	ModuleVersion     = "0.0.0.1"
+	ModuleVersion     = "0.0.0.2"
 	GUID              = "ad3159e1-ef91-4c84-9b48-62f746dc4a25"
 
 
@@ -75,6 +75,7 @@
         "mv"
         "grep"
         "ff"
+        "ls"
 
 
 

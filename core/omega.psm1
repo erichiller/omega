@@ -176,6 +176,10 @@ function Search-Executable {
 }
 Set-Alias -Name "whereis" -Value Search-Executable
 
+# new ls
+if (alias ls   -ErrorAction SilentlyContinue) { Remove-Item alias:ls   }
+if (alias ls   -ErrorAction SilentlyContinue) { Remove-Item alias:ls   }
+
 # new mv
 if (alias mv   -ErrorAction SilentlyContinue) { Remove-Item alias:mv   }
 
