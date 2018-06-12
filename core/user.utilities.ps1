@@ -148,11 +148,11 @@ function ls {
             $format = "-l"
         }
 		if ( $pipelineInput -eq $Null ){
-			ls.exe --all $format --human-readable --classify --color=auto @Remaining
+			ls.exe --all $format --human-readable --group-directories-first --classify --color=auto @Remaining
 		}
 		ForEach ($input in $pipelineInput) {
 			Write-Verbose "input item=>${input}"
-			$input| Out-String | ls.exe --all $format --human-readable --classify --color=auto @Remaining
+			$input| Out-String | ls.exe --all $format --human-readable --group-directories-first --classify --color=auto @Remaining
 		}
 	}
 	End {
