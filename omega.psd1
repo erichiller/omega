@@ -64,8 +64,7 @@
         "Get-DirectoryDiff"
         "Open-OmegaBaseDirectory"
         "Open-GitHubDevDirectory"
-        "Convert-DirectoryStringtoUnix"
-        "Remove-DirFromPath"
+        "Convert-DirectoryStringToUnix"
         "Send-LinuxConfig"
         "Get-DirectorySize"
         "Search-Executable"
@@ -76,6 +75,7 @@
         "grep"
         "ff"
         "ls"
+        "Install-OmegaPackage"
 
 
 
@@ -133,13 +133,13 @@
 #         "TabExpansion"
 
 # ## omega
-#         "Omega-Help"
-#         "Remove-DirFromPath"
+        "Get-OmegaHelp"
+        "Remove-DirFromPath"
 #         "SafeObjectArray"
 #         "Save-UserConfig"
         "Search-FrequentDirectory"
         "Search-KnowledgeBase"
-        # "Set-RegisterCommandAvailable"
+        "Set-RegisterCommandAvailable"
 #         "Set-UserRepo"
 #         "Test-Admin"
 
@@ -149,14 +149,12 @@
 #         "Debug-Title"
 #         "Debug-Variable"
 #         "Enter-UserConfirm"
-#         "ff"
-#         "Get-CommandsAvailable"
+        "Get-OmegaCommands"
 #         "Get-DirectoryDiff"
 #         "Get-DirectorySize"
         "Get-FileContentTail"
 #         "Get-md5sum"
 #         "Get-sha256sum"
-#         "grep"
 #         "Join-Paths"
 #         "New-UserConfigRepo"
 
@@ -193,7 +191,8 @@
 		# "core/system.install.ps1"
 		"core\user.omega.ps1"
         "core\user.utilities.ps1"
-		"core\resources.create.ps1"
+        "core\resources.create.ps1"
+        "core\package.install.ps1"
 	)
 
 	# HelpInfoURI          = ""
@@ -212,7 +211,31 @@
 			RequireLicenseAcceptance = 'False'
 			IsPrerelease             = 'True'
 
-		}
+        }
+        RegisteredCommands = @(
+            "Get-OmegaCommands"
+            "Get-OmegaHelp"
+            "Add-DirToPath"
+            "Remove-DirFromPath"
+            "Show-Env"
+            "Show-Path"
+            "Convert-DirectoryStringToUnix"
+            "Send-LinuxConfig"
+            "Get-DirectorySize"
+            "Get-DirectoryDiff"
+            "whereis"
+            "md5sum"
+            "sha256sum"
+            "hexdump"
+            "psr"
+            "f"
+            "ff"
+            "tail"
+            "gh"
+            "om"
+            "kb"
+            "Install-OmegaPackage"
+        )
 	}
 
 

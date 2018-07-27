@@ -73,18 +73,12 @@ class OmegaConfig {
 	OmegaConfig() {
 		Write-Debug "Empty OmegaConfig init --> SHOULD USE ::GetInstance()"
     }
-    
+
     [string] GetLogPath() {
         return ( Join-Path $this.BaseDir $this.LogPath )
     }
 
 
-}
-
-Class RegisteredCommand {
-	[string] $Name
-	[string] $Synopsis
-	[string] $Source = "local"
 }
 
 Class User {
@@ -93,7 +87,7 @@ Class User {
 	[System.Collections.ArrayList] $SystemPathAdditions;
 	static hidden [string] $UserStateFilePath = ( Join-Path ([OmegaConfig]::GetInstance()).BaseDir (Join-Path "local" "state.json" ) );
 	[psobject] $Packages;
-	[RegisteredCommand[]] $RegisteredCommands;
+	[string[]] $RegisteredCommands;
 	# these defaults can be overriden
 	[VerbosityConfig] $Verbosity = ([OmegaConfig]::GetInstance()).DefaultVerbosity;
 	[PushConfig] $Push = ([OmegaConfig]::GetInstance()).Push;
@@ -101,7 +95,7 @@ Class User {
 	# Singleton
 	static hidden [User] $instance
 	static [User] GetInstance() {
-		if ([User]::instance -eq $null) {
+		if ($null -eq [User]::instance) {
 			Write-Verbose "User::GetInstance() -> -eq Null -> new()"
 
 			Write-Verbose "[User]::UserStateFilePath $([User]::UserStateFilePath)"
@@ -117,8 +111,7 @@ Class User {
 			else {
 				Write-Warning "UserState file not found: $( [User]::UserStateFilePath )"
 			}
-		}
-		Write-Verbose "User::GetInstance() -> returning instance $([User]::instance)"
+        } 
 		return [User]::instance
 	}
 	# constructor
@@ -171,13 +164,12 @@ Class User {
 	NewUserConfigRepo ([string] $GitUser, [string] $GitRepo = "maxpowershell_config" ) {
 	}
 
-
-
 }
 
-Enum PackageInstallSource {
-	GitRelease
 
+Enum PackageInstallSource {
+    GitRelease;
+    WebDirSearch
 }
 
 class PackageProvides {
@@ -190,6 +182,7 @@ class PackageInstallParameters {
 	[string] $Destination;
 	[bool] $AdminRequired;
 
+	[string] $SearchPath;
 	[string] $SearchTerm;
 	[string] $VersionPattern;
 
@@ -226,7 +219,7 @@ class Package {
 
 	static [Package] GetInstance([string] $PackageName) {
 		Write-Verbose "Package::GetInstance($PackageName)"
-		if ([Package]::instance.$PackageName -eq $null) {
+		if ( $null -eq [Package]::instance.$PackageName ) {
 			[Package]::instance = ( New-Object psobject )
 			Write-Verbose "Package::GetInstance($PackageName) -> -eq Null -> new()"
 
@@ -263,16 +256,18 @@ class Package {
 	}
 
 
-	Package () {}
+	Package () {
+		Write-Debug "Package() init is actionless"
+    }
 	# constructor reads pkg.json
 	Package([string] $name) {
-		Write-Debug "in actionless init Package($name)"
+		Write-Debug "Package($name) init is actionless"
 	}
 
 	[bool] TestPrerequisites() {
 		Write-Verbose "Checking Prerequisites for the PACKAGE<$($this.Name)>"
 		$local:e = "Missing Dependency! Installation is impossible; missing:"
-    
+
 		if ( ( [boolean] (Get-Command -Name "7z" -ErrorAction SilentlyContinue) ) -eq $False ) {
 			if (Test-Path "C:\Program Files\7-Zip\7z.exe") {
 				Add-DirToPath "C:\Program Files\7-Zip\"
@@ -282,9 +277,9 @@ class Package {
 				return $False
 			}
 		}
-    
+
 		Write-Debug "Package.Install.AdminRequired: $($this.Install.AdminRequired)"
-		Write-Debug "Test-Admin: $(Test-Admin)"	
+		Write-Debug "Test-Admin: $(Test-Admin)"
 		if ( ( Test-Path variable:this.System.PathAdditions ) -or ( Test-Path variable:this.System.SystemEnvironmentVariables ) ) {
 			if ( -not $this.Install.AdminRequired ) {
 				Write-Warning "Package.adminRequired is `$False ; however if either `PathAdditions` or `SystemEnvironmentVariables` is specified `Install.AdminRequired` is equated to `$True`."

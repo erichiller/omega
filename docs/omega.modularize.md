@@ -1,4 +1,4 @@
 # Omega Modularization
 
-- may be able to remove `Omega-CommandsAvailable` for a dump of what the module provides.
+- may be able to remove `Get-OmegaCommands` for a dump of what the module provides.
 

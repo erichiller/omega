@@ -5,9 +5,9 @@
 
 # `pkg.json` definition file values:
 
-`pkg.json` files define the package being installed. Packages can consist of many different types of programs, functions, modules, scripts, etc. Both binary, script, powershell and non. Git , node , conemu are all packages.
+`pkg.json` files define the package being installed. Packages can consist of many different types of programs, functions, modules, scripts, etc. Both binary, script, Powershell and non. Git , node , ConEmu are all packages.
 
-Packages definitions are in json format and have serveral *required* fields and several optional ones. Definitions follow:
+Packages definitions are in json format and have several *required* fields and several optional ones. Definitions follow:
 
 
 # fields
@@ -52,9 +52,15 @@ The `GitRelease` package source downloads a *release* from a github repo.
 | Field					| Required? | Description
 |---					|---        |---       
 | AdminRequired         | Yes       | Are administrator privileges required to install this package?
-| Source                | Yes       | Type of package, method of installation
+| Source                | Yes       | Type of package, method of installation, see Enum `PackageInstallSource`
 | Destination	        | Yes		| destination for the installation, either an exact path string, or the keyword `SystemPath` which installs to `<basedir>\system\<pkgname>`
 
+#### If source=WebDirSearch
+| SearchPath			| Yes		| Base URL in which to search for downloadable file
+
+#### If Source=GitRelease
+| Field					| Required? | Description
+|---					|---        |---       
 | org					| Yes		| org name for the organization the package can be found at
 | repo					| Yes		| repo of org to download from
 | searchTerm			| Yes		| wildcard style search pattern to select appropriate file to download from repo releases
@@ -86,4 +92,4 @@ The `GitRelease` package source downloads a *release* from a github repo.
 
 ## Additional Resources
 
-* **Helpfiles** can (and _should_) be provides for each of the `Provides.Commands` in the form of `help.<commandname>.md` with the content inside being standard PowerShell help _manpage_ style (`.SYNOPSIS` etc...)
+* **Helpfiles** can (and _should_) be provided for each of the `Provides.Commands` in the form of `help.<commandname>.md` with the content inside being standard PowerShell help _manpage_ style (`.SYNOPSIS` etc...)

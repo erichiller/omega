@@ -66,7 +66,7 @@ function Remove-DirFromPath {
                 $newPath += "$testdir;"
             }
         }
-            
+
         # remove trailing semi-colon
         $newPath = $newPath.TrimEnd(";")
         $env:Path = $newPath
@@ -106,13 +106,13 @@ function Update-SystemPath {
     { Write-Warning "$Directory already within `$ENV:Path" }
     # Check that the directory is not already on the configured path
     if ( $user.SystemPathAdditions -Contains $Directory) {
-        Debug-Variable $user.SystemPathAdditions "userState.SystemPathAdditions"; 
+        Debug-Variable $user.SystemPathAdditions "userState.SystemPathAdditions";
         Write-Warning "$Directory is already present in `$user.SystemPathAdditions"
         If ( -not (Enter-UserConfirm "force-add?") ){
             Return
         }
     }
-	
+
     # MUST BE ADMIN to create in the default start menu location;
     # check, if not warn and exit
     if ( -not (Test-Admin -warn) ) { return }
@@ -127,7 +127,7 @@ function Update-SystemPath {
     Debug-Variable $user.SystemPathAdditions "userState.SystemPathAdditions"
     # Safe to proceed now, add the Directory to $Path
     $Path = "$Path;$(Resolve-Path $Directory)"
-	
+
     # Cleanup the path
     # rebuild, directory by directory, deleting paths who are within omega's realm, and no longer exist or are permitted to be there (via user.SystemPathAdditions)
     $Dirs = $Path.split(";") | where-object {$_ -ne " "}
@@ -148,10 +148,10 @@ function Update-SystemPath {
             { Write-Debug "SystemPathAdditions is not a Property of `$userPath" ; continue }
             # test to see if $user.SystemPathAdditions contains $testDir, if it does not, then continue
             if ( $user.SystemPathAdditions -NotContains $testDir)
-            { Write-Debug "$testDir not in `$user.SystemPathAdditions"; continue } 
+            { Write-Debug "$testDir not in `$user.SystemPathAdditions"; continue }
         }
     }
-    $Path = $Path -join ";" 
+    $Path = $Path -join ";"
     # All Tests Passed, the trials are complete, you, noble directory, can be added (or kept) on the system's path
     Write-Debug "All validity tests have passed, '$Directory' is now on '$Path'"
     # Set the path
@@ -178,7 +178,7 @@ function Update-SystemEnvironmentVariables {
         [string] $Name,
         [string] $Value
     )
-	
+
     $Path = ([OmegaConfig]::GetInstance()).system_environment_key
 
     Write-Debug "Updating key name '$Name' at '$Path' with value '$Value'"
@@ -211,18 +211,18 @@ function SafeObjectArray {
         $pN | Get-Member | Format-Table
         Write-Verbose "property--"
         Write-Output "len is $($object.$pN.length)"
-        if ( $object.$pN -eq $null ) { 
+        if ( $object.$pN -eq $null ) {
             Write-Output "is null"
             $object.$pN = @()
         }
         Write-Verbose "end---"
     }
-	
+
     if (!(Get-Member -InputObject $object -Name $pN -Membertype Properties)) {
         Add-Member -InputObject $object -MemberType NoteProperty -Name $pN -Value $ArrayList
 
         #debug
-        if ( $VerbosePreference ) { 
+        if ( $VerbosePreference ) {
             Write-Verbose "$pN not present on $object"
             $object | Get-Member | Format-Table
         }
@@ -242,11 +242,11 @@ function ArrayAddUnique {
     if ( $AddTo -notcontains $AdditionalItem) {
         $AddTo += $AdditionalItem
     }
-    Write-Verbose "returning ArrayAddUnique"	
+    Write-Verbose "returning ArrayAddUnique"
     Debug-Variable $AddTo "ArrayAddUnique()'s return value of `$AddTo"
     return $AddTo
 
-	
+
 }
 
 <#
@@ -263,7 +263,7 @@ function Set-RegisterCommandAvailable ($command) {
         $command = $((Get-PSCallStack)[1].Command)
     }
     # put the name and synopsis into the table
-    ([User]::GetInstance()).RegisteredCommands += (Get-Help $command | Select-Object Name, Synopsis)
+    ([User]::GetInstance()).RegisteredCommands += $command
 }
 
 
@@ -281,6 +281,6 @@ function Join-Paths {
         Write-Verbose "Joining $($Paths[0]) to $($Paths[$i])"
         $Paths[0] = Join-Path $Paths[0] $Paths[$i]
     }
-    Write-Verbose "Returning $($Paths[0])"	
+    Write-Verbose "Returning $($Paths[0])"
     return $Paths[0]
 }

@@ -15,7 +15,7 @@ View PSReadline actions with the command
 
 # See Also
 
-`Omega-CommandsAvailable`
+`Get-OmegaCommands`
 
 
 

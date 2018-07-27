@@ -1,22 +1,27 @@
 <# File for User Facing, Omega Specific Commands #>
 
 <#
-.Synopsis
+.SYNOPSIS
  Display the commands Omega provides
 .LINK
 Set-RegisterCommandAvailable
 #>
-function Get-CommandsAvailable {
-	# print the table
-	if ( ([User]::GetInstance()).RegisteredCommands -ne $null ){
-		([User]::GetInstance()).RegisteredCommands
-	} else {
-		Write-Warning "No commands available, this is most likely an error."
-	}
+function Get-OmegaCommands {
+    # print the table
+    $FunctionHelpList = @()
+    (Get-Module Omega).PrivateData.RegisteredCommands | ForEach-Object {
+        $FunctionHelpList +=( Get-Help $_ | Select-Object Name, Synopsis )
+    }
+	if ( $null -ne ([User]::GetInstance()).RegisteredCommands ){
+		([User]::GetInstance()).RegisteredCommands | ForEach-Object {
+            $FunctionHelpList +=( Get-Help $_ | Select-Object Name, Synopsis )
+        }
+    }
+    $FunctionHelpList
 }
 
 <#
-.Synopsis
+.SYNOPSIS
  display the Path, one directory per line
  takes one input parameters, defaults to the env:Path
 .LINK
@@ -24,7 +29,7 @@ Add-DirToPath
 .LINK
 Remove-DirFromPath
 #>
-function Show-Path { 
+function Show-Path {
 	param (
 		[string] $PathToPrint = $ENV:Path,
 		[switch] $Debug,
@@ -129,7 +134,7 @@ function Send-LinuxConfig {
 
 	## Send key(s) , and skip if already present
 	# get keys from ssh-agent ; THAT MEANS THIS WORKS WITH keeagent (KeePass) !! _nice_
-	$keys = & "$($config.basedir)\system\git\usr\bin\ssh-add.exe" -L 
+	$keys = & "$($config.basedir)\system\git\usr\bin\ssh-add.exe" -L
 	if( -not $keys ){
 		Write-Warning "No keys present in ssh-agent`n Operation can not proceed, exiting."
 	}
@@ -145,11 +150,11 @@ function Send-LinuxConfig {
         $env:SSHCallBasic = $True
         $line | & "$($config.basedir)\bin\ssh.cmd" $ConnectionString $sh
     }
-    
+
     if ( [string]::IsNullOrEmpty($user.push.bashrc) ){
         $user.push = ([OmegaConfig]::GetInstance()).Push;
     }
-	
+
 	# push bashrc and vimrc
 	$(Invoke-WebRequest -UseBasicParsing $user.push.bashrc).Content | & "$($config.basedir)\bin\ssh.cmd" $ConnectionString "sed $'s/\r//' > ~/.bashrc"
 	Write-Output "Sent .bashrc"
@@ -164,7 +169,7 @@ function Send-LinuxConfig {
 .SYNOPSIS
 Swap \ for / ; windows directories to linux style
 #>
-function Convert-DirectoryStringtoUnix {
+function Convert-DirectoryStringToUnix {
 	param (
 	[Parameter(Position=1,Mandatory=$True)]
 	[String] $path
@@ -181,13 +186,13 @@ function Get-DirectoryDiff {
 	param (
 	[Parameter(Position=1,Mandatory=$True)]
 	[System.Management.Automation.PathInfo] $a,
-	
-	[Parameter(Position=2,Mandatory=$True)]	
+
+	[Parameter(Position=2,Mandatory=$True)]
 	[System.Management.Automation.PathInfo] $b
 	)
 	Get-FileHash $a | ForEach-Object {
 		$shortName = ($_.Path | Split-Path -Leaf)
-		($_.Path | Split-Path -Leaf).PadRight(30, " ") + $_.Hash.Substring($_.Hash.Length - 8) + " ".PadRight(10, " ") + (Get-FileHash $b\$($_.Path | Split-Path -Leaf)).Hash | Write-Host 
+		($_.Path | Split-Path -Leaf).PadRight(30, " ") + $_.Hash.Substring($_.Hash.Length - 8) + " ".PadRight(10, " ") + (Get-FileHash $b\$($_.Path | Split-Path -Leaf)).Hash | Write-Host
 		Compare-Object -ReferenceObject $(Get-Content .\$shortName) -DifferenceObject $(Get-Content $b\$shortName)
 	}
 }
@@ -213,9 +218,193 @@ function Get-DirectorySize {
 	# 	).Sum
 	# }
 	Get-ChildItem | Where-Object { $_.PSIsContainer } | ForEach-Object { $_.Name + ": " + "{0:N2}" -f ((Get-ChildItem $_ -Recurse | Measure-Object Length -Sum -ErrorAction SilentlyContinue).Sum / 1MB) + " MB" }
-	
+
 }
 
+
+<#
+.SYNOPSIS
+Get md5 hash of input file(s)
+#>
+function Get-md5sum { Get-FileHash -Algorithm "md5" -Path $args };
+
+<#
+.SYNOPSIS
+Get sha256sum hash of input file(s)
+#>
+function Get-sha256sum { Get-FileHash -Algorithm "sha256" -Path $args };
+
+
+<#
+.SYNOPSIS
+Use the Silver Searcher to do Find Files by input name
+#>
+function ff { & "$($config.basedir)\bin\ag.exe" -i -g $args }
+
+<#
+.SYNOPSIS
+Search-Executable is a replacement and expansion of *nix's where. It can locate a command in the file hierarchy, as well as return its containing directory.
+.PARAMETER command
+The name of the command to search for
+.PARAMETER directory
+A switch, its presence will return the containing directory rather than the path to the command itself.
+.EXAMPLE
+Search-Executable notepad.exe
+.NOTES
+Often aliased to `whereis`
+#>
+function Search-Executable {
+	param (
+		[Parameter(Mandatory = $true)]
+		[string] $command,
+		[Parameter(Mandatory = $false)]
+		[switch] $directory
+	)
+	if ($directory -eq $true) {
+		Split-Path (Get-Command $command | Select-Object -ExpandProperty Definition) -parent
+	} else {
+		$(Get-Command $command).source
+	}
+}
+
+<#
+.SYNOPSIS
+Tail follows file updates and prints to screen as they occur
+#>
+function Get-FileContentTail {
+	param(
+		[Parameter(Mandatory = $true, Position = 1)]
+		[Alias("f")]
+		[string] $file
+	)
+	Get-Content -Tail 10 -Wait -Path $file
+}
+
+<#
+.SYNOPSIS
+change Directory to a set user directory location
+.NOTES
+By default this uses a structure assuming
+%USERPROFILE$\
+    Dev\
+        src\
+            [repository sources]...
+            github.com\
+                $user.itUser
+        bin\
+        pkg\
+        data\
+#>
+function Open-GitHubDevDirectory {
+    $User = [User]::GetInstance()
+    Set-Location "${env:Home}\Dev\src\github.com\$($user.GitUser)\$($args[0])"
+}
+
+<#
+.SYNOPSIS
+change Directory Omega Directory + Optional subdirectory
+.PARAMETER subdir
+Optional subdirectory within OmegaBaseDirectory to CD into
+#>
+function Open-OmegaBaseDirectory ($subdir) {
+    $destination = Join-Path $config.Basedir $subdir
+    Set-Location $destination
+    return $desination
+}
+
+
+<#
+.Synopsis
+ Search Knowledge Base files for text using Silver Surfer
+#>
+function Search-KnowledgeBase {
+	param (
+		[Parameter(Mandatory = $false, Position = 1)]
+		[string] $Term,
+
+		[Parameter(Mandatory = $false, HelpMessage = "The Path can not have a trailing slash.")]
+		[string] $Path = (Join-Path ${env:Home} "\Google Drive\Documents\Knowledge Base"),
+
+		[Parameter(Mandatory = $false, HelpMessage = "Opens a new vscode window into your kb folder.")]
+		[switch] $Create,
+
+		[Parameter(Mandatory = $false, HelpMessage = "Open file, Read-only.")]
+		[Alias("o")][switch] $Open,
+
+		[Parameter(Mandatory = $false, HelpMessage = "Search in filenames only, not contents.")]
+		[Alias("f")][switch] $SearchFilenames,
+
+		[Parameter(Mandatory = $false, HelpMessage = "Display filenames only, not contents.")]
+		[Alias("l")][switch] $DisplayFilenames,
+
+		[Parameter(Mandatory = $false, HelpMessage = "Ignore Filename/Path pattern. Can take *.ext or Filename.ext as item,comma,list")]
+		[Alias("i")][string[]] $IgnorePath = "*.ipynb",
+
+		[Parameter(Mandatory = $false, HelpMessage = "Disable Filename/Path pattern.")]
+		[Alias("n")][switch] $NoIgnorePath,
+
+		[Parameter(Mandatory = $False)][string] $Editor = "code",
+
+		[Alias("h", "?" )][switch] $help
+	)
+	# NOTE: THE PATH CAN _NOT_ HAVE A TRAILING SLASH , but we will make it safe just in case nobody listens
+	# replace the last character ONLY IF IT IS / or \
+	$path = $path -replace "[\\/]$"
+	if ($Create) {
+		# https://code.visualstudio.com/docs/editor/command-line
+		. $Editor $path
+		#### -$Edit HERE
+		# code file:line[:character]
+
+	} elseif ( $Term ) {
+		if ( $Term -eq "--help" ) {
+			$help = $True
+		} else {
+			# if ( $File ){
+			#     & "$($config.basedir)bin\ag.exe" -g --stats --ignore-case $Term $Path
+			# }
+			$Modifiers = @(	"--stats",
+				"--smart-case",
+				"--color-win-ansi",
+				"--pager", "more" )
+			If ($DisplayFilenames) {
+				$Modifiers += "--count"
+			}
+			$IgnorePathSplat = @()
+			if ( $NoIgnorePath -eq $False ) {
+				$IgnorePath | ForEach-Object { $IgnorePathSplat += "--ignore"; $IgnorePathSplat += "$_" }
+			}
+			$Params = $Term , $Path
+			if ( $SearchFilenames -eq $True ) {
+				$Params = "--filename-pattern" , $Params
+			}
+			If ($PSCmdlet.MyInvocation.BoundParameters["Debug"].IsPresent) { $exe = "EchoArgs.exe" } else { $exe = "ag.exe" }
+			# "--ignore","*.ipynb","--ignore","ConEmu.md"
+			# & "$($config.basedir)\bin\ag.exe" --stats --smart-case @IgnorePathSplat --color-win-ansi --pager more (&{If($DisplayFilenames) {"--count"}}) $Term $Path
+			# & "$($config.basedir)\bin\ag.exe" @modifiers @IgnorePathSplat @Params
+			$output = & "$($config.basedir)\bin\$exe" @Modifiers @IgnorePathSplat @Params
+			$output	# in the future, this could be prettied-up
+			if ( $Open -eq $True ) {
+				# .  ( $output | Select-String -Pattern "\w:\\[\w\\\s\/.]*" )
+				Write-Host -ForegroundColor Magenta ( $output | select-string -Pattern "\w:\\[\w\\\/. /]*" ).Matches
+
+
+				( $output | select-string -Pattern "\w:\\[\w\\\/. /]*" ).Matches | ForEach-Object {
+					if ( Enter-UserConfirm -dialog "Open $_ in editor?"  ) {
+						. $Editor $_
+					}
+				}
+			}
+		}
+	} else {
+		Write-Warning "Please enter search text"
+
+		Write-Output "---kb---help---start---"
+		Get-Help $MyInvocation.MyCommand
+		Write-Output "---kb---help---end---"
+	}
+	if ( $help ) { Get-Help $MyInvocation.MyCommand; return; } # Call help on self and exit
+}
 
 
 

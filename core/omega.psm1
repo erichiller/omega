@@ -149,31 +149,6 @@ Set-Alias -Name "7z" -Value "${env:ProgramFiles}\7-zip\7z.exe"
 # where whereis which
 # probably a bad idea to reset where, it breaks a decent number of things.
 Set-Alias -Name "which" -Value "${env:windir}\System32\where.exe"
-<#
-.SYNOPSIS
-Search-Executable is a replacement and expansion of *nix's where. It can locate a command in the file hierarchy, as well as return its containing directory.
-.PARAMETER command
-The name of the command to search for
-.PARAMETER directory
-A switch, its presence will return the containing directory rather than the path to the command itself.
-.EXAMPLE
-Search-Executable notepad.exe
-.NOTES
-Often aliased to `whereis`
-#>
-function Search-Executable {
-	param (
-		[Parameter(Mandatory = $true)]
-		[string] $command,
-		[Parameter(Mandatory = $false)]
-		[switch] $directory
-	)
-	if ($directory -eq $true) {
-		Split-Path (Get-Command $command | Select-Object -ExpandProperty Definition) -parent
-	} else {
-		$(Get-Command $command).source
-	}
-}
 Set-Alias -Name "whereis" -Value Search-Executable
 
 # new ls
@@ -199,146 +174,33 @@ Set-Alias -Name "less" -Value "$($config.basedir)\system\git\usr\bin\less.exe"
 # sed
 Set-Alias -Name sed -Value "$($config.basedir)\system\git\usr\bin\sed.exe"
 
-# sed
+# ssh
 Set-Alias -Name ssh -Value "$($config.basedir)\bin\ssh.cmd"
 
-# File hashes for md5sum and sha256sum
-function Get-md5sum { Get-FileHash -Algorithm "md5" -Path $args }; Set-Alias -Name md5sum -Value Get-md5sum
-function Get-sha256sum { Get-FileHash -Algorithm "sha256" -Path $args }; Set-Alias -Name sha256sum -Value Get-sha256sum
+
+# file hashes
+Set-Alias -Name md5sum -Value Get-md5sum
+Set-Alias -Name sha256sum -Value Get-sha256sum
 
 # hexdump
 if (-not (Get-Command hexdump.exe -ErrorAction ignore )) { Set-Alias -Name hexdump -Value "Format-Hex" }
 
-# psr "PowerShell Remoting" -> Enter-PSSession 
+# psr "PowerShell Remoting" -> Enter-PSSession
 Set-Alias -Name psr -Value Enter-PSSession
 
 # f is Search-FrequentDirectory
 Set-Alias -Name f -Value Search-FrequentDirectory -ErrorAction Ignore
 
-<# Use the Silver Searcher to do
-Find File
--g finds files
-#>
-function ff { & "$($config.basedir)\bin\ag.exe" -i -g $args }
 
 
 #################################################
 ######        STEP #4: USER SPECIFICS       #####
 #################################################
-# Ultimately this should be its own usr file
-function Open-GitHubDevDirectory { Set-Location "${env:Home}\Dev\src\github.com\$($user.GitUser)\$($args[0])" }
 set-alias -Name gh -Value Open-GitHubDevDirectory
-function Open-OmegaBaseDirectory { $destination = Join-Path $config.Basedir $args[0] ; Set-Location $destination; return $desination; }
 set-alias -Name om -Value Open-OmegaBaseDirectory
 
-<#
-.Synopsis
-Tail follows file updates and prints to screen as they occur
-#>
-function Get-FileContentTail { 
-	param(
-		[Parameter(Mandatory = $true, Position = 1)]
-		[Alias("f")]
-		[string] $file
-	)
-	Get-Content -Tail 10 -Wait -Path $file
-}
+
 set-alias -Name tail -Value Get-FileContentTail
-<#
-.Synopsis
- Search Knowledge Base files for text using Silver Surfer
-#>
-function Search-KnowledgeBase {
-	param (
-		[Parameter(Mandatory = $false, Position = 1)]
-		[string] $Term,
-
-		[Parameter(Mandatory = $false, HelpMessage = "The Path can not have a trailing slash.")]
-		[string] $Path = (Join-Path ${env:Home} "\Google Drive\Documents\Knowledge Base"),
-
-		[Parameter(Mandatory = $false, HelpMessage = "Opens a new vscode window into your kb folder.")]
-		[switch] $Create,
-
-		[Parameter(Mandatory = $false, HelpMessage = "Open file, Read-only.")]
-		[Alias("o")][switch] $Open,
-		
-		[Parameter(Mandatory = $false, HelpMessage = "Search in filenames only, not contents.")]
-		[Alias("f")][switch] $SearchFilenames,
-		
-		[Parameter(Mandatory = $false, HelpMessage = "Display filenames only, not contents.")]
-		[Alias("l")][switch] $DisplayFilenames,
-
-		[Parameter(Mandatory = $false, HelpMessage = "Ignore Filename/Path pattern. Can take *.ext or Filename.ext as item,comma,list")]
-		[Alias("i")][string[]] $IgnorePath = "*.ipynb",
-		
-		[Parameter(Mandatory = $false, HelpMessage = "Disable Filename/Path pattern.")]
-		[Alias("n")][switch] $NoIgnorePath,
-
-		[Parameter(Mandatory = $False)][string] $Editor = "code",
-
-		[Alias("h", "?" )][switch] $help
-	)
-	# NOTE: THE PATH CAN _NOT_ HAVE A TRAILING SLASH , but we will make it safe just in case nobody listens
-	# replace the last character ONLY IF IT IS / or \
-	$path = $path -replace "[\\/]$"
-	if ($Create) {
-		# https://code.visualstudio.com/docs/editor/command-line
-		. $Editor $path
-		#### -$Edit HERE
-		# code file:line[:character]
-
-	} elseif ( $Term ) {
-		if ( $Term -eq "--help" ) {
-			$help = $True
-		} else {
-			# if ( $File ){
-			#     & "$($config.basedir)bin\ag.exe" -g --stats --ignore-case $Term $Path 
-			# }
-			$Modifiers = @(	"--stats",
-				"--smart-case",
-				"--color-win-ansi", 
-				"--pager", "more" )
-			If ($DisplayFilenames) {
-				$Modifiers += "--count"
-			}
-			$IgnorePathSplat = @()			
-			if ( $NoIgnorePath -eq $False ) {
-				$IgnorePath | ForEach-Object { $IgnorePathSplat += "--ignore"; $IgnorePathSplat += "$_" }
-			}
-			$Params = $Term , $Path
-			if ( $SearchFilenames -eq $True ) {
-				$Params = "--filename-pattern" , $Params
-			}
-			If ($PSCmdlet.MyInvocation.BoundParameters["Debug"].IsPresent) { $exe = "EchoArgs.exe" } else { $exe = "ag.exe" }
-			# "--ignore","*.ipynb","--ignore","ConEmu.md"
-			# & "$($config.basedir)\bin\ag.exe" --stats --smart-case @IgnorePathSplat --color-win-ansi --pager more (&{If($DisplayFilenames) {"--count"}}) $Term $Path 
-			# & "$($config.basedir)\bin\ag.exe" @modifiers @IgnorePathSplat @Params
-			$output = & "$($config.basedir)\bin\$exe" @Modifiers @IgnorePathSplat @Params
-			$output	# in the future, this could be prettied-up
-			if ( $Open -eq $True ) {
-				# .  ( $output | Select-String -Pattern "\w:\\[\w\\\s\/.]*" )
-				Write-Host -ForegroundColor Magenta ( $output | select-string -Pattern "\w:\\[\w\\\/. /]*" ).Matches
-				
-				
-				( $output | select-string -Pattern "\w:\\[\w\\\/. /]*" ).Matches | ForEach-Object {
-					if ( Enter-UserConfirm -dialog "Open $_ in editor?"  ) {
-						. $Editor $_
-					}
-				}
-			}
-
-
-
-		}
-	} else {
-		Write-Warning "Please enter search text"
-		
-		Write-Output "---kb---help---start---"
-		Get-Help $MyInvocation.MyCommand
-		Write-Output "---kb---help---end---"
-	}
-	if ( $help ) { Get-Help $MyInvocation.MyCommand; return; } # Call help on self and exit
-}
 Set-Alias -Name kb -Value Search-KnowledgeBase
 
 # function Show-HelpKeyGrid {
@@ -356,14 +218,14 @@ Register-ArgumentCompleter -Native -CommandName ssh -ScriptBlock {
 		$matches = select-string $known_hosts_path -pattern "^[\d\w.:]*" -AllMatches
 		$matches += select-string $known_hosts_path -pattern "(?<=,)([\w.:]*)" -AllMatches
 
-		$matches | Where-Object { 
+		$matches | Where-Object {
 			$_.matches.Value -like "$wordToComplete*"
-		} | Sort-Object | 
-			Foreach-Object { 
-			$CompletionText = $_.matches.Value 
-			$ListItemText = $_.matches.Value 
+		} | Sort-Object |
+			Foreach-Object {
+			$CompletionText = $_.matches.Value
+			$ListItemText = $_.matches.Value
 			$ResultType = 'ParameterValue'
-			$ToolTip = $_.matches.Value 
+			$ToolTip = $_.matches.Value
 			[System.Management.Automation.CompletionResult]::new($CompletionText, $ListItemText, $ResultType, $ToolTip)
 		}
 	} else {
@@ -384,17 +246,18 @@ Complete paths from history
 # 		$matches = select-string $known_hosts_path -pattern "^[\d\w.:]*" -AllMatches
 # 		$matches += select-string $known_hosts_path -pattern "(?<=,)([\w.:]*)" -AllMatches
 
-# 		$matches | Where-Object { 
+# 		$matches | Where-Object {
 # 			$_.matches.Value -like "$wordToComplete*"
-# 		} | Sort-Object | 
-# 			Foreach-Object { 
-# 			$CompletionText = $_.matches.Value 
-# 			$ListItemText = $_.matches.Value 
+# 		} | Sort-Object |
+# 			Foreach-Object {
+# 			$CompletionText = $_.matches.Value
+# 			$ListItemText = $_.matches.Value
 # 			$ResultType = 'ParameterValue'
-# 			$ToolTip = $_.matches.Value 
+# 			$ToolTip = $_.matches.Value
 # 			[System.Management.Automation.CompletionResult]::new($CompletionText, $ListItemText, $ResultType, $ToolTip)
 # 		}
 # 	} else {
 # 		Write-Debug "$known_hosts_path not found"
 # 	}
 # }
+

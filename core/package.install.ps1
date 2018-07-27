@@ -39,14 +39,14 @@ function Install-PackageFromURL {
 	}
 	Write-Debug "Found Filename: $filename"
 	Write-Debug "Final Path(concat): $concat"
-    
+
 	$version = ( $filename | Select-String -Pattern $Package.Install.VersionPattern | ForEach-Object {"$($_.matches.groups[1])"} )
 	Write-Debug "Found Version: $version"
 
 	# deploy
 	Write-Debug "(concat): $concat"
 	Install-DeployToOmegaSystem $Package $concat $filename $version
-    
+
 	return $version
 }
 
@@ -95,7 +95,7 @@ function Install-PostProcessPackage {
 
 	$user = [User]::GetInstance()
 	Write-Verbose "Package Post Processing..."
-    
+
 	<#
     no matter the package type
     we run the postInstall actions
@@ -103,7 +103,7 @@ function Install-PostProcessPackage {
 	try {
 		Debug-Variable $Package.System "Raw `$Package.System"
 		# Update system path
-		Debug-Variable $Package.System.PathAdditions "Raw `$Package.System.PathAdditions"				
+		Debug-Variable $Package.System.PathAdditions "Raw `$Package.System.PathAdditions"
 		$Package.System.PathAdditions | ForEach-Object {
 			$expandedDirectory = $ExecutionContext.InvokeCommand.ExpandString($_)
 			Write-Debug "System Path adding directory '$expandedDirectory'"
@@ -127,14 +127,14 @@ function Install-PostProcessPackage {
 		[PackageState] $packageState = [PackageState]::new( $Package.name, $version )
 		$user.setPackageState($packageState)
 	} catch {
-        
+
 		Write-Warning "$($Package.name) module failed to load. Either not installed or there was an error. This module, who's function follow, will not be enabled:"
 		Write-Warning $Package.brief
 		$e = $_.Exception
 		$line = $_.InvocationInfo.ScriptLineNumber
 		$file = $_.InvocationInfo.ScriptName
 		$position = $_.InvocationInfo.DisplayScriptPosition
-		$msg = $e.Message 
+		$msg = $e.Message
 		Write-Host -ForegroundColor Red "caught (msg) exception: $msg at $($file):$($line):$($position)"
 
 		Write-Host -ForegroundColor Red "caught exception: $e at $line"
@@ -165,7 +165,7 @@ function Install-DeployToOmegaSystem {
 	Write-Verbose "Extension:'$([IO.Path]::GetExtension($filename))'"
 
 	Write-Information "installing version $version of $($Package.name) ($filename)"
-    
+
 	$deployNoRemoveDir = $True
 	# deploy is where the Package will be _INSTALLED_ Can be a path or the special values listed here, see README too
 	if ( $Package.Install.Destination -eq "SystemPath" ) {
@@ -179,14 +179,14 @@ function Install-DeployToOmegaSystem {
             $outFile = Join-Paths $deploy $Package.Name [IO.Path]::GetExtension($filename)
         }
 	} else {
-		Write-Warning "Installation Desitnation of $($Package.Install.Desination) is unsupported"
+		Write-Warning "Installation Destination of $($Package.Install.Desination) is unsupported"
 		return $False
 	}
 	Write-Verbose "Deploy (installation directory): $deploy"
 	# check if deploy path already exists
-	if ( $deployAllowRemoveDir -eq $True -and 
-		( Test-Path $deploy ) -and 
-		$deploy -ne $conf.bindir -and 
+	if ( $deployAllowRemoveDir -eq $True -and
+		( Test-Path $deploy ) -and
+		$deploy -ne $conf.bindir -and
 		$deploy -ne $conf.sysdir ) {
 		if ( ( Read-Host "Deployment Path (installation directory) <$deploy> already exists, should it be removed? (y/n)" ).ToLower() -like "*y*" ) {
 			try {
@@ -201,7 +201,7 @@ function Install-DeployToOmegaSystem {
 	}
 	try {
 		if ( Test-Path $deploy ) {
-			Write-Error "$deploy removal failed attempt, exiting"		
+			Write-Error "$deploy removal failed attempt, exiting"
 			return $False
 		}
 	} catch {
@@ -221,7 +221,7 @@ function Install-DeployToOmegaSystem {
 	while ( $True ) {
 		if ( $conf.compression_extensions -contains [IO.Path]::GetExtension($outFile) ) {
 			Write-Verbose ( "Decompression of $outFile required. extension:" + [IO.Path]::GetExtension($outFile) + "; Decompressing to the deployment directory:$deploy" )
-			# add ` -bb1` as an option to `7z` for more verbose output 
+			# add ` -bb1` as an option to `7z` for more verbose output
 			& 7z x $outFile "-o$deploy"
 			if ( (-not (Test-Path $deploy) ) -and ( $? -eq $False ) ) {
 				Write-Error "7z failure in decompression. exiting"
@@ -245,7 +245,7 @@ function Install-DeployToOmegaSystem {
 			}
 			Write-Verbose "temporarily moving the package from:'$deploy' to:'$tempPath'"
 			Move-Item $outFile -Destination $tempPath -Force
-			$outFile = $tempPath			
+			$outFile = $tempPath
 			continue
 		} else {
 			Write-Debug ("either there was more than a single child in $deploy or it had did not match " + [IO.Path]::GetFileNameWithoutExtension($filename))
@@ -254,7 +254,7 @@ function Install-DeployToOmegaSystem {
 		Write-Debug "Reached the end of the decompression loop"
 		break
 	}
-    
+
     # only perform the following if the package consists of more than a single file
 	if ( ( ( Test-Path variable:flag_SingleFile) -ne $True ) -or  $flag_SingleFile -ne $True ) {
 		# check if the deployed directory ONLY Contains directories, this most likely means the package was zipped in a way that the first level directory should be removed.
@@ -267,10 +267,10 @@ function Install-DeployToOmegaSystem {
 
 		# Raise folder one level if the deploy folder contains only a single folder named the same as the parent
 		Write-Debug ( "Are any files within the deploy (installation) path named the same as the parent? (possible the directory needs to be raised one level); True=Yes(boolean): " + ( $( ( Get-ChildItem $deploy | Where-Object { $_.Name -eq [IO.Path]::GetFileNameWithoutExtension($filename) } )) -eq "" ) )
-    
+
 		Write-Debug ( " There is a single item in `$deploy and it matches the parent without extension? " + $(( ( Get-ChildItem $deploy).Count -eq 1 ) -and ( ( Get-ChildItem  $deploy | Where-Object { $_.Name -eq [IO.Path]::GetFileNameWithoutExtension($filename)  } ))) )
 
-		if (( ( Get-ChildItem -Attributes directory $deploy).Count ) -eq ( ( Get-ChildItem $deploy).Count ) -and 
+		if (( ( Get-ChildItem -Attributes directory $deploy).Count ) -eq ( ( Get-ChildItem $deploy).Count ) -and
 			# Check if there is a single child-item, and if that single child-item has the same name as the file we just downloaded
 			( ( Get-ChildItem $deploy).Count -eq 1 ) -and ( ( Get-ChildItem  $deploy | Where-Object { $_.Name -eq [IO.Path]::GetFileNameWithoutExtension($filename) } )) ) {
 			$tempPath = ( Join-Path $env:TEMP $Package.name )
@@ -284,6 +284,10 @@ function Install-DeployToOmegaSystem {
 }
 
 
+<#
+.SYNOPSIS
+Install Omega Package to local computer
+#>
 function Install-OmegaPackage {
 	param(
 		# Package name to install
@@ -297,14 +301,12 @@ function Install-OmegaPackage {
 	$Package.TestPrerequisites()
 	Debug-Variable $Package "Packaged init in Install-OmegaPackage"
 
-	switch ( $Package.PackageInstallParameters.Source ) {
-		[PackageInstallSource]::GitRelease { Install-PackageFromGitRelease $Package }
+	switch ( $Package.Install.Source ) {
+        [PackageInstallSource]::GitRelease { Install-PackageFromGitRelease $Package }
+        [PackageInstallSource]::WebDirSearch { Install-PackageFromURL $Package }
 		Default {
-			Write-Warning "Package Installation Source of $($Package.PackageInstallParameters.Source) is undefined"
+			Write-Warning "Package Installation Source of $($Package.Install.Source) is undefined in $([PackageInstallSource])"
 		}
 	}
-
-
-
 
 }

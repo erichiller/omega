@@ -1,0 +1,24 @@
+{
+    "Name": "nodejs",
+    "Brief": "Node and Npm",
+    "Required": false,
+    "Install": {
+        "Source": "WebDirSearch",
+        "Destination": "SystemPath",
+        "AdminRequired": true,
+        "SearchPath": "https://nodejs.org/download/release/latest/",
+        "SearchTerm": "node-v*-win-x64.zip",
+        "VersionPattern": ".*node-v(.*)-win-x64\\.zip$"
+    },
+    "System": {
+        "PathAdditions": [
+            "$( ( [OmegaConfig]::GetInstance() ).BaseDir)\\system\\nodejs"
+        ]
+    },
+    "Provides": {
+        "Binaries": [
+            "node",
+            "npm"
+        ]
+    }
+}

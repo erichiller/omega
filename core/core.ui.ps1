@@ -1,11 +1,17 @@
 
 
-function Omega-Help {
+<#
+.SYNOPSIS
+Display version and usage information
+.Link
+See also Get-OmegaCommands
+#>
+function Get-OmegaHelp {
 	### change this to user help system!!!
 	### md -> manpages /// xml help?
 
 
-	Write-Host -ForegroundColor Cyan "PowerShell Version" $PSVersionTable.PSVerson
+	Write-Host -ForegroundColor Cyan "PowerShell Version" $PSVersionTable.PSVersion
 	Write-Host -ForegroundColor Cyan "Windows Version" $PSVersionTable.BuildVersion
 	Write-Host -ForegroundColor Magenta "See More with `$PSVersionTable"
 	$conf = [OmegaConfig]::GetInstance()
@@ -73,7 +79,7 @@ function Get-PrettyPath {
             if( $dir.Drive ) {
                 $base = $dir.Drive.Name + ":"
                 # Display the UNC (smb) host if it is one
-            } else { 
+            } else {
                 $base = (new-object System.Uri(Convert-Path .))
                 if( $base.IsUnc ){
                     $base = "\\" + $base.Host
@@ -96,7 +102,7 @@ function Get-PrettyPath {
 		return (,$base + $result) -join $ThemeSettings.PromptSymbols.PathSeparator
     # for NETWORK SHARES, could also use:
     # new-object System.Uri(Convert-Path .).Host
-    # 
+    #
 	} else {
 		return $dir.path.Replace((Get-Drive -dir $dir), '')
 	}
@@ -111,7 +117,7 @@ The most commonly cd 'd into directory containing the string is then cd'd into.
 .PARAMETER dirSearch
 directory string to search for
 .NOTES
-Additionall, a very similarly useful command in powershell is 
+Additionall, a very similarly useful command in powershell is
 #<command><tab>
 That is hash symbol, then type the command you would like to search your command history for, then press tab. A menucomplete of all your history containing that command will come up for your selection.
 #>
@@ -133,11 +139,11 @@ function Search-FrequentDirectory {
 	$dirSearchParamAttribute.Mandatory = $true
 	$dirSearchParamAttribute.Position = 1
 	$dirSearchParamAttribute.HelpMessage = "Enter one or more module names, separated by commas"
-	$dirSearch.Add($dirSearchParamAttribute)    
+	$dirSearch.Add($dirSearchParamAttribute)
 
 	# [ValidateSet[(...)]
 	$dirPossibles = @()
-	
+
 	$historyFile = (Get-PSReadlineOption).HistorySavePath
 	# directory Seperating character for the os; \ (escaped to \\) for windows (as C:\Users\); / for linux (as in /var/www/);
 	# a catch all would be \\\/  ; but this invalidates the whitespace escape character that may be used mid-drectory.
@@ -146,9 +152,9 @@ function Search-FrequentDirectory {
 	$regex = "^[[:blank:]]*cd ([a-zA-Z\.\~:]+([$dirSep][^$dirSep]+)*[$dirSep]([^$dirSep]+)[$dirSep]?)$"
 	# original: ^[[:blank:]]*cd [a-zA-Z\~:\\\/]+([^\\\/]+[\\\/]?)*[\\\/]([^\\\/]+)[\/\\]?$
 	# test for historyFile existance
-	if( -not (Test-Path $historyFile )){ 
-		Write-Warning "File $historyFile not found, unable to load command history. Exiting."; 
-		return 1; 
+	if( -not (Test-Path $historyFile )){
+		Write-Warning "File $historyFile not found, unable to load command history. Exiting.";
+		return 1;
 	}
 	$historyLines = Get-Content $historyFile
 	# create a hash table, format of ;;; [directory path] = [lowest directory]
@@ -173,7 +179,7 @@ function Search-FrequentDirectory {
 	}
 	# this helps with hashtables
 	# https://www.simple-talk.com/sysadmin/powershell/powershell-one-liners-collections-hashtables-arrays-and-strings/
-	
+
 	$dirPossibles = ( $searchHistory.values | Select -Unique )
 
 	$modulesValidated_SetAttribute = New-Object -type System.Management.Automation.ValidateSetAttribute($dirPossibles)
@@ -217,13 +223,13 @@ function Search-FrequentDirectory {
 
 		# comes out as an array, but only one is possible, so grab that
 		$dirSearch = $PsBoundParameters.dirSearch[0]
-		
+
 		Debug-Variable $searchHistory "f/searchHistory"
-				
+
 		Write-Debug "dirSearch=$dirSearch"
-		
+
 		#this is doing ___EQUAL___ /// or do I want to be doing a like dirSearch*
-		$filteredDirs = $searchHistory.GetEnumerator() | ?{ $_.Value -eq $dirSearch } 
+		$filteredDirs = $searchHistory.GetEnumerator() | ?{ $_.Value -eq $dirSearch }
 
 		# if there is a single match
 		if ( $filteredDirs.count -eq 1 ){
@@ -245,7 +251,7 @@ function Search-FrequentDirectory {
 				$highestDir = ( $filteredDirs.GetEnumerator() | ?{$_.Name -contains $countedDir.Name} )
 				if ( $highestDir.count -eq 1 ){
 					Write-Debug "Check for $($highestDir.name)"
-					$testedPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($highestDir.name) 
+					$testedPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($highestDir.name)
 					if( $testedPath | Test-Path ){
 						Set-LocationHelper $testedPath
 						break
