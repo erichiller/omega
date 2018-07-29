@@ -50,7 +50,7 @@ try {
     if ( Get-Module "posh-git" ){
         Write-Verbose "module 'posh-git' already loaded, skipping forced load"
     } else {
-        Import-Module -Name "posh-git" -ErrorAction Stop >$null
+        Import-Module -Global -Name "posh-git" -ErrorAction Stop >$null
     }
 	$DebugPreference = $script:DebugPreference_prior
 	# set status as true
@@ -72,7 +72,11 @@ try {
 # load GitStatusCachePoshClient
 # see: https://github.com/cmarcusreid/git-status-cache-posh-client
 try {
-	Import-Module -Name "GitStatusCachePoshClient" -ErrorAction Stop >$null
+    if ( Get-Module "GitStatusCachePoshClient" ){
+        Write-Verbose "module 'GitStatusCachePoshClient' already loaded, skipping forced load"
+    } else {
+        Import-Module -Name "GitStatusCachePoshClient" -ErrorAction Stop >$null
+    }
 } catch {
 	Write-Warning "The GitStatusCachePoshClient module could not be found & imported, large directories may take significantly longer without it."
 }
@@ -83,7 +87,7 @@ try {
         Write-Verbose "module 'oh-my-posh' already loaded, skipping forced load"
     } else {
         if ( $gitStatus -eq $True ){
-            Import-Module oh-my-posh -ErrorAction Stop >$null
+            Import-Module oh-my-posh -Global -ErrorAction Stop >$null
             $global:ThemeSettings.MyThemesLocation = "$($config.basedir)\core"
             Set-Theme themeOmega
         }

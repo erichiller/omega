@@ -54,17 +54,16 @@ The `GitRelease` package source downloads a *release* from a github repo.
 | AdminRequired         | Yes       | Are administrator privileges required to install this package?
 | Source                | Yes       | Type of package, method of installation, see Enum `PackageInstallSource`
 | Destination	        | Yes		| destination for the installation, either an exact path string, or the keyword `SystemPath` which installs to `<basedir>\system\<pkgname>`
+| versionPattern		| Yes		| regex string to extract the version from the downloaded (full URL)
 
 #### If source=WebDirSearch
-| SearchPath			| Yes		| Base URL in which to search for downloadable file
+| SearchPath			| Yes		| **ARRAY** of URLs listed from parent to child in which to search for downloadable file
 
 #### If Source=GitRelease
 | Field					| Required? | Description
 |---					|---        |---       
 | org					| Yes		| org name for the organization the package can be found at
 | repo					| Yes		| repo of org to download from
-| searchTerm			| Yes		| wildcard style search pattern to select appropriate file to download from repo releases
-| versionPattern		| Yes		| regex string to extract the version from the downloaded (full URL)
 
 
 
@@ -83,7 +82,6 @@ The `GitRelease` package source downloads a *release* from a github repo.
             "InstallDestination": "SystemPath",
             "Org": "git-for-windows",
             "Repo": "git",
-            "SearchTerm": "*-64-bit.tar.bz2*",
             "VersionPattern": "^Git-(.*)-64-bit\\.tar\\.bz2$"
         }
     }

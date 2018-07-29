@@ -1,9 +1,14 @@
 function Install-PackageFromURL {
 	param(
 		[Package] $Package
-	)
-	[String] $concat = $Package.Install.SearchPath[0]
-	$matchPath = @($Package.Install.SearchPath[0])
+    )
+    if ( $Package.Install.SearchPath.getType().BaseType.toString() -eq "System.Array" ){
+	    [String] $concat = $Package.Install.SearchPath[0]
+        $matchPath = @($Package.Install.SearchPath[0])
+    } else {
+        Write-Warning "Package's SearchPath *$($Package.Install.SearchPath) is of an invalid type: $($Package.Install.SearchPath.GetType())"
+        return $false
+    }
 	$matchFilter = @{}
 	for ( $i = 1; $i -lt $Package.Install.SearchPath.Length; $i++) {
 		Write-Debug "i=$i of $($Package.Install.SearchPath.Length)"
@@ -11,8 +16,12 @@ function Install-PackageFromURL {
 		$filename = ( ((Invoke-WebRequest -UseBasicParsing -Uri $concat).Links | Where-Object { $_.href -match $Package.Install.SearchPath[$i] } | Where-Object { $_.href -notin $matchFilter[$i] }).href | Sort-Object )
 		if ( -not $filename ) {
 			Debug-Variable $matchPath "matchPath"
-			Write-Warning "Filename not found, dropping i to recurse at the lower hierarchy"
+            Write-Warning "Filename not found, dropping i to recurse at the lower hierarchy"
 			$i -= 2;
+            if ( $i -le 0 ){
+                Write-Warning "$i has decremented too many times, stopping processing"
+                return $false
+            }
 
 			$matchPath = $matchPath[0..($matchPath.length - 2)]
 
@@ -45,8 +54,10 @@ function Install-PackageFromURL {
 
 	# deploy
 	Write-Debug "(concat): $concat"
-	Install-DeployToOmegaSystem $Package $concat $filename $version
-
+    Write-Verbose "Found Version: $version - Installing $Package to system."
+    if ( $False -ne ( Install-DeployToOmegaSystem $Package $concat $filename $version ) ) {
+        Install-PostProcessPackage $Package $version
+    } else { return $False }
 	return $version
 }
 
@@ -106,30 +117,33 @@ function Install-PostProcessPackage {
 		Debug-Variable $Package.System.PathAdditions "Raw `$Package.System.PathAdditions"
 		$Package.System.PathAdditions | ForEach-Object {
 			$expandedDirectory = $ExecutionContext.InvokeCommand.ExpandString($_)
-			Write-Debug "System Path adding directory '$expandedDirectory'"
-			if ( -not ( Update-SystemPath $expandedDirectory ) ) {
-				Write-Error "System Path update FAILED on directory $expandedDirectory"
-			}
-		}
-		# Update system environment variables
-		Debug-Variable $Package.System.SystemEnvironmentVariables "Raw `$Package.System.SystemEnvironmentVariables"
-		$path_updates = $Package.System.SystemEnvironmentVariables_Iterable()
-		Debug-Variable $path_updates "Updates that `$Package=$($Package.Name) is going to make to the System Environment variables"
-		foreach ($p in $path_updates) {
-			Write-Debug "Updating environment variables... Expanding value<$($p.value)> for $($p.name) "
-			$expandedValue = $ExecutionContext.InvokeCommand.ExpandString($p.Value)
-			Write-Debug "System Environment Variables adding '$($p.Name)' = '$expandedValue'"
-			if ( -not ( Update-SystemEnvironmentVariables -Name $p.Name -Value $expandedValue ) ) {
-				Write-Error "System Environment Variables update FAILED on $key = $expandedValue"
-			}
-		}
+            Write-Debug "System Path adding directory '$expandedDirectory'"
+            if ( -not ( Update-SystemPath $expandedDirectory ) ) {
+                Write-Error "System Path update FAILED on directory $expandedDirectory"
+            }
+        }
+        SafeObjectArray $Package.System "SystemEnvironmentVariables" -Verbose
+        # Update system environment variables
+        if ( $Package.System.SystemEnvironmentVariables ) {
+            Debug-Variable $Package.System.SystemEnvironmentVariables "Raw `$Package.System.SystemEnvironmentVariables"
+            $path_updates = $Package.System.SystemEnvironmentVariables_Iterable()
+            Debug-Variable $path_updates "Updates that `$Package=$($Package.Name) is going to make to the System Environment variables"
+            foreach ($p in $path_updates) {
+                Write-Debug "Updating environment variables... Expanding value<$($p.value)> for $($p.name) "
+                $expandedValue = $ExecutionContext.InvokeCommand.ExpandString($p.Value)
+                Write-Debug "System Environment Variables adding '$($p.Name)' = '$expandedValue'"
+                if ( -not ( Update-SystemEnvironmentVariables -Name $p.Name -Value $expandedValue ) ) {
+                    Write-Error "System Environment Variables update FAILED on $key = $expandedValue"
+                }
+            }
+        }
 		# mark as installed in the manifest
 		[PackageState] $packageState = [PackageState]::new( $Package.name, $version )
 		$user.setPackageState($packageState)
 	} catch {
 
 		Write-Warning "$($Package.name) module failed to load. Either not installed or there was an error. This module, who's function follow, will not be enabled:"
-		Write-Warning $Package.brief
+		Write-Warning "$($Package.brief)`n`n"
 		$e = $_.Exception
 		$line = $_.InvocationInfo.ScriptLineNumber
 		$file = $_.InvocationInfo.ScriptName
@@ -166,10 +180,9 @@ function Install-DeployToOmegaSystem {
 
 	Write-Information "installing version $version of $($Package.name) ($filename)"
 
-	$deployNoRemoveDir = $True
+    $deployAllowRemoveDir = $True
 	# deploy is where the Package will be _INSTALLED_ Can be a path or the special values listed here, see README too
 	if ( $Package.Install.Destination -eq "SystemPath" ) {
-		$deployNoRemoveDir = $False
 		$deploy = ( Join-Path (Join-Path $conf.Basedir $conf.sysdir) $Package.Name )
 	} elseif ($Package.Install.Desination -eq "BinPath" ) {
         $deploy = ( Join-Paths $conf.Basedir $conf.bindir )
@@ -220,7 +233,7 @@ function Install-DeployToOmegaSystem {
 	Debug-Variable $conf.compression_extensions "Supported Compression Extensions"
 	while ( $True ) {
 		if ( $conf.compression_extensions -contains [IO.Path]::GetExtension($outFile) ) {
-			Write-Verbose ( "Decompression of $outFile required. extension:" + [IO.Path]::GetExtension($outFile) + "; Decompressing to the deployment directory:$deploy" )
+            Write-Verbose ( "Decompression of $outFile required. extension:" + [IO.Path]::GetExtension($outFile) + "; Decompressing to the deployment directory:$deploy" )
 			# add ` -bb1` as an option to `7z` for more verbose output
 			& 7z x $outFile "-o$deploy"
 			if ( (-not (Test-Path $deploy) ) -and ( $? -eq $False ) ) {
@@ -234,11 +247,33 @@ function Install-DeployToOmegaSystem {
 		}
 		Write-Debug ( " There is a single item in `$deploy and it matches the parent without extension? " + $(( ( Get-ChildItem $deploy).Count -eq 1 ) -and ( ( Get-ChildItem  $deploy | Where-Object { $_.Name -eq [IO.Path]::GetFileNameWithoutExtension($filename)  } ))) )
 		if ( $(( ( Get-ChildItem $deploy).Count -eq 1 ) -and ( ( Get-ChildItem $deploy | Where-Object { $_.Name -eq [IO.Path]::GetFileNameWithoutExtension($filename)  } ))) ) {
-			$outFile = ( Join-Path $deploy ([IO.Path]::GetFileNameWithoutExtension($filename)) )
+            $outFile = ( Join-Path $deploy ([IO.Path]::GetFileNameWithoutExtension($filename)) )
+
 			Write-Debug "outFile set to child (extensionless parent): $outFile"
 			# [IO.Path]  -- https://msdn.microsoft.com/en-us/library/system.io.path.getfilename(v=vs.110).aspx
 			Write-Debug ("running --> Join-Path " + $env:TEMP + " " + [IO.Path]::GetFileName($outFile) )
-			$tempPath = ( Join-Path $env:TEMP ([IO.Path]::GetFileName($outFile)) )
+            $tempPath = ( Join-Path $env:TEMP ([IO.Path]::GetFileName($outFile)) )
+
+            Write-Verbose "test-path: $tempPath -> ( $True -eq $(Test-Path $tempPath ))"
+
+            if ( $True -eq (Test-Path $tempPath )){
+                # deploy already exists
+                Write-Verbose "$tempPath already exists"
+                if ( $True -eq $deployAllowRemoveDir ){
+                    Write-Verbose "Permissions to remove dir are True"
+                    try {
+                        # Remove-Item has too many issues
+                        [IO.Directory]::Delete($tempPath, 1)
+                        Write-Information "$tempPath removed"
+                    } catch {
+                        Write-Error "$tempPath could not be removed, exiting"
+                        return $False
+                    }
+                } else {
+                    Write-Error "Deploy dir removal not allowed, could not remove $tempPath"
+                }
+            }
+
 			if ( ! ( Test-Path $outFile ) ) {
 				Write-Error "$outFile does not exist. Can not move file. Exiting."
 				return $False
@@ -274,8 +309,27 @@ function Install-DeployToOmegaSystem {
 			# Check if there is a single child-item, and if that single child-item has the same name as the file we just downloaded
 			( ( Get-ChildItem $deploy).Count -eq 1 ) -and ( ( Get-ChildItem  $deploy | Where-Object { $_.Name -eq [IO.Path]::GetFileNameWithoutExtension($filename) } )) ) {
 			$tempPath = ( Join-Path $env:TEMP $Package.name )
-			Write-Verbose "temporarily moving the package from:'$deploy' to:'$tempPath'"
-			Move-Item $deploy -Destination $tempPath -Force
+            Write-Verbose "preparing to finalize destination... temporarily moving the package from:'$deploy' to:'$tempPath'"
+            Write-Verbose "test-path: $tempPath -> ( $True -eq $(Test-Path $tempPath ))"
+            if ( $True -eq (Test-Path $tempPath )){
+                # deploy already exists
+                Write-Verbose "$tempPath already exists"
+                if ( $True -eq $deployAllowRemoveDir ){
+                    Write-Verbose "Permissions to remove dir are True"
+                    try {
+                        # Remove-Item has too many issues
+                        [IO.Directory]::Delete($tempPath, 1)
+                        Write-Information "$tempPath removed"
+                    } catch {
+                        Write-Error "$tempPath could not be removed, exiting"
+                        return $False
+                    }
+                } else {
+                    Write-Error "Deploy dir removal not allowed, could not remove $tempPath"
+                }
+            }
+            Move-Item $deploy -Destination $tempPath -Force
+			Write-Verbose "final destination: moving the package from:'$( ( Join-Path $tempPath ([IO.Path]::GetFileNameWithoutExtension($filename))) )' to:'$deploy'"
 			Move-Item ( Join-Path $tempPath ([IO.Path]::GetFileNameWithoutExtension($filename)) ) -Destination $deploy
 		}
 	}
@@ -302,8 +356,8 @@ function Install-OmegaPackage {
 	Debug-Variable $Package "Packaged init in Install-OmegaPackage"
 
 	switch ( $Package.Install.Source ) {
-        [PackageInstallSource]::GitRelease { Install-PackageFromGitRelease $Package }
-        [PackageInstallSource]::WebDirSearch { Install-PackageFromURL $Package }
+        "GitRelease" { Install-PackageFromGitRelease $Package }
+        "WebDirSearch" { Install-PackageFromURL $Package }
 		Default {
 			Write-Warning "Package Installation Source of $($Package.Install.Source) is undefined in $([PackageInstallSource])"
 		}

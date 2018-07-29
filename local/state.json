@@ -2,7 +2,8 @@
     "GitUser":  "a",
     "GitRepoState":  "",
     "SystemPathAdditions":  [
-                                "C:\\users\\ehiller\\appdata\\Roaming\\omega\\system\\git\\cmd"
+                                "C:\\users\\ehiller\\appdata\\Roaming\\omega\\system\\git\\cmd",
+                                "C:\\Program Files\\WindowsPowerShell\\Modules\\omega\\system\\nodejs"
                             ],
     "Packages":  {
                      "git":  {
@@ -36,7 +37,40 @@
                                                                                },
                                                 "SymLinks":  null
                                             }
-                             }
+                             },
+                     "nodejs":  {
+                                    "UpdateDate":  "2018-Jul-27 18:00",
+                                    "version":  "10.7.0",
+                                    "Name":  "nodejs",
+                                    "Brief":  "Node and Npm",
+                                    "Required":  false,
+                                    "Install":  {
+                                                    "Source":  1,
+                                                    "Destination":  "SystemPath",
+                                                    "AdminRequired":  true,
+                                                    "SearchPath":  [
+                                                                       "https://nodejs.org/download/release/latest/",
+                                                                       "node-v[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}-win-x64.zip"
+                                                                   ],
+                                                    "VersionPattern":  ".*node-v(.*)-win-x64\\.zip$",
+                                                    "Org":  null,
+                                                    "Repo":  null
+                                                },
+                                    "Provides":  {
+                                                     "Commands":  null,
+                                                     "Binaries":  [
+                                                                      "node",
+                                                                      "npm"
+                                                                  ]
+                                                 },
+                                    "System":  {
+                                                   "PathAdditions":  [
+                                                                         "$( ( [OmegaConfig]::GetInstance() ).BaseDir)\\system\\nodejs"
+                                                                     ],
+                                                   "SystemEnvironmentVariables":  null,
+                                                   "SymLinks":  null
+                                               }
+                                }
                  },
     "RegisteredCommands":  null,
     "Verbosity":  {

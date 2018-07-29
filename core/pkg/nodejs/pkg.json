@@ -6,8 +6,10 @@
         "Source": "WebDirSearch",
         "Destination": "SystemPath",
         "AdminRequired": true,
-        "SearchPath": "https://nodejs.org/download/release/latest/",
-        "SearchTerm": "node-v*-win-x64.zip",
+        "SearchPath": [
+            "https://nodejs.org/download/release/latest/",
+            "node-v[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}-win-x64.zip"
+        ],
         "VersionPattern": ".*node-v(.*)-win-x64\\.zip$"
     },
     "System": {

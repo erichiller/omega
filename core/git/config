@@ -69,6 +69,3 @@
     plog = log --graph --decorate --pretty=oneline --abbrev-commit
     # detailed log
     alog = log --graph --decorate --pretty=oneline --abbrev-commit --all
-[user]
-	name = Eric Hiller
-	email = eric@hiller.pro

@@ -99,18 +99,21 @@ function Update-SystemPath {
     Write-Debug "Checking Path at '$($conf.system_environment_key)' - currently set to `n$OriginalPath"
     $Path = $OriginalPath
     # Check to ensure that the Directory is not already on the System Path
-    if ($Path | Select-String -SimpleMatch $Directory)
-    { Write-Warning "$Directory already within System Path" }
-    # Ensure the Directory is not already within the path
-    if ($ENV:Path | Select-String -SimpleMatch $Directory)
-    { Write-Warning "$Directory already within `$ENV:Path" }
-    # Check that the directory is not already on the configured path
-    if ( $user.SystemPathAdditions -Contains $Directory) {
+    if ($Path | Select-String -SimpleMatch $Directory){
+        Write-Warning "$Directory already within System Path"
+    } elseif ($ENV:Path | Select-String -SimpleMatch $Directory) { 
+        # Ensure the Directory is not already within the path
+        Write-Warning "$Directory already within `$ENV:Path"
+    } elseif ( $user.SystemPathAdditions -Contains $Directory) {
+        # Check that the directory is not already on the configured path
         Debug-Variable $user.SystemPathAdditions "userState.SystemPathAdditions";
         Write-Warning "$Directory is already present in `$user.SystemPathAdditions"
         If ( -not (Enter-UserConfirm "force-add?") ){
-            Return
+            Return $False
         }
+        $Path = "$Path;$(Resolve-Path $Directory)"
+    } else {
+        $Path = "$Path;$(Resolve-Path $Directory)"
     }
 
     # MUST BE ADMIN to create in the default start menu location;
@@ -123,14 +126,12 @@ function Update-SystemPath {
     Debug-Variable $Directory "`$Directory"
     $user.add_SystemPathAdditions($Directory)
     # Debug-Variable ArrayAddUnique -AddTo $user.SystemPathAdditions -AdditionalItem $Directory
-    Write-Warning "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     Debug-Variable $user.SystemPathAdditions "userState.SystemPathAdditions"
     # Safe to proceed now, add the Directory to $Path
-    $Path = "$Path;$(Resolve-Path $Directory)"
 
     # Cleanup the path
     # rebuild, directory by directory, deleting paths who are within omega's realm, and no longer exist or are permitted to be there (via user.SystemPathAdditions)
-    $Dirs = $Path.split(";") | where-object {$_ -ne " "}
+    $Dirs = ( $Path.split(";") | where-object {$_ -ne " "} | where-object {$_ -ne ""} )
 
     ForEach ($testDir in $Dirs) {
         Write-Debug "Testing for validity within the system path:`t$testDir"
@@ -151,7 +152,7 @@ function Update-SystemPath {
             { Write-Debug "$testDir not in `$user.SystemPathAdditions"; continue }
         }
     }
-    $Path = $Path -join ";"
+    $Path = $Dirs -join ";"
     # All Tests Passed, the trials are complete, you, noble directory, can be added (or kept) on the system's path
     Write-Debug "All validity tests have passed, '$Directory' is now on '$Path'"
     # Set the path
@@ -210,23 +211,26 @@ function SafeObjectArray {
         Write-Verbose "propertyName---"
         $pN | Get-Member | Format-Table
         Write-Verbose "property--"
-        Write-Output "len is $($object.$pN.length)"
+        Write-Verbose "len is $($object.$pN.length)"
         if ( $object.$pN -eq $null ) {
-            Write-Output "is null"
-            $object.$pN = @()
+            Write-Debug "$pN parameter on object is null"
         }
         Write-Verbose "end---"
     }
+    try {
+        if (!(Get-Member -InputObject $object -Name $pN -Membertype Properties)) {
+            Write-Host -ForegroundColor "magenta" "adding property $pn to $object"
+            Add-Member -InputObject $object -MemberType NoteProperty -Name $pN -Value $ArrayList
 
-    if (!(Get-Member -InputObject $object -Name $pN -Membertype Properties)) {
-        Add-Member -InputObject $object -MemberType NoteProperty -Name $pN -Value $ArrayList
-
-        #debug
-        if ( $VerbosePreference ) {
-            Write-Verbose "$pN not present on $object"
-            $object | Get-Member | Format-Table
+            #debug
+            if ( $VerbosePreference ) {
+                Write-Verbose "$pN not present on $object"
+                $object | Get-Member | Format-Table
+            }
+            $object.$pN = @()
         }
-        $object.$pN = @()
+    } catch {
+        Write-Error $_.Exception
     }
 }
 

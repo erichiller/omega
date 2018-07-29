@@ -182,8 +182,7 @@ class PackageInstallParameters {
 	[string] $Destination;
 	[bool] $AdminRequired;
 
-	[string] $SearchPath;
-	[string] $SearchTerm;
+	[System.Array] $SearchPath;
 	[string] $VersionPattern;
 
 	# Present only for GitRelease
