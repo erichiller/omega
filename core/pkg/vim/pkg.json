@@ -1,0 +1,41 @@
+{
+    "Name": "vim",
+    "Brief": "ViM for Windows 64 bit",
+    "Required": true,
+    "Install": {
+        "Source": "GitRelease",
+        "Destination": "SystemPath",
+        "AdminRequired": true,
+        "VersionPattern": ".*gvim_([0-9.]*)_x64.zip$",
+        "Org": "vim",
+		"Repo": "vim-win32-installer"
+	},
+	"Shortcuts": [
+		{
+			"ShortcutPutPath": "",
+			"TargetPath": "system/vim/gvim.exe",
+			"Arguments": "-u %VIMINIT%",
+			"IconPath": "config/pkg/vim/vim.ico",
+			"RegisterApp": true
+		}
+	],
+    "System": {
+        "PathAdditions": [
+            "$( ( [OmegaConfig]::GetInstance() ).BaseDir)\\system\\vim"
+        ],
+        "SystemEnvironmentVariables": {
+            "VIMINIT": "source $( ( [OmegaConfig]::GetInstance() ).BaseDir)\\core\\config\\omega.vimrc"
+		},
+		"Directories": [
+			"${env:TEMP}\\vimfiles\\swap",
+			"${env:TEMP}\\vimfiles\\undo",
+			"${env:TEMP}\\vimfiles\\cache\\neocomplete",
+			"${env:TEMP}\\vimfiles\\sessions"
+		]
+    },
+    "Provides": {
+        "Binaries": [
+            "vim"
+        ]
+    }
+}

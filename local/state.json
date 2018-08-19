@@ -70,12 +70,56 @@
                                                    "SystemEnvironmentVariables":  null,
                                                    "SymLinks":  null
                                                }
-                                }
+                                },
+                     "vim":  {
+                                 "UpdateDate":  "2018-Aug-19 11:16",
+                                 "version":  "8.1.0296",
+                                 "Name":  "vim",
+                                 "Brief":  "ViM for Windows 64 bit",
+                                 "Required":  true,
+                                 "Install":  {
+                                                 "Source":  0,
+                                                 "Destination":  "SystemPath",
+                                                 "AdminRequired":  true,
+                                                 "SearchPath":  null,
+                                                 "VersionPattern":  ".*gvim_([0-9.]*)_x64.zip$",
+                                                 "Org":  "vim",
+                                                 "Repo":  "vim-win32-installer"
+                                             },
+                                 "System":  {
+                                                "PathAdditions":  null,
+                                                "SystemEnvironmentVariables":  {
+                                                                                   "VIMINIT":  "$( ( [OmegaConfig]::GetInstance() ).BaseDir)\\core\\config\\omega.vimrc"
+                                                                               },
+                                                "SymLinks":  null,
+                                                "Directories":  [
+                                                                    "${env:TEMP}\\vimfiles\\swap",
+                                                                    "${env:TEMP}\\vimfiles\\undo",
+                                                                    "${env:TEMP}\\vimfiles\\cache\\neocomplete",
+                                                                    "${env:TEMP}\\vimfiles\\sessions"
+                                                                ]
+                                            },
+                                 "Provides":  {
+                                                  "Commands":  null,
+                                                  "Binaries":  [
+                                                                   "vim"
+                                                               ]
+                                              },
+                                 "Shortcuts":  [
+                                                   {
+                                                       "ShortcutPutPath":  "",
+                                                       "TargetPath":  "system/vim/gvim.exe",
+                                                       "Arguments":  "-u %VIMINIT%",
+                                                       "IconPath":  "config/pkg/vim/vim.ico",
+                                                       "RegisterApp":  true
+                                                   }
+                                               ]
+                             }
                  },
     "RegisteredCommands":  null,
     "Verbosity":  {
                       "Information":  "Continue",
-                      "Verbose":  "Continue",
+                      "Verbose":  "•SilentlyContinue",
                       "Debug":  "Continue"
                   },
     "Push":  null

@@ -38,7 +38,6 @@ if ( Test-Path $local:ModulePath ) {
 	$global:UserModuleBasePath = $local:ModulePath
 }
 
-
 #################################################
 ######        STEP #2: IMPORT MODULES       #####
 ######        -----> mandatory <-----       #####
@@ -185,6 +184,9 @@ Set-Alias -Name ssh -Value "$($config.basedir)\bin\ssh.cmd"
 # file hashes
 Set-Alias -Name md5sum -Value Get-md5sum
 Set-Alias -Name sha256sum -Value Get-sha256sum
+
+# alias linux's `ifconfig` with windows' `ipconfig`
+Set-Alias -Name ifconfig -Value ipconfig
 
 # hexdump
 if (-not (Get-Command hexdump.exe -ErrorAction ignore )) { Set-Alias -Name hexdump -Value "Format-Hex" }

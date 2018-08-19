@@ -27,24 +27,6 @@ Packages definitions are in json format and have several *required* fields and s
 | `Provides.*`          | No        | Resources this package provides
 | `System.*`            | No        | System Alterations which will be made by this package.
 
-### `Provides.*`
-
-| Field                 | Required? | Description
-|---                    |---        |---      
-| Provides.Commands     | No        | Commands this package provides and should be registered.
-| Provides.Binaries     | No        | Critical Binary (Executables) that other packages may desire/depend on that this package provides
-
-
-### `System.*`
-
-| Field                 | Required? | Description
-|---                    |---        |---      
-| SystemPathAdditions   | No        | *Array* of directories to be added to the system `%PATH%`
-| SystemEnvironmentVariables | No   | `{"VarName": "VarValue",...}` of variables to be added to the System Environment (`$Env:VarName`)
-| SymLinks              | No        | SymLinks to create in the form of `"/internal/path/of/pkg/": "/path/within/system"`
-
-* If either `SystemPathAdditions` or `SystemEnvironmentVariables` is specified `adminRequired` is equated to `$True`.
-
 ### `Install.*`
 
 The `GitRelease` package source downloads a *release* from a github repo.
@@ -65,6 +47,42 @@ The `GitRelease` package source downloads a *release* from a github repo.
 | org					| Yes		| org name for the organization the package can be found at
 | repo					| Yes		| repo of org to download from
 
+### `Shortcut.*`
+
+| Field                 | Required? | Description
+|---                    |---        |---      
+| ShortcutPutPath   | No        | *Array* of directories to be added to the system `%PATH%`
+
+### `System.*`
+
+| Field                 | Required? | Description
+|---                    |---        |---      
+| SystemPathAdditions   | No        | *Array* of directories to be added to the system `%PATH%`
+| SystemEnvironmentVariables | No   | `{"VarName": "VarValue",...}` of variables to be added to the System Environment (`$Env:VarName`)
+| SymLinks              | No        | SymLinks to create in the form of `"/internal/path/of/pkg/": "/path/within/system"`
+| Directories           | No        | Directories which this package owns, Created if necessary
+
+* If either `SystemPathAdditions` or `SystemEnvironmentVariables` is specified `adminRequired` is equated to `$True`.
+
+### `Provides.*`
+
+| Field                 | Required? | Description
+|---                    |---        |---      
+| Provides.Commands     | No        | Commands this package provides and should be registered.
+| Provides.Binaries     | No        | Critical Binary (Executables) that other packages may desire/depend on that this package provides
+
+
+
+
+- Directories
+- Shortcut
+    - ShortCutPath
+    - TargetPath
+    - Arguments
+    - IconPath
+    - Register
+- *run `install.ps1` if present*
+- 
 
 
 # example
@@ -91,3 +109,8 @@ The `GitRelease` package source downloads a *release* from a github repo.
 ## Additional Resources
 
 * **Helpfiles** can (and _should_) be provided for each of the `Provides.Commands` in the form of `help.<commandname>.md` with the content inside being standard PowerShell help _manpage_ style (`.SYNOPSIS` etc...)
+
+Testing:
+```powershell
+powershell.exe "&{ Start-Process powershell -Verb runAs -argumentlist '&{ Install-OmegaPackage vim;Pause;}'}"
+```

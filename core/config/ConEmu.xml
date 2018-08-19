@@ -623,26 +623,35 @@
 					<value name="Cmd4" type="string" data="echo %ESC%[9999H &amp;"/>
 					<value name="Cmd5" type="string" data='"%ConEmuBaseDir%\conemu-cyg-64.exe" --wsl -t "%ConEmuBaseDir%\wsl\wsl-boot.sh"'/>
 				</key>
-				<key name="Task4" modified="2018-04-14 07:08:48" build="180411">
-					<value name="Name" type="string" data="{msys2_MINGW32}"/>
-					<value name="Flags" type="dword" data="00000000"/>
+				<key name="Task4" modified="2018-07-29 18:59:08" build="180626">
+					<value name="Name" type="string" data="{msys2}"/>
+					<value name="Flags" type="dword" data="00000004"/>
 					<value name="Hotkey" type="dword" data="00001173"/>
 					<value name="GuiArgs" type="string" data='/icon "%ConEmuDir%\..\..\icons\bash_32.ico" /Dir %USERPROFILE%'/>
-					<value name="Cmd1" type="string" data='set basedir=%APPDATA%\omega &amp; set CHERE_INVOKING=1 &amp; set MSYSTEM=MINGW32 &amp; set "PATH=%basedir%\system\msys\usr\bin\;%PATH%" &amp; "%basedir%\system\ConEmu\ConEmu\conemu-msys2-32.exe %basedir%\system\msys\usr\bin\bash.exe --login -i"'/>
+					<value name="Cmd1" type="string" data="%ConEmuBaseDirShort%\..\..\msys\usr\bin\bash.exe --login -i"/>
 					<value name="Active" type="long" data="0"/>
 					<value name="Count" type="long" data="1"/>
 				</key>
-				<key name="Task5" modified="2018-02-17 08:36:53" build="180206">
-					<value name="Name" type="string" data="{msys2_MINGW64}"/>
-					<value name="Flags" type="dword" data="00000004"/>
+				<key name="Task5" modified="2018-07-29 18:59:08" build="180626">
+					<value name="Name" type="string" data="{msys2_MINGW32}"/>
+					<value name="Flags" type="dword" data="00000000"/>
 					<value name="Hotkey" type="dword" data="00001174"/>
 					<value name="GuiArgs" type="string" data='/icon "%ConEmuDir%\..\..\icons\bash_32.ico" /Dir %USERPROFILE%'/>
-					<value name="Cmd1" type="string" data='set CHERE_INVOKING=1 &amp; set MSYSTEM=MINGW34 &amp; set "PATH=%ConEmuDir%\..\msys\usr\bin\;%PATH%" &amp; "%ConEmuBaseDirShort%\conemu-msys2-64.exe %ConEmuDir%\..\msys\usr\bin\bash.exe --login -i"'/>
+					<value name="Cmd1" type="string" data='set CHERE_INVOKING=1 &amp; set MSYSTEM=MINGW32 &amp; set "PATH=%ConEmuBaseDirShort%\..\..\msys\usr\bin\;%PATH%" &amp; "%ConEmuBaseDirShort%\conemu-msys2-32.exe %ConEmuBaseDirShort%\..\..\msys\usr\bin\bash.exe --login -i"'/>
 					<value name="Active" type="long" data="0"/>
 					<value name="Count" type="long" data="1"/>
 					<value name="Cmd2" type="string" data='PowerShell -ExecutionPolicy Bypass -NoLogo -NoProfile -NoExit -Command ". \"%ConEmuDir%\..\..\core\profile.ps1\""'/>
 				</key>
-				<key name="Task6" modified="2018-02-17 08:28:11" build="180206">
+				<key name="Task6" modified="2018-07-29 18:59:08" build="180626">
+					<value name="Name" type="string" data="{msys2_MINGW64}"/>
+					<value name="Flags" type="dword" data="00000004"/>
+					<value name="Hotkey" type="dword" data="00001175"/>
+					<value name="GuiArgs" type="string" data='/icon "%ConEmuDir%\..\..\icons\bash_32.ico" /Dir %USERPROFILE%'/>
+					<value name="Cmd1" type="string" data="set MSYSTEM=MINGW64 &amp; %ConEmuBaseDirShort%\..\..\msys\usr\bin\bash.exe --login -i"/>
+					<value name="Active" type="long" data="0"/>
+					<value name="Count" type="long" data="1"/>
+				</key>
+				<key name="Task7" modified="2018-07-29 16:51:09" build="180626">
 					<value name="Name" type="string" data="{PowerShell_Here}"/>
 					<value name="Flags" type="dword" data="00000004"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
@@ -651,21 +660,12 @@
 					<value name="Active" type="long" data="0"/>
 					<value name="Count" type="long" data="1"/>
 				</key>
-				<key name="Task7" modified="2018-02-17 08:28:11" build="180206">
+				<key name="Task8" modified="2018-07-29 16:51:09" build="180626">
 					<value name="Name" type="string" data="{help}"/>
 					<value name="Flags" type="dword" data="00000004"/>
 					<value name="Hotkey" type="dword" data="00000000"/>
 					<value name="GuiArgs" type="string" data=""/>
 					<value name="Cmd1" type="string" data='PowerShell -ExecutionPolicy Bypass -NoLogo -NoProfile -Command ". \"%ConEmuDir%\..\..\core\profile.ps1\" ; Omega-Help ; pause" -new_console:sV'/>
-					<value name="Active" type="long" data="0"/>
-					<value name="Count" type="long" data="1"/>
-				</key>
-				<key name="Task8" modified="2017-07-06 05:50:07" build="170705">
-					<value name="Name" type="string" data="{SDK::VS 14.0 x64 tools prompt}"/>
-					<value name="Flags" type="dword" data="00000004"/>
-					<value name="Hotkey" type="dword" data="00000000"/>
-					<value name="GuiArgs" type="string" data=""/>
-					<value name="Cmd1" type="string" data='cmd /k ""%ConEmuDrive%\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat"" x64 -new_console:t:"VS 14.0"'/>
 					<value name="Active" type="long" data="0"/>
 					<value name="Count" type="long" data="1"/>
 				</key>

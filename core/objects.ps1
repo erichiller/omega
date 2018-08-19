@@ -22,17 +22,17 @@ class VerbosityConfig {
 ## something like this could even be the basis for shared variables ???
 class OmegaConfig {
 
-    [string] $Name = "Omega"
+	[string] $Name = "Omega"
 	[string] $BinDir
 	[string] $SysDir
-    [string] $ConfDir
-    [string] $UserDir
+	[string] $ConfDir
+	[string] $UserDir
 	[string] $HelpDir
 	[string] $system_environment_key
 	[string] $user_environment_key
 	[string] $app_paths_key
-    [string[]] $compression_extensions
-    [string[]] $SingleFileExtensions
+	[string[]] $compression_extensions
+	[string[]] $SingleFileExtensions
 	[string] $LogPath
 	[PushConfig] $Push
 	[VerbosityConfig] $DefaultVerbosity;
@@ -72,11 +72,11 @@ class OmegaConfig {
 
 	OmegaConfig() {
 		Write-Debug "Empty OmegaConfig init --> SHOULD USE ::GetInstance()"
-    }
+	}
 
-    [string] GetLogPath() {
-        return ( Join-Path $this.BaseDir $this.LogPath )
-    }
+	[string] GetLogPath() {
+		return ( Join-Path $this.BaseDir $this.LogPath )
+	}
 
 
 }
@@ -111,7 +111,7 @@ Class User {
 			else {
 				Write-Warning "UserState file not found: $( [User]::UserStateFilePath )"
 			}
-        } 
+		} 
 		return [User]::instance
 	}
 	# constructor
@@ -168,8 +168,8 @@ Class User {
 
 
 Enum PackageInstallSource {
-    GitRelease;
-    WebDirSearch
+	GitRelease;
+	WebDirSearch
 }
 
 class PackageProvides {
@@ -190,10 +190,23 @@ class PackageInstallParameters {
 	[string] $Repo;
 }
 
+
+<#
+ ShortCut data object for Package Parameters
+#>
+class PackageShortcut {
+	[string] $ShortcutPutPath;       # Where the shortcut should be located after creation
+	[string] $TargetPath;            # What the shortcut points to
+	[string] $Arguments;             # Arguments for the Target
+	[string] $IconPath;              # Path to Icon which will be used for Shortcut
+	[bool]   $RegisterApp;             # Register the "App" with Windows, this allows it to be found via Cortana Search
+}
+
 class PackageSystemAlterations {
 	[System.Collections.ArrayList] $PathAdditions;
 	[PSObject] $SystemEnvironmentVariables;
 	[PSObject] $SymLinks;
+	[string[]] $Directories;
 
 	[Object[]] SystemEnvironmentVariables_Iterable() {
 		Write-Debug "[PackageSystemAlterations]::SystemEnvironmentVariables_Iterable is Returning SystemEnvironmentVariables as name,value iterable"
@@ -206,8 +219,9 @@ class Package {
 	[string] $Brief;
 	[bool] $Required;
 	[PackageInstallParameters] $Install;
-	[PackageProvides] $Provides;
 	[PackageSystemAlterations] $System;
+	[PackageProvides] $Provides;
+	[PackageShortcut[]] $Shortcuts;
 
 
 	static hidden [string] $pkgPathBase = ( Join-Paths ([OmegaConfig]::GetInstance()).BaseDir "core" "pkg" )
@@ -257,7 +271,7 @@ class Package {
 
 	Package () {
 		Write-Debug "Package() init is actionless"
-    }
+	}
 	# constructor reads pkg.json
 	Package([string] $name) {
 		Write-Debug "Package($name) init is actionless"
@@ -291,12 +305,30 @@ class Package {
 			# powershell.exe "Start-Process powershell -ArgumentList '-ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -File c:\install.ps1' -Verb RunAs"
 			powershell.exe "Start-Process powershell -ArgumentList '-ExecutionPolicy Bypass -NoLogo' -Verb RunAs"
 			Write-Verbose "Returning False in `$Package.Install.AdminRequired -and !(Test-Admin)"
-			exit
+			return $False
 		}
 		( "{ in test-preq } `$Package members:`n" + ( $this | get-member | out-string) ) | Write-Host -ForegroundColor "Magenta"
 		Write-Verbose "Test-InstallPrerequisite reporting success, $True"
 		return $True
 	}
+
+	[bool] InvokeInstallScript() {
+		Write-Debug "looking for path at $([Package]::pkgPathBase) + $($this.Name) + install.ps1"
+		$local:install_ps1_path = ( Join-Paths ( [Package]::pkgPathBase ) $this.Name "install.ps1"  )
+		if ( Test-Path $local:install_ps1_path ){
+			Write-Debug "InstallScript found, running..."
+			try {
+				. $local:install_ps1_path
+			} catch {
+				Write-Warning ( "Received Exception '" + $_.Exception.Message + "' ; will not continue executing install.ps1" )
+				return $False
+			}
+			return $True
+		}
+		Write-Debug "No InstallScript exists, continuing"
+		return $True
+	}
+
 
 }
 

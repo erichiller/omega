@@ -26,9 +26,15 @@ http://stackoverflow.com/questions/35624787/powershell-whats-the-best-way-to-dis
 #>
 function Debug-Variable { 
 	param(
-		[Parameter(Mandatory = $True)] $var,
+		[Parameter(Mandatory = $True)] 
+			[AllowEmptyString()]
+			[AllowNull()] $var,
 		[string] $name
 	)
+	if ( -not $var ){
+		Write-Information "var cannot be displayed it is null"
+		return
+	}
     if (!(Get-Member -InputObject $var -Name "Length" -Membertype Properties)) { $length = "length: $($var.Length)`n" } else { $length = "" }
 	@(
 		if ([string]::IsNullOrEmpty($name) -ne $true) { $name = "`nName: ``$name``" }

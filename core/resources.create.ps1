@@ -46,18 +46,22 @@ Defaults to C:\Users\ehiller\APPDATA\Microsoft\Windows\Start Menu\Programs\ + <b
 function New-Shortcut {
 	param(
 		[Parameter(Mandatory = $true)]
-		[string] $targetRelPath,
+			[string] $targetRelPath,
 		[Parameter(Mandatory = $false)]
-		[string] $shortcutFile,
+			[AllowEmptyString()]
+			[AllowNull()]
+			[string] $shortcutFile,
 		[Parameter(Mandatory = $false)]
-		[string] $iconRelPath,
+			[string] $iconRelPath,
 		[Parameter(Mandatory = $false)]
-		[string]$arguments
+			[string] $arguments,
+		[Parameter(Mandatory = $false)]
+			[bool] $RegisterApp = $False
 	)
     $conf = [OmegaConfig]::GetInstance()
 
-	# if no shortcut file is specified, create a default on in the start menu folder
-	if ( -not $shortcutFile) {
+	# if no shortcut file is specified, create a default one in the start menu folder
+	if ( -not $shortcutFile ) {
 		# MUST BE ADMIN to create in the default start menu location;
 		# check, if not warn and exit
 		if ( -not (Test-Admin -warn) ) { return }
@@ -75,9 +79,18 @@ function New-Shortcut {
 		Write-Debug $baseName
 		$shortcutFile = Join-Path "${env:ALLUSERSPROFILE}\Microsoft\Windows\Start Menu\Programs\" $baseName
 	}
-
+	
 	if (-not $shortcutFile.EndsWith(".lnk")) {
 		$shortcutFile += ".lnk"
+	}
+	
+	if ( -not ( Test-Path (Join-Path $conf.basedir $targetRelPath) ) ){
+		Write-Warning "No item exists at target path: $targetRelPath, skipping shortcut creation"
+		return $False
+	}
+	if ( -not ( Test-Path $iconRelPath ) ){
+		Write-Warning "No item exists at icon path: $iconRelPath, skipping shortcut creation"
+		return $False
 	}
 
 	$WScriptShell = New-Object -ComObject WScript.Shell
@@ -93,6 +106,19 @@ function New-Shortcut {
 
 	$Shortcut.Save()
 	Write-Output "Shortcut Created at $shortcutFile"
+
+	if ( $RegisterApp ){
+		$baseName = Split-Path -Path $shortcutFile -Leaf -Resolve
+		$positionDot = $baseName.LastIndexOf(".")
+		if ($positionDot -gt 0) {
+			$baseName = $baseName.substring(0, $positionDot)
+			Write-Debug "Registering $baseName"
+			Register-App -appName $baseName -targetPath $Shortcut.TargetPath
+		} else {
+			Write-Warning "App had no name to register"
+		}
+	}
+	return $True
 }
 
 
@@ -105,7 +131,7 @@ appName is the name of the application that will be indexed
 In the registry entry, .exe will be appended
 If no value is provided, it defaults to omega
 .PARAMETER targetPath
-this is the path RELATIVE TO BASEDIR where the shortcut or exe to be linked to / executed is located
+this is the path where the shortcut or exe to be linked to / executed is located
 #>
 function Register-App {
 
