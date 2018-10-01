@@ -37,7 +37,7 @@
 
 	@rem set title for the case where remote host does not provide this info.
 	@set TITLE=" (ssh) %1"
-	@powershell.exe -Command Write-Host \"$([char]27)]9;3;$env:TITLE$([char]7)\"
+	@powershell.exe -Command Write-Host \"$([char]27)]0;eric$([char]7)\"
 
 	@set CHERE_INVOKING=1
 	@%ConEmuBaseDirShort%\conemu-msys2-64.exe -cur_console:p ssh.exe -F "%config%" %*

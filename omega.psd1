@@ -76,6 +76,7 @@
         "ff"
         "ls"
         "Install-OmegaPackage"
+        "Get-History"
 
 
 
