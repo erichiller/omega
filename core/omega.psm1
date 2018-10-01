@@ -171,6 +171,11 @@ if (alias curl -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:curl }
 if (alias curl -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:curl }
 Set-Alias -Name "curl" -Value "$($config.basedir)\bin\curl.cmd"
 
+# scp
+if (alias scp -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:scp }
+if (alias scp -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:scp }
+Set-Alias -Name "scp" -Value "$($config.basedir)\bin\scp.cmd"
+
 # less
 Set-Alias -Name "less" -Value "$($config.basedir)\system\git\usr\bin\less.exe"
 
