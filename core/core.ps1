@@ -26,14 +26,21 @@ function Add-DirToPath {
         # if it isn't already in the PATH, add it
         if ( -not $env:Path.Contains($dir) ) {
             $env:Path += ";" + $dir
-            return $True
+            return
         }
+    } else {
+        throw "Directory $dir does not exist, can not add to path"
     }
     if ( $SystemPath) {
         Write-Debug "Updating SystemPath with 'Update-SystemPath $dir'"
-        return Update-SystemPath $dir
+        Try {
+            Update-SystemPath $dir
+            return
+        } Catch {
+            throw "Failed to add $dir to System Path"
+        }
     }
-    return $False
+    throw "Failed to add $dir to environment path"
 }
 
 <#
@@ -109,7 +116,7 @@ function Update-SystemPath {
         Debug-Variable $user.SystemPathAdditions "userState.SystemPathAdditions";
         Write-Warning "$Directory is already present in `$user.SystemPathAdditions"
         If ( -not (Enter-UserConfirm "force-add?") ){
-            Return $False
+            throw "Path not added, User rejected force-add"
         }
         $Path = "$Path;$(Resolve-Path $Directory)"
     } else {
@@ -118,7 +125,7 @@ function Update-SystemPath {
 
     # MUST BE ADMIN to create in the default start menu location;
     # check, if not warn and exit
-    if ( -not (Test-Admin -warn) ) { return }
+    if ( -not (Test-Admin -warn) ) { throw "Can not continue: Must have admin permissions to add to System Path" }
 
     # Add the directory to $user.SystemPathAdditions
     SafeObjectArray $user "SystemPathAdditions" -Verbose
@@ -161,8 +168,7 @@ function Update-SystemPath {
         Set-ItemProperty -Path "$($conf.system_environment_key)" -Name PATH -Value $Path
     }
     catch {
-        Write-Error "There was an issue updating the system registry."
-        return $false
+        throw "There was an issue updating the system registry."
     }
 
     if ( -not $ENV:Path.Contains($testDir) ) {
@@ -171,7 +177,6 @@ function Update-SystemPath {
     }
 
     Show-Path -Debug
-    return $true
 }
 
 function Update-SystemEnvironmentVariables {

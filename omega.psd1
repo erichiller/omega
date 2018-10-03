@@ -237,6 +237,7 @@
             "om"
             "kb"
             "Install-OmegaPackage"
+            "Get-History"
         )
 	}
 
