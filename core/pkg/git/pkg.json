@@ -16,7 +16,7 @@
             "$( ( [OmegaConfig]::GetInstance() ).BaseDir)\\system\\git\\cmd"
         ],
         "SystemEnvironmentVariables": {
-            "XDG_CONFIG_HOME": "$( ( [OmegaConfig]::GetInstance() ).BaseDir)\\core",
+            "XDG_CONFIG_HOME": "$( ( [OmegaConfig]::GetInstance() ).BaseDir)\\core\\config",
             "GIT_CONFIG_NOSYSTEM": "1"
         }
     },

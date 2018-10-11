@@ -38,7 +38,7 @@
     # pager is set in profile with GIT_PAGER
 
 [http]
-	sslcainfo = /ssl/certs/ca-bundle.crt
+    sslcainfo=/ssl/certs/ca-bundle.crt
 
 [color]
     ui = true

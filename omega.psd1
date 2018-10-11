@@ -56,6 +56,7 @@
     CmdletsToExport   = @()
 	VariablesToExport = @(
         "GitPromptScriptBlock"
+        "GIT_EDITOR"
     ) # all
 	FunctionsToExport = @(
         "Add-DirToPath"

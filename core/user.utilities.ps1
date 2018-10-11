@@ -147,7 +147,7 @@ function ls {
             # not local -> so display EVERYTHING, including group information
             $format = "-l"
         }
-		if ( $pipelineInput -eq $Null ){
+		if ( $Null -eq $pipelineInput ){
 			ls.exe --all $format --human-readable --group-directories-first --classify --color=auto @Remaining
 		}
 		ForEach ($input in $pipelineInput) {
@@ -159,3 +159,4 @@ function ls {
 		$env:PATH = $op
 	}
 }
+
