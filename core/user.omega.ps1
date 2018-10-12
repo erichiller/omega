@@ -7,17 +7,17 @@
 Set-RegisterCommandAvailable
 #>
 function Get-OmegaCommands {
-    # print the table
-    $FunctionHelpList = @()
-    (Get-Module Omega).PrivateData.RegisteredCommands | ForEach-Object {
-        $FunctionHelpList +=( Get-Help $_ | Select-Object Name, Synopsis )
-    }
+	# print the table
+	$FunctionHelpList = @()
+	(Get-Module Omega).PrivateData.RegisteredCommands | ForEach-Object {
+		$FunctionHelpList +=( Get-Help $_ | Select-Object Name, Synopsis )
+	}
 	if ( $null -ne ([User]::GetInstance()).RegisteredCommands ){
 		([User]::GetInstance()).RegisteredCommands | ForEach-Object {
-            $FunctionHelpList +=( Get-Help $_ | Select-Object Name, Synopsis )
-        }
-    }
-    $FunctionHelpList
+			$FunctionHelpList +=( Get-Help $_ | Select-Object Name, Synopsis )
+		}
+	}
+	$FunctionHelpList
 }
 
 <#
@@ -35,17 +35,17 @@ function Show-Path {
 		[switch] $Debug,
 		[switch] $System,
 		[switch] $User,
-        [switch] $Objects,
+		[switch] $Objects,
 
-        [Alias("h", "?")]
-        [switch] $help
+		[Alias("h", "?")]
+		[switch] $help
 	)
 	$conf = [OmegaConfig]::GetInstance()
 
-    if ( $help ) {
-        get-help $MyInvocation.MyCommand
-        return;
-    }
+	if ( $help ) {
+		get-help $MyInvocation.MyCommand
+		return;
+	}
 
 	if ($System -eq $true) {
 		$PathToPrint = (Get-ItemProperty -Path "$($conf.system_environment_key)" -Name PATH).Path
@@ -146,21 +146,21 @@ function Send-LinuxConfig {
 "@
 		Write-Output "Sending Key: $($($line.Split(" ")) | Select-Object -last 1)"
 		# do your thing
-        # $line | & "$($config.basedir)\system\git\usr\bin\ssh.exe" $ConnectionString $sh
-        $env:SSHCallBasic = $True
-        $line | & "$($config.basedir)\bin\ssh.cmd" $ConnectionString $sh
-    }
+		# $line | & "$($config.basedir)\system\git\usr\bin\ssh.exe" $ConnectionString $sh
+		$env:SSHCallBasic = $True
+		$line | & "$($config.basedir)\bin\ssh.cmd" $ConnectionString $sh
+	}
 
-    if ( [string]::IsNullOrEmpty($user.push.bashrc) ){
-        $user.push = ([OmegaConfig]::GetInstance()).Push;
-    }
+	if ( [string]::IsNullOrEmpty($user.push.bashrc) ){
+		$user.push = ([OmegaConfig]::GetInstance()).Push;
+	}
 
 	# push bashrc and vimrc
 	$(Invoke-WebRequest -UseBasicParsing $user.push.bashrc).Content | & "$($config.basedir)\bin\ssh.cmd" $ConnectionString "sed $'s/\r//' > ~/.bashrc"
 	Write-Output "Sent .bashrc"
 	$(Invoke-WebRequest -UseBasicParsing $user.push.vimrc).Content | & "$($config.basedir)\bin\ssh.cmd" $ConnectionString "sed $'s/\r//' > ~/.vimrc"
 	Write-Output "Sent .vimrc"
-    Remove-Item env:SSHCallBasic
+	Remove-Item env:SSHCallBasic
 }
 
 
@@ -238,6 +238,10 @@ function Get-sha256sum { Get-FileHash -Algorithm "sha256" -Path $args };
 <#
 .SYNOPSIS
 Use the Silver Searcher to do Find Files by input name
+.DESCRIPTION
+`-i` and `-g` are already specified so that a case insensitive file name search is performed
+Typical use would be:
+ff <filename> [<filepathbase>]
 #>
 function ff { & "$($config.basedir)\bin\ag.exe" -i -g $args }
 
@@ -286,18 +290,18 @@ change Directory to a set user directory location
 .NOTES
 By default this uses a structure assuming
 %USERPROFILE$\
-    Dev\
-        src\
-            [repository sources]...
-            github.com\
-                $user.itUser
-        bin\
-        pkg\
-        data\
+	Dev\
+		src\
+			[repository sources]...
+			github.com\
+				$user.itUser
+		bin\
+		pkg\
+		data\
 #>
 function Open-GitHubDevDirectory {
-    $User = [User]::GetInstance()
-    Set-Location "${env:Home}\Dev\src\github.com\$($user.GitUser)\$($args[0])"
+	$User = [User]::GetInstance()
+	Set-Location "${env:Home}\Dev\src\github.com\$($user.GitUser)\$($args[0])"
 }
 
 <#
@@ -305,11 +309,21 @@ function Open-GitHubDevDirectory {
 change Directory Omega Directory + Optional subdirectory
 .PARAMETER subdir
 Optional subdirectory within OmegaBaseDirectory to CD into
+.PARAMETER var
+If set command will return $destination directory rather than changing into the directory
 #>
-function Open-OmegaBaseDirectory ($subdir) {
-    $destination = Join-Path $config.Basedir $subdir
-    Set-Location $destination
-    return $desination
+function Open-OmegaBaseDirectory {
+	param (
+		[Parameter(Mandatory = $false)]
+		[string] $subdir = "",
+		[Parameter(Mandatory = $false)]
+		[switch] $var
+	)
+	$destination = Join-Path $config.Basedir $subdir
+	if ($var -eq $True ) {
+		return $destination
+	}
+	Set-Location $destination
 }
 
 
@@ -411,20 +425,20 @@ function Search-KnowledgeBase {
 
 
 function Save-UserConfig {
-    # see git submodules
-    # save /local
+	# see git submodules
+	# save /local
 }
 
 function Set-UserRepo {
-    param(
-        [string] $GitUser
-    )
+	param(
+		[string] $GitUser
+	)
 }
 
 
 function New-UserConfigRepo {
-    param(
-        [string] $GitUser,
-        [string] $GitRepo = "maxpowershell_config"
+	param(
+		[string] $GitUser,
+		[string] $GitRepo = "maxpowershell_config"
 	)
 }
