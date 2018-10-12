@@ -20,6 +20,28 @@ function Get-OmegaCommands {
 	$FunctionHelpList
 }
 
+
+<#
+.SYNOPSIS
+Output (*unique*) History from PSReadline, optionally matching a string (REGEX supported), rather than from the native PowerShell history system.
+.DESCRIPTION
+Get-History is an improved version of the native PowerShell Get-History command which only stores History for the given session.
+.PARAMETER Find
+REGEX capable string on which to filter results
+#>
+function Get-History {
+	param (
+        [Parameter(Mandatory = $False)]
+        [Alias("f", "search", "s")]
+        [string] $Find = "*",
+
+        [Parameter(Mandatory = $False)]
+        [Alias("tail", "n")]
+        [string] $Count = 10000
+    )
+    Get-Content -Tail $Count "${env:APPDATA}\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt" | Get-Unique | Select-String -Pattern $Find | Select-Object -Property LineNumber, Line
+}
+
 <#
 .SYNOPSIS
  display the Path, one directory per line
@@ -57,7 +79,7 @@ function Show-Path {
 		$obj = @()
 		foreach ( $dirAsStr in $PathToPrint.Split(";") ) {
 			if ( $dirAsStr -and ( Test-Path $dirAsStr) ) {
-				$obj += Get-Item -Path $dirAsStr
+	$obj += Get-Item -Path $dirAsStr
 			} else { Write-Warning "$dirAsStr DOES NOT EXIST! Not adding to new path." }
 		}
 		return $obj
@@ -109,8 +131,8 @@ Note: When saving configs in a gist:
 	  https://gist.github.com/[gist_user]/[gist_id]/raw/[file_name]
 	that is, you simply remove the `[revision_id]` block
 ********************************************************************************
-Author:                 Eric D Hiller
-Originally:             15 January 2016
+Author:				 Eric D Hiller
+Originally:			 15 January 2016
 Updated for Powershell: 25 March 2017
 #>
 function Send-LinuxConfig {
@@ -375,22 +397,22 @@ function Search-KnowledgeBase {
 			$help = $True
 		} else {
 			# if ( $File ){
-			#     & "$($config.basedir)bin\ag.exe" -g --stats --ignore-case $Term $Path
+			#	 & "$($config.basedir)bin\ag.exe" -g --stats --ignore-case $Term $Path
 			# }
 			$Modifiers = @(	"--stats",
-				"--smart-case",
-				"--color-win-ansi",
-				"--pager", "more" )
+	"--smart-case",
+	"--color-win-ansi",
+	"--pager", "more" )
 			If ($DisplayFilenames) {
-				$Modifiers += "--count"
+	$Modifiers += "--count"
 			}
 			$IgnorePathSplat = @()
 			if ( $NoIgnorePath -eq $False ) {
-				$IgnorePath | ForEach-Object { $IgnorePathSplat += "--ignore"; $IgnorePathSplat += "$_" }
+	$IgnorePath | ForEach-Object { $IgnorePathSplat += "--ignore"; $IgnorePathSplat += "$_" }
 			}
 			$Params = $Term , $Path
 			if ( $SearchFilenames -eq $True ) {
-				$Params = "--filename-pattern" , $Params
+	$Params = "--filename-pattern" , $Params
 			}
 			If ($PSCmdlet.MyInvocation.BoundParameters["Debug"].IsPresent) { $exe = "EchoArgs.exe" } else { $exe = "ag.exe" }
 			# "--ignore","*.ipynb","--ignore","ConEmu.md"
@@ -399,15 +421,15 @@ function Search-KnowledgeBase {
 			$output = & "$($config.basedir)\bin\$exe" @Modifiers @IgnorePathSplat @Params
 			$output	# in the future, this could be prettied-up
 			if ( $Open -eq $True ) {
-				# .  ( $output | Select-String -Pattern "\w:\\[\w\\\s\/.]*" )
-				Write-Host -ForegroundColor Magenta ( $output | select-string -Pattern "\w:\\[\w\\\/. /]*" ).Matches
+	# .  ( $output | Select-String -Pattern "\w:\\[\w\\\s\/.]*" )
+	Write-Host -ForegroundColor Magenta ( $output | select-string -Pattern "\w:\\[\w\\\/. /]*" ).Matches
 
 
-				( $output | select-string -Pattern "\w:\\[\w\\\/. /]*" ).Matches | ForEach-Object {
-					if ( Enter-UserConfirm -dialog "Open $_ in editor?"  ) {
-						. $Editor $_
-					}
-				}
+	( $output | select-string -Pattern "\w:\\[\w\\\/. /]*" ).Matches | ForEach-Object {
+		if ( Enter-UserConfirm -dialog "Open $_ in editor?"  ) {
+			. $Editor $_
+		}
+	}
 			}
 		}
 	} else {

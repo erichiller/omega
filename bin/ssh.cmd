@@ -34,8 +34,17 @@
 
 @rem we are going to call the cygwin connector if available.
 @IF DEFINED ConEmuBaseDirShort (
+
+	@rem set title for the case where remote host does not provide this info.
+	@set TITLE=" (ssh) %1"
+	@powershell.exe -Command Write-Host \"$([char]27)]0;eric$([char]7)\"
+
 	@set CHERE_INVOKING=1
 	@%ConEmuBaseDirShort%\conemu-msys2-64.exe -cur_console:p ssh.exe -F "%config%" %*
+	
+	@rem RESTORE ORIGINAL TITLE
+	@powershell.exe -Command Write-Host \"$([char]27)]9;3;$([char]7)\"
+	
 	@GOTO:eof
 )
 

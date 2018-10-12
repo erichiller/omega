@@ -56,6 +56,7 @@
     CmdletsToExport   = @()
 	VariablesToExport = @(
         "GitPromptScriptBlock"
+        "GIT_EDITOR"
     ) # all
 	FunctionsToExport = @(
         "Add-DirToPath"
@@ -76,6 +77,7 @@
         "ff"
         "ls"
         "Install-OmegaPackage"
+        "Get-History"
 
 
 
@@ -236,6 +238,7 @@
             "om"
             "kb"
             "Install-OmegaPackage"
+            "Get-History"
         )
 	}
 

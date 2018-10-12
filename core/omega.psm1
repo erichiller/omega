@@ -26,7 +26,7 @@ $DebugPreference = $User.verbosity.debug
 
 # Add local bin dir (for single file executable or user-runnable scripts)
 # ensure it isn't already added, as in the case of root tab copy
-Add-DirToPath($Config.bindir)
+Add-DirToPath(Join-Path $Config.BaseDir $Config.bindir)
 
 $local:ModulePath = Join-Path $Config.BaseDir "\system\psmodules"
 if ( Test-Path $local:ModulePath ) {
@@ -171,6 +171,11 @@ if (alias curl -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:curl }
 if (alias curl -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:curl }
 Set-Alias -Name "curl" -Value "$($config.basedir)\bin\curl.cmd"
 
+# scp
+if (alias scp -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:scp }
+if (alias scp -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:scp }
+Set-Alias -Name "scp" -Value "$($config.basedir)\bin\scp.cmd"
+
 # less
 Set-Alias -Name "less" -Value "$($config.basedir)\system\git\usr\bin\less.exe"
 
@@ -179,7 +184,6 @@ Set-Alias -Name sed -Value "$($config.basedir)\system\git\usr\bin\sed.exe"
 
 # ssh
 Set-Alias -Name ssh -Value "$($config.basedir)\bin\ssh.cmd"
-
 
 # file hashes
 Set-Alias -Name md5sum -Value Get-md5sum
