@@ -138,7 +138,8 @@ function ls {
         test with:
         & "C:\Program Files\WindowsPowerShell\Modules\omega\system\git\usr\bin\ls.exe" -oa --human-readable --classify --color=auto
         #>
-        $env:LS_COLORS = 'rs=0:ln=01;37:bd=01;37:pi=01;37:cd=01;37:do=01;37:no=01;37:or=01;37:so=01;37:mi=01;37:fi=01;37:*java=01;35:*c=01;35:*cpp=01;35:*cs=01;35:*js=01;35:*css=01;35:*html=01;35:*zip=01;32:*tar=01;32:*gz=01;32:*rar=01;32:*jar=01;32:*war=01;32:di=01;36:ow=01;36:*txt=01;33:*cfg=01;33:*conf=01;33:*ini=01;33:*csv=01;33:*log=01;33:*config=01;33:*xml=01;33:*yml=01;33:*md=01;33:*markdown=01;33:ex=01;31:*exe=01;31:*bat=01;31:*cmd=01;31:*py=01;31:*pl=01;31:*ps1=01;31:*psm1=01;31:*vbs=01;31:*rb=01;31:*reg=01;31:*.py=32:*.ps1=36:*.python_history=40:';
+		$env:LS_COLORS = 'rs=0:ln=01;37:bd=01;37:pi=01;37:cd=01;37:do=01;37:no=01;37:or=01;37:so=01;37:mi=01;37:fi=01;37:*java=01;35:*c=01;35:*cpp=01;35:*cs=01;35:*js=01;35:*css=01;35:*html=01;35:*zip=01;32:*tar=01;32:*gz=01;32:*rar=01;32:*jar=01;32:*war=01;32:di=01;36:ow=01;36:*txt=01;33:*cfg=01;33:*conf=01;33:*ini=01;33:*csv=01;33:*log=01;33:*config=01;33:*xml=01;33:*yml=01;33:*md=01;33:*markdown=01;33:ex=01;31:*exe=01;31:*bat=01;31:*cmd=01;31:*py=01;31:*pl=01;31:*ps1=01;31:*psm1=01;31:*vbs=01;31:*rb=01;31:*reg=01;31:*.py=32:*.ps1=36:*.python_history=40:';
+		$env:LC_COLLATE = 'en_US.utf8'
         $local = $True
         if ( $local -eq $true ){
             # this is windows, we don't need no stinking group information
