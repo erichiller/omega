@@ -110,6 +110,21 @@ function grep {
 
 <#
 .SYNOPSIS
+Change directory / Location to prior
+#>
+function back {
+	if ( Test-Path variable:Global:Location ){
+		$curr = Get-Location
+		$Global:Location | Foreach-Object {
+			if ( $_ -ne $curr) {
+				Set-Location $_
+			}
+		}
+	}
+}
+
+<#
+.SYNOPSIS
 Wrapper for Get-ChildItem to emulate GNU ls (coreutils) which allows for pipelining and ls style arguments.
 .PARAMETER all
 In directories show hidden files

@@ -93,7 +93,13 @@ function Write-Theme {
     $prompt += Write-Prompt -Object $sl.PromptSymbols.SegmentForwardSymbol -BackgroundColor $host.UI.RawUI.BackgroundColor -ForegroundColor $lastColor
 
 
-
+	# determine location and save last known
+	$loc = Get-Location
+	if ( -not (Test-Path variable:Global:Location ) ){
+		$Global:Location = new-object 'System.Collections.Generic.List[string]'
+	}
+	$Global:Location.Insert(0, $loc)
+	
     # Set ConEmu Tab Title (if in ConEmu)
     $host.ui.RawUI.WindowTitle = $(Get-PrettyPath -dir $pwd)
 
@@ -102,7 +108,7 @@ function Write-Theme {
         # Let ConEmu know when the prompt ends, to select typed
         # command properly with "Shift+Home", to change cursor
         # position in the prompt by simple mouse click, etc.
-        $prompt += Write-Prompt "$([char]27)]9;12$([char]7)"
+		$prompt += Write-Prompt "$([char]27)]9;12$([char]7)"
 
         # And current working directory (FileSystem)
         # ConEmu may show full path or just current folder name
@@ -111,12 +117,14 @@ function Write-Theme {
         # on files in the output from compilers and source control
         # systems (git, hg, ...)
         if ($loc.Provider.Name -eq "FileSystem") {
-            $prompt += Write-Prompt "$([char]27)]9;9;`"$($loc.Path)`"$([char]7)"
+            $prompt += Write-Prompt "$([char]27)]9;9;$($loc.Path)$([char]7)"
         }
     }
 
     $prompt += ' '
     $prompt
+
+	# Write-Host $script:Location
 
     #Show-Glyphs
 }
