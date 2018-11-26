@@ -80,7 +80,7 @@ try {
 	Write-Warning "The GitStatusCachePoshClient module could not be found & imported, large directories may take significantly longer without it."
 }
 
-# 4.2 sec
+# # 4.2 sec
 try {
     if ( Get-Module "oh-my-posh" ){
         Write-Verbose "module 'oh-my-posh' already loaded, skipping forced load"
@@ -220,26 +220,41 @@ Set-Alias -Name kb -Value Search-KnowledgeBase
 <#
 .Synopsis
 Complete hosts for ssh
+.NOTES
+Non-filename completers are currently not capable of returning when there is no initial text
+It will be overriden by the default, which is to use the local path.
+thus ssh <tab> will yield the files in the local directory
+For more information see:
+https://github.com/PowerShell/PowerShell/issues/8092
+$PSDefaultParameterValues variable does not affect native commands
+https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_parameters_default_values?view=powershell-6
 #>
 Register-ArgumentCompleter -Native -CommandName ssh -ScriptBlock {
 	param($wordToComplete, $commandAst, $cursorPosition)
 	$known_hosts_path = Join-Path $env:HOME ".ssh\known_hosts"
+	$ssh_config_path = Join-Path $env:HOME ".ssh\config"
+	$matches = @()
 	if ( Test-Path $known_hosts_path ) {
-		$matches = select-string $known_hosts_path -pattern "^[\d\w.:]*" -AllMatches
-		$matches += select-string $known_hosts_path -pattern "(?<=,)([\w.:]*)" -AllMatches
-
-		$matches | Where-Object {
-			$_.matches.Value -like "$wordToComplete*"
+		(select-string $known_hosts_path -pattern "((?<=,)([\w.:]+))|(^[\d\w.:]+)" -AllMatches) | ForEach-Object {
+			$matches += $_.Matches.Value
+		}
+	}
+	if ( Test-Path $known_hosts_path ) {
+		# select Hostnames and Aliases
+		(select-string $ssh_config_path -pattern "((?<=host )([\w\d.\- ]*))|([\d]{1,3}\.[\d]{1,3}.[\d]{1,3}.[\d]{1,3})" -AllMatches) | foreach-object {
+			$matches += $_.Matches.Value.Split(" ")
+		}
+	}
+	if ( Test-Path variable:matches ){
+		$matches | Select -Unique | Where-Object {
+			$_ -like "$wordToComplete*"
 		} | Sort-Object |
 			Foreach-Object {
-			$CompletionText = $_.matches.Value
-			$ListItemText = $_.matches.Value
+			$CompletionText = $_
+			$ListItemText = $_
 			$ResultType = 'ParameterValue'
-			$ToolTip = $_.matches.Value
+			$ToolTip = $_
 			[System.Management.Automation.CompletionResult]::new($CompletionText, $ListItemText, $ResultType, $ToolTip)
-		}
-	} else {
-		Write-Debug "$known_hosts_path not found"
 	}
 }
 
