@@ -255,6 +255,7 @@ Register-ArgumentCompleter -Native -CommandName ssh -ScriptBlock {
 			$ResultType = 'ParameterValue'
 			$ToolTip = $_
 			[System.Management.Automation.CompletionResult]::new($CompletionText, $ListItemText, $ResultType, $ToolTip)
+		}
 	}
 }
 
