@@ -1,4 +1,4 @@
-#requires -Version 2 -Modules posh-git, oh-my-posh
+#requires -Version 1 -Modules posh-git
 
 <#
 
@@ -11,6 +11,13 @@ MXP update 2017 August 3
 *****
 
 #>
+
+# function Write-Theme {
+#     "edh-theme"
+# }
+# # function Prompt {
+# #     "eric"
+# # }
 
 function Write-Theme {
     param(
@@ -192,6 +199,7 @@ if (Get-Member -inputobject $host.PrivateData -name "DebugForegroundColor" -Memb
 # other useful Unicode symbols start at U+F000
 
 $sl = $global:ThemeSettings #local settings
+# $s1 = $GitPromptSettings
 
 # $sl.PromptSymbols.StartSymbol                       = [char]::ConvertFromUtf32(0x03a9)     # greek omega , b1 is alpha
 $sl.PromptSymbols.StartSymbol                       = [char]::ConvertFromUtf32(0xf0e7)     # revolution fist
