@@ -180,8 +180,8 @@ function Install-PostProcessPackage {
 		}
 
 		# mark as installed in the manifest
-		[PackageState] $packageState = [PackageState]::new( $Package.name, $version )
-		$user.setPackageState($packageState)
+		[InstalledPackage] $packageState = [InstalledPackage]::new( $Package.name, $version )
+		$user.setInstalledPackage($packageState)
 		return $True
 	} catch {
 		Write-Warning "$($Package.name) module failed to load. Either not installed or there was an error. This module, who's function follow, will not be enabled:"

@@ -132,13 +132,13 @@ Class User {
 	}
 
 	# add Package
-	setPackageState([PackageState] $Package) {
+	setInstalledPackage([InstalledPackage] $Package) {
 		Write-Debug "Adding Package $Package"
 		Debug-Variable $Package
 		# if ( $this.Packages -eq $null ){
 		#     $this.Packages = New-Object System.Management.Automation.PSCustomObject;
 		# }
-		$this.Packages | Add-Member -MemberType NoteProperty -TypeName PackageState -Name $Package.Name -Value $Package -Force
+		$this.Packages | Add-Member -MemberType NoteProperty -TypeName InstalledPackage -Name $Package.Name -Value $Package -Force
 		# $this.Packages | Add-Member $Package -Name Package.Name - ScriptProperty
 		$this.SaveState()
 	}
@@ -218,11 +218,11 @@ class Package {
 	[string] $Name;
 	[string] $Brief;
 	[bool] $Required;
+	[PSObject] $Dependencies;
 	[PackageInstallParameters] $Install;
 	[PackageSystemAlterations] $System;
 	[PackageProvides] $Provides;
 	[PackageShortcut[]] $Shortcuts;
-
 
 	static hidden [string] $pkgPathBase = ( Join-Paths ([OmegaConfig]::GetInstance()).BaseDir "core" "pkg" )
 
@@ -268,6 +268,10 @@ class Package {
 		return ([Package]::instance).$PackageName
 	}
 
+	[Object[]] Dependencies_Iterable() {
+		Write-Debug "[Package]::Dependencies_Iterable is returning Dependencies as name,value iterable"
+		return ($this.Dependencies.PSObject.Properties | select-object name, value)
+	}
 
 	Package () {
 		Write-Debug "Package() init is actionless"
@@ -279,7 +283,28 @@ class Package {
 
 	[bool] TestPrerequisites() {
 		Write-Verbose "Checking Prerequisites for the PACKAGE<$($this.Name)>"
+		
+
 		$local:e = "Missing Dependency! Installation is impossible; missing:"
+
+
+		if ( ( Test-Path variable:this.Dependencies ) ) {
+			$this.Dependencies_Iterable() | ForEach-Object {
+				$dependencyPackageName = $_.name
+				$requiredPackageVersion     = $_.value
+				try {
+					$installedPackage = [User]::GetInstance().Packages.$dependencyPackageName
+					$installedVersion = $installedPackage.Version
+					if ( $installedVersion -match $requiredPackageVersion ){
+						throw "$installedVersion of $dependencyPackageName does not meet the version requirement of $requiredPackageVersion"
+					}
+				} catch {
+					Write-Error $e
+					return $False
+				}
+			}
+		}
+
 
 		if ( ( [boolean] (Get-Command -Name "7z" -ErrorAction SilentlyContinue) ) -eq $False ) {
 			if (Test-Path "C:\Program Files\7-Zip\7z.exe") {
@@ -332,21 +357,29 @@ class Package {
 
 }
 
-class PackageState : Package {
-	[string] $UpdateDate;
-	[string] $version;
 
-	PackageState() {
-		Write-Debug "PackageState empty constructor"
+class InstalledPackage : Package {
+	[string] $UpdateDate;
+	[string] $Version;
+
+	InstalledPackage() {
+		Write-Debug "InstalledPackage empty constructor"
 	}
 
-	PackageState([string] $PackageName, [string] $VersionIn) {
-		Write-Debug "PackageState constructor --> PackageName=$PackageName"
+	# InstalledPackage([string] $PackageName){
+	# 	Get-Content( [User]::UserStateFilePath ) | ConvertFrom-Json
+	# 	if ( Test-Path variable:userLoadedObject.PSObject.$PackageName.Version ) {
+	# 		[Package]
+	# 	}
+	# }
+
+	InstalledPackage([string] $PackageName, [string] $VersionIn) {
+		Write-Debug "InstalledPackage constructor --> PackageName=$PackageName"
 		$this.Name = $PackageName;
 		$this.Version = $VersionIn;
 		$this.UpdateDate = (Get-Date -format "yyyy-MMM-dd HH:mm" );
 		$this.loadPackageFromName($PackageName)
-		Debug-Variable $this "PackageState created (constructor)"
+		Debug-Variable $this "InstalledPackage created (constructor)"
 	}
 
 	hidden loadPackageFromName([string] $PackageName) {
