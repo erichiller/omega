@@ -34,8 +34,14 @@ if !isdirectory($TEMP . "/vimfiles/backup")
 endif
 set directory=$TEMP/vimfiles/swap
 set backupdir=$TEMP/vimfiles/backup
+" remap Home and End keys
+nnoremap 0 $
+nnoremap 9 0
+inoremap <C-A> <Home>
+inoremap <C-E> <End>
 " make windows function much as *nix
 if has('win32') || has('win64')
+    source $VIMRUNTIME/mswin.vim
     set runtimepath=$VIM/../vimfiles
     set runtimepath+=$VIM/vimfiles
     set runtimepath+=$VIMRUNTIME
