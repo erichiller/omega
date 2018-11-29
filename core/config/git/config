@@ -69,3 +69,15 @@
     plog = log --graph --decorate --pretty=oneline --abbrev-commit
     # detailed log
     alog = log --graph --decorate --pretty=oneline --abbrev-commit --all
+
+
+
+[help]
+	format = man
+[man]
+	# viewer = less
+# [man "less"]
+	# cmd = ./../../system/git/usr/share/vim/vim81/macros/less.sh
+	# cmd = less.exe
+	# cmd = ./../../system/git/usr/bin/less.exe
+	# cmd = C:/Program Files/WindowsPowerShell/Modules/omega/system/msys/usr/bin/man.exe

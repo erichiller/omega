@@ -260,6 +260,10 @@ function Get-sha256sum { Get-FileHash -Algorithm "sha256" -Path $args };
 <#
 .SYNOPSIS
 Use the Silver Searcher to do Find Files by input name
+.DESCRIPTION
+`-i` and `-g` are already specified so that a case insensitive file name search is performed
+Typical use would be:
+ff <filename> [<filepathbase>]
 #>
 function ff { & "$($config.basedir)\bin\ag.exe" -i -g $args }
 
@@ -327,11 +331,21 @@ function Open-GitHubDevDirectory {
 change Directory Omega Directory + Optional subdirectory
 .PARAMETER subdir
 Optional subdirectory within OmegaBaseDirectory to CD into
+.PARAMETER var
+If set command will return $destination directory rather than changing into the directory
 #>
-function Open-OmegaBaseDirectory ($subdir) {
+function Open-OmegaBaseDirectory {
+	param (
+		[Parameter(Mandatory = $false)]
+		[string] $subdir = "",
+		[Parameter(Mandatory = $false)]
+		[switch] $var
+	)
 	$destination = Join-Path $config.Basedir $subdir
+	if ($var -eq $True ) {
+		return $destination
+	}
 	Set-Location $destination
-	return $desination
 }
 
 
