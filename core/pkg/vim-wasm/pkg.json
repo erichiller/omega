@@ -1,0 +1,12 @@
+{
+	"Name":  "vim-wasm",
+	"Brief":  "Vim WebAssembly Language Support",
+	"Required":  false,
+    "Install": {
+        "Source": "GitMaster",
+        "Destination": "VimPack",
+        "AdminRequired": true,
+        "Org": "rhysd",
+		"Repo": "vim-wasm"
+	}
+}

@@ -1,0 +1,14 @@
+{
+	"Name":  "vim-ps1",
+	"Brief":  "Vim Powershell Language Support",
+	"Required":  false,
+    "Install": {
+        "Source": "WebDirSearch",
+        "Destination": "VimPack",
+        "AdminRequired": true,
+		"SearchPath": [
+			"https://github.com/PProvost/vim-ps1/archive/master.zip"
+		],
+		"VersionPattern": "^vim-ps1-([A-Za-z]*).zip"
+	}
+}

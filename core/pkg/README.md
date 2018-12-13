@@ -36,8 +36,19 @@ The `GitRelease` package source downloads a *release* from a github repo.
 |---					|---        |---       
 | AdminRequired         | Yes       | Are administrator privileges required to install this package?
 | Source                | Yes       | Type of package, method of installation, see Enum `PackageInstallSource`
-| Destination	        | Yes		| destination for the installation, either an exact path string, or the keyword `SystemPath` which installs to `<basedir>\system\<pkgname>`
-| versionPattern		| Yes		| regex string to extract the version from the downloaded (full URL)
+| Destination	        | Yes		| destination for the installation, either an exact path string, or the keywords list below as `PackageInstallParameters.Destination`
+| VersionPattern		| Yes		| regex string to extract the version from the downloaded (full URL)
+
+#### GitMaster
+
+The same fields as `GitRelease` but `VersionPattern` is not used
+
+#### `PackageInstallParameters.Destination`
+| Keyword       | Action
+|---            |---
+| `SystemPath`  | installs to `<basedir>\system\<pkgname>`
+| `BinPath`     | installs into `<basedir>\bin\`
+| `VimPack`     | specifically for Vim packages, installs into `<basedir>\system\vimfiles\pack\vendor\start\<pkgname>`
 
 #### If source=WebDirSearch
 | SearchPath			| Yes		| **ARRAY** of URLs listed from parent to child in which to search for downloadable file

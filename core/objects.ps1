@@ -169,6 +169,7 @@ Class User {
 
 Enum PackageInstallSource {
 	GitRelease;
+	GitMaster;
 	WebDirSearch
 }
 
@@ -182,7 +183,9 @@ class PackageInstallParameters {
 	[string] $Destination;
 	[bool] $AdminRequired;
 
+	# Only for WebDirSearch
 	[System.Array] $SearchPath;
+	# Not used by GitMaster
 	[string] $VersionPattern;
 
 	# Present only for GitRelease
