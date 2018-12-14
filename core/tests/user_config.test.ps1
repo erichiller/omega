@@ -103,9 +103,9 @@ $u.Packages.git | Format-List
 # $user | get-member -Force
 
 # # mark as installed in the manifest
-# $packageState = [PackageState]::new( $Package.Name, "a" )
+# $packageState = [InstalledPackage]::new( $Package.Name, "a" )
 # # $user.foo()
-# $user.setPackageState($packageState)
+# $user.setInstalledPackage($packageState)
 # # $user.Packages[$Package.Name] 		= $packageState
 
 # Add-DirToPath "C:\users\ehiller\AppData\Local\omega\system\git\cmd" -System

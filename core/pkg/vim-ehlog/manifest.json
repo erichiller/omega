@@ -1,13 +1,35 @@
 {
-  "name": "vim-ehlog",
-  "description": "log analyzation vim plugin (colors, expansion)",
-  "dependencies": {
+  "Name": "vim-ehlog",
+  "Brief": "log analyzation vim plugin (colors, expansion)",
+  "Required": false,
+  "Dependencies": {
     "vim": "8.*",
     "edh_markdown": "*"
   },
-  "repo":
-  {
+    "Install": {
+        "Source": "GitRelease",
+        "Destination": "$( ( [OmegaConfig]::GetInstance() ).BaseDir)\\system\\vimfiles\\pack\\vendor\\start\\vim-ehlog",
+        "AdminRequired": false,
+        "VersionPattern": ".*gvim_([0-9.]*)_x64.zip$",
+        "Org": "vim",
+    "Repo": "vim-win32-installer"
+  },
+  "repo": {
     "type": "git",
     "url": "https://github.com/erichiller/vim-ehlog"
+  },
+  "System": {
+    "PathAdditions": [
+      "$( ( [OmegaConfig]::GetInstance() ).BaseDir)\\system\\vim"
+    ],
+    "SystemEnvironmentVariables": {
+      "VIMINIT": "source $( ( [OmegaConfig]::GetInstance() ).BaseDir)\\core\\config\\omega.vimrc"
+    },
+    "Directories": [
+      "${env:TEMP}\\vimfiles\\swap",
+      "${env:TEMP}\\vimfiles\\undo",
+      "${env:TEMP}\\vimfiles\\cache\\neocomplete",
+      "${env:TEMP}\\vimfiles\\sessions"
+    ]
   }
 }

@@ -23,6 +23,7 @@ Packages definitions are in json format and have several *required* fields and s
 | Name                  | Yes       | Package name
 | Brief                 | Yes       | Package description
 | Required              | Yes       | Is this package required to operate **NOTE: this is _internal_ use only**
+| Dependencies          | Yes       | Dict of packages required for this package to operate. Format: `{"packageName": "packageVersion"}`. Regex allowed in `packageVersion` ie. 8.*
 | `Install.*`           | **BELOW** | Parameters required for Installation
 | `Provides.*`          | No        | Resources this package provides
 | `System.*`            | No        | System Alterations which will be made by this package.
@@ -35,8 +36,19 @@ The `GitRelease` package source downloads a *release* from a github repo.
 |---					|---        |---       
 | AdminRequired         | Yes       | Are administrator privileges required to install this package?
 | Source                | Yes       | Type of package, method of installation, see Enum `PackageInstallSource`
-| Destination	        | Yes		| destination for the installation, either an exact path string, or the keyword `SystemPath` which installs to `<basedir>\system\<pkgname>`
-| versionPattern		| Yes		| regex string to extract the version from the downloaded (full URL)
+| Destination	        | Yes		| destination for the installation, either an exact path string, or the keywords list below as `PackageInstallParameters.Destination`
+| VersionPattern		| Yes		| regex string to extract the version from the downloaded (full URL)
+
+#### GitMaster
+
+The same fields as `GitRelease` but `VersionPattern` is not used
+
+#### `PackageInstallParameters.Destination`
+| Keyword       | Action
+|---            |---
+| `SystemPath`  | installs to `<basedir>\system\<pkgname>`
+| `BinPath`     | installs into `<basedir>\bin\`
+| `VimPack`     | specifically for Vim packages, installs into `<basedir>\system\vimfiles\pack\vendor\start\<pkgname>`
 
 #### If source=WebDirSearch
 | SearchPath			| Yes		| **ARRAY** of URLs listed from parent to child in which to search for downloadable file
@@ -51,7 +63,7 @@ The `GitRelease` package source downloads a *release* from a github repo.
 
 | Field                 | Required? | Description
 |---                    |---        |---      
-| ShortcutPutPath   | No        | *Array* of directories to be added to the system `%PATH%`
+| ShortcutPutPath       | No        | *Array* of directories to be added to the system `%PATH%`
 
 ### `System.*`
 
@@ -68,9 +80,9 @@ The `GitRelease` package source downloads a *release* from a github repo.
 
 | Field                 | Required? | Description
 |---                    |---        |---      
-| Provides.Commands     | No        | Commands this package provides and should be registered.
-| Provides.Binaries     | No        | Critical Binary (Executables) that other packages may desire/depend on that this package provides
-
+| Commands              | No        | Commands this package provides and should be registered.
+| Binaries              | No        | Critical Binary (Executables) that other packages may desire/depend on that this package provides
+| Package_Extension     | No        | This package is a supplement to another primary package.
 
 
 

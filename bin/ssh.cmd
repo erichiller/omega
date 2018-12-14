@@ -21,7 +21,7 @@
 @if not exist "%HOME%\.ssh\config" @set HOME=%HOMEDRIVE%%HOMEPATH%
 
 @REM Reverse config path dividers \ to /
-@set "config=%BaseDir%\core\config\omega.ssh.conf"
+@set "config=%ConEmuBaseDirShort%\..\..\..\core\config\omega.ssh.conf"
 @set config=%config:\=/%
 
 @rem Spoof terminal environment for git color.
@@ -36,8 +36,8 @@
 @IF DEFINED ConEmuBaseDirShort (
 
 	@rem set title for the case where remote host does not provide this info.
-	@set TITLE=" (ssh) %1"
-	@powershell.exe -Command Write-Host \"$([char]27)]0;eric$([char]7)\"
+	@set TITLE=" (ssh) %*"
+	@powershell.exe -Command Write-Host \"$([char]27)]0;$env:TITLE$([char]7)\"
 
 	@set CHERE_INVOKING=1
 	@%ConEmuBaseDirShort%\conemu-msys2-64.exe -cur_console:p ssh.exe -F "%config%" %*

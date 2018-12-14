@@ -40,7 +40,7 @@
                              },
                      "nodejs":  {
                                     "UpdateDate":  "2018-Jul-27 18:00",
-                                    "version":  "10.7.0",
+                                    "Version":  "10.7.0",
                                     "Name":  "nodejs",
                                     "Brief":  "Node and Npm",
                                     "Required":  false,
@@ -73,7 +73,7 @@
                                 },
                      "vim":  {
                                  "UpdateDate":  "2018-Aug-19 11:16",
-                                 "version":  "8.1.0296",
+                                 "Version":  "8.1.0296",
                                  "Name":  "vim",
                                  "Brief":  "ViM for Windows 64 bit",
                                  "Required":  true,

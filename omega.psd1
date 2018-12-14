@@ -80,6 +80,7 @@
 		"Get-History"
 		"back"
 		"killall"
+        # "Prompt"
 
 
 
@@ -198,6 +199,7 @@
         "core\user.utilities.ps1"
         "core\resources.create.ps1"
         "core\package.install.ps1"
+        # "core\themeOmega.psm1"
 	)
 
 	# HelpInfoURI          = ""

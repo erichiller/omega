@@ -90,6 +90,32 @@ function Install-PackageFromGitRelease {
 		}
 	}
 }
+function Install-PackageFromGitMaster {
+	param(
+		[Package] $Package
+	)
+
+	$file_url = "https://github.com/$($Package.Install.Org)/$($Package.Install.Repo)/archive/master.zip"
+	$api_url = "https://api.github.com/repos/$($Package.Install.Org)/$($Package.Install.Repo)/commits"
+
+	# The tag could also be used for the version, but I've found it generally less precise than parsing the download uri
+	Write-Debug ( "(download) file_url is: $file_url" )
+	Write-Debug ( "api_url url is: $api_url" )
+	[Net.ServicePointManager]::SecurityProtocol = 'Tls12';
+	$json = (Invoke-WebRequest -UseBasicParsing -Uri $api_url | ConvertFrom-Json)
+	if ( $json.name ) {
+		Write-Verbose "Successfully navigated to the api - commits for $($json.name)"
+	}
+
+	$version = $json[0].sha
+	if ( $version ) {
+		Write-Verbose "Found Version: $version - Installing $Package to system."
+		if ( Install-DeployToOmegaSystem $Package $file_url "$($Package.Name)-master.zip" $version ) {
+			Install-PostProcessPackage $Package $version
+		}
+		break;
+	}
+}
 
 
 <#
@@ -180,8 +206,8 @@ function Install-PostProcessPackage {
 		}
 
 		# mark as installed in the manifest
-		[PackageState] $packageState = [PackageState]::new( $Package.name, $version )
-		$user.setPackageState($packageState)
+		[InstalledPackage] $packageState = [InstalledPackage]::new( $Package.name, $version )
+		$user.setInstalledPackage($packageState)
 		return $True
 	} catch {
 		Write-Warning "$($Package.name) module failed to load. Either not installed or there was an error. This module, who's function follow, will not be enabled:"
@@ -227,18 +253,21 @@ function Install-DeployToOmegaSystem {
 	# deploy is where the Package will be _INSTALLED_ Can be a path or the special values listed here, see README too
 	if ( $Package.Install.Destination -eq "SystemPath" ) {
 		$deploy = ( Join-Path (Join-Path $conf.Basedir $conf.sysdir) $Package.Name )
-	} elseif ($Package.Install.Desination -eq "BinPath" ) {
+	} elseif ($Package.Install.Destination -eq "BinPath" ) {
 		$deploy = ( Join-Paths $conf.Basedir $conf.bindir )
 		# if the package is going to the bindir it is almost certainly a single file
 		if ( $conf.SingleFileExtensions -contains [IO.Path]::GetExtension($filename) ) {
 			$flag_SingleFile = $True
 			$outFile = Join-Paths $deploy $Package.Name [IO.Path]::GetExtension($filename)
 		}
+	} elseif ( $Package.Install.Destination -eq "VimPack" ) {
+		$deploy = ( Join-Paths $conf.Basedir $conf.sysdir "vimfiles" "pack" "vendor" "start" $Package.Name )
 	} else {
-		Write-Warning "Installation Destination of $($Package.Install.Desination) is unsupported"
+		Write-Warning "Installation Destination of $($Package.Install.Destination) is unsupported"
 		return $False
 	}
 	Write-Verbose "Deploy (installation directory): $deploy"
+	Write-Verbose "Outfile (installation directory): $outFile"
 	# check if deploy path already exists
 	if ( $deployAllowRemoveDir -eq $True -and
 		( Test-Path $deploy ) -and
@@ -338,6 +367,7 @@ function Install-DeployToOmegaSystem {
 	# only perform the following if the package consists of more than a single file
 	if ( ( ( Test-Path variable:flag_SingleFile) -ne $True ) -or  $flag_SingleFile -ne $True ) {
 		# check if the deployed directory ONLY Contains directories, this most likely means the package was zipped in a way that the first level directory should be removed.
+		Write-Debug ( "Installation directory is " + ( Get-ChildItem -Attributes directory $deploy) )
 		Write-Debug ( "Directories in the pre-installation directory: " + $(( Get-ChildItem -Attributes directory $deploy).Count ) )
 		Write-Debug ( "Total Files in the pre-installation directory: " + $(( Get-ChildItem $deploy).Count ) )
 		Write-Debug ( "If True, then ALL Files Contained in the directory are directories; and thus this should be elevated one level(boolean): " + $((( Get-ChildItem -Attributes directory $deploy).Count ) -eq (  ( Get-ChildItem  $deploy).Count )) )
@@ -392,9 +422,15 @@ function Install-OmegaPackage {
 		# Package name to install
 		[Parameter(Mandatory = $true)]
 		[string]
-		$PackageName
+		$PackageName,
+		[Alias("h", "?")]
+		[switch] $help
 	)
 
+	if ( $help ) {
+		get-help $MyInvocation.MyCommand
+		return;
+	}
 
 	$Package = [Package]::GetInstance($PackageName)
 	if ( -not ( $Package.TestPrerequisites() )){
@@ -406,6 +442,7 @@ function Install-OmegaPackage {
 	$result = $False
 	switch ( $Package.Install.Source ) {
 		"GitRelease" { $result = Install-PackageFromGitRelease $Package }
+		"GitMaster" { $result = Install-PackageFromGitMaster $Package }
 		"WebDirSearch" { $result =  Install-PackageFromURL $Package }
 		Default {
 			Write-Warning "Package Installation Source of $($Package.Install.Source) is undefined in $([PackageInstallSource])"

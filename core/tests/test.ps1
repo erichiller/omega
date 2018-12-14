@@ -25,7 +25,7 @@ Write-Verbose "this is *verbose*"
 #>
 
 
-# [PackageState] $pst = [PackageState](
+# [InstalledPackage] $pst = [InstalledPackage](
 # @"
 # {
 #     "name": "git",
@@ -33,7 +33,7 @@ Write-Verbose "this is *verbose*"
 # }
 # "@ | ConvertFrom-Json)
 
-# [PackageState] $pst = [PackageState]::new("git",2)
+# [InstalledPackage] $pst = [InstalledPackage]::new("git",2)
 
 
 # $pst | Get-Member
@@ -76,9 +76,9 @@ $error.Clear();
 # $user | get-member -Force
 
 # # mark as installed in the manifest
-# $packageState = [PackageState]::new( $Package.Name, "a" )
+# $packageState = [InstalledPackage]::new( $Package.Name, "a" )
 # # $user.foo()
-# $user.setPackageState($packageState)
+# $user.setInstalledPackage($packageState)
 # # $user.Packages[$Package.Name] 		= $packageState
 
 # Add-DirToPath "C:\users\ehiller\AppData\Local\omega\system\git\cmd" -System
