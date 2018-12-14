@@ -125,6 +125,19 @@ function back {
 
 <#
 .SYNOPSIS
+Unix-like killall utility. A simple wrapper for taskkill
+#>
+function killall {
+	Param(
+		[Parameter(Mandatory=$True)]
+		$ImageName
+	)
+	# Forcefully kill images containing ImageName
+	& taskkill /FI "imagename eq $ImageName*" /F
+}
+
+<#
+.SYNOPSIS
 Wrapper for Get-ChildItem to emulate GNU ls (coreutils) which allows for pipelining and ls style arguments.
 .PARAMETER all
 In directories show hidden files

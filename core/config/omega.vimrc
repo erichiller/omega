@@ -1,6 +1,17 @@
+"
+" ViM - omega configuration
+""""""""""""""""""""""""""""""""
+" For additional docs, see the docs folder
+" Some helpful commands:
+" - read the current settings with 
+"       :set <variable>?
+" - start ViM in debug mode, logging to 'myVim.log'
+"       vim -V9myVim.log
+" - see all messages:
+"       :messages
+"       :echo errmsg
 
 " Setting some decent VIM settings for programming
-" read the current settings with :set <variable>?
 filetype plugin indent on
 syntax on                       " turn syntax highlighting on by default
 set nocompatible                " basic starting point for usability

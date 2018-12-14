@@ -1,7 +1,7 @@
 Set the System Environment Variables
 
 - `GIT_CONFIG_NOSYSTEM` = 1
-- `XDG_CONFIG_HOME` to `$conf.basedir\core`
+- `XDG_CONFIG_HOME` to `$conf.basedir\core\config`
 
 https://git-scm.com/docs/git-config#git-config-XDGCONFIGHOMEgitconfig
 
