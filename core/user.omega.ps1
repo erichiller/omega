@@ -199,6 +199,20 @@ function Convert-DirectoryStringToUnix {
 	return $path.Replace("\", "/")
 }
 
+<#
+.SYNOPSIS
+Swap \ for / ; windows directories to linux style
+#>
+function Convert-DirectoryStringEscape {
+	param (
+	[Parameter(Position=1,Mandatory=$True)]
+	[String] $path
+	)
+	$path = $path.Replace("\", "\\")
+	$path = $path.Replace(" ", "\ ")
+	return $path
+}
+
 
 <#
 .SYNOPSIS
