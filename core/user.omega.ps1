@@ -296,14 +296,24 @@ Often aliased to `whereis`
 function Search-Executable {
 	param (
 		[Parameter(Mandatory = $true)]
-		[string] $command,
+			[string] $command,
 		[Parameter(Mandatory = $false)]
-		[switch] $directory
+			[switch] $directory,
+		[Parameter(Mandatory = $false)]
+			[Alias("cd","change")]
+			[switch] $ChangeDirectory,
+		[Alias("h", "?" )][switch] $help
 	)
-	if ($directory -eq $true) {
-		Split-Path (Get-Command $command | Select-Object -ExpandProperty Definition) -parent
+	if ( $help ) { Get-Help $MyInvocation.MyCommand; return; } # Call help on self and exit
+	if ($directory -eq $true -or $ChangeDirectory -eq $True) {
+		$path = Split-Path (Get-Command $command | Select-Object -ExpandProperty Definition) -parent
 	} else {
-		$(Get-Command $command).source
+		$path = $(Get-Command $command).source
+	}
+	if ( $changeDirectory ){
+		set-location $path
+	} else {
+		echo $path
 	}
 }
 

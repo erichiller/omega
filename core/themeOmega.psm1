@@ -288,6 +288,11 @@ Set-PSReadlineKeyHandler -Key Tab       -Function Complete
 Set-PSReadlineKeyHandler -Key UpArrow   -Function HistorySearchBackward
 Set-PSReadlineKeyHandler -Key DownArrow -Function HistorySearchForward
 
+# These keys use alt+arrow which requires `$env:PSREADLINE_VTINPUT=1` to be set BEFORE starting PowerShell
+# Set-PSReadLineKeyHandler -Chord "Alt,LeftArrow" -Function BackwardWord
+# Set-PSReadLineKeyHandler -Chord "Alt,RightArrow" -Function ForwardWord
+
+
 
 # PSReadline version 2.0 does not support -Backgroundcolor & since I was only setting it to default, commenting it out is fine.
 # Set-PSReadlineOption -TokenKind comment   -BackgroundColor $MASTER_BACKGROUND
