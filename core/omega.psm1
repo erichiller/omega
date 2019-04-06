@@ -26,7 +26,12 @@ $DebugPreference = $User.verbosity.debug
 
 # Add local bin dir (for single file executable or user-runnable scripts)
 # ensure it isn't already added, as in the case of root tab copy
-Add-DirToPath(Join-Path $Config.BaseDir $Config.bindir)
+try {
+	Add-DirToPath(Join-Path $Config.BaseDir $Config.bindir)
+} catch {
+	Write-Warning "Error adding bindir: $(Join-Path $Config.BaseDir $Config.bindir) to path"
+	$gitStatus = $false
+}
 
 $local:ModulePath = Join-Path $Config.BaseDir "\system\psmodules"
 if ( Test-Path $local:ModulePath ) {
