@@ -4,7 +4,7 @@
 
 When writing programs, modules, etc... you are supposed to use a set of [approved verbs]
 
-[approved verbs]: https://msdn.microsoft.com/en-us/library/ms714428(v=vs.85).aspx
+[approved verbs]: https://docs.microsoft.com/en-us/powershell/developer/cmdlet/approved-verbs-for-windows-powershell-commands
 
 ## Parameters
 
