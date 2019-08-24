@@ -55,54 +55,54 @@ See omega.psm1 for usage
 #>
 function Get-PrettyPath {
 	param (
-    [System.Management.Automation.PathInfo] $dir,
-	[switch] $prependBase = $False
+		[System.Management.Automation.PathInfo] $dir,
+		[switch] $prependBase = $False
 	)
 	#### IT IS GIVING ME A STRING!!!!!
-	if( -not $dir ){ $dir = Get-Location }
-	if( -not ( $dir | Get-Member -Name "Provider" ) ){
+	if ( -not $dir ) { $dir = Get-Location }
+	if ( -not ( $dir | Get-Member -Name "Provider" ) ) {
 		throw
 		return "?!?"
 		# somehow this does not have a Provider?
 	}
 	$provider = $dir.Provider.Name
-	if($provider -eq 'FileSystem'){
-        # if it is home, stop all further processing, don't waste time
-        if ($dir.path -eq $HOME) {
-            return '~'
-        }
+	if ($provider -eq 'FileSystem') {
+		# if it is home, stop all further processing, don't waste time
+		if ($dir.path -eq $HOME) {
+			return '~'
+		}
 		$result = @()
-        $currentDir = Get-Item $dir.path
-        if ( $prependBase -eq $True ){
-            # the first is a blank `/` root ; so subtract 1
-            $pathSegmentsLength = (new-object System.Uri(Convert-Path .)).Segments.Length - 1
-            if( $dir.Drive ) {
-                $base = $dir.Drive.Name + ":"
-                # Display the UNC (smb) host if it is one
-            } else {
-                $base = (new-object System.Uri(Convert-Path .))
-                if( $base.IsUnc ){
-                    $base = "\\" + $base.Host
-                } else {
-                    $base = $base.Host
-                }
-            }
-        }
-		while( ($currentDir.Parent) -And ($result.Count -lt 2 ) -And ($currentDir -ne $base ) ){
-			$result = ,$currentDir.Name + $result
+		$currentDir = Get-Item $dir.path
+		if ( $prependBase -eq $True ) {
+			# the first is a blank `/` root ; so subtract 1
+			$pathSegmentsLength = (new-object System.Uri(Convert-Path .)).Segments.Length - 1
+			if ( $dir.Drive ) {
+				$base = $dir.Drive.Name + ":"
+				# Display the UNC (smb) host if it is one
+			} else {
+				$base = (new-object System.Uri(Convert-Path .))
+				if ( $base.IsUnc ) {
+					$base = "\\" + $base.Host
+				} else {
+					$base = $base.Host
+				}
+			}
+		}
+		while ( ($currentDir.Parent) -And ($result.Count -lt 2 ) -And ($currentDir -ne $base ) ) {
+			$result = , $currentDir.Name + $result
 			$currentDir = $currentDir.Parent
-        }
-        if ( $prependBase -ne $True ){
-            return $result -join $ThemeSettings.PromptSymbols.PathSeparator
-        }
-        if ( $pathSegmentsLength -gt $result.Length ){
-            # create an indicator for the number of path segments skipped
-            $base = $base + "(" + ($pathSegmentsLength - $result.Length) + ")"
-        }
-		return (,$base + $result) -join $ThemeSettings.PromptSymbols.PathSeparator
-    # for NETWORK SHARES, could also use:
-    # new-object System.Uri(Convert-Path .).Host
-    #
+		}
+		if ( $prependBase -ne $True ) {
+			return $result -join $ThemeSettings.PromptSymbols.PathSeparator
+		}
+		if ( $pathSegmentsLength -gt $result.Length ) {
+			# create an indicator for the number of path segments skipped
+			$base = $base + "(" + ($pathSegmentsLength - $result.Length) + ")"
+		}
+		return (, $base + $result) -join $ThemeSettings.PromptSymbols.PathSeparator
+		# for NETWORK SHARES, could also use:
+		# new-object System.Uri(Convert-Path .).Host
+		#
 	} else {
 		return $dir.path.Replace((Get-Drive -dir $dir), '')
 	}
@@ -124,88 +124,113 @@ That is hash symbol, then type the command you would like to search your command
 function Search-FrequentDirectory {
 	[CmdletBinding()]
 	Param (
-		[Parameter(Mandatory=$false)]
+		[Parameter(Mandatory = $false)]
 		[Switch] $delete,
 		[Parameter(Mandatory = $false)]
 		[Switch] $outputDebug
 	)
 	DynamicParam {
-	$dirSearch = new-object -Type System.Collections.ObjectModel.Collection[System.Attribute]
+		$dirSearch = new-object -Type System.Collections.ObjectModel.Collection[System.Attribute]
 
-	# [parameter(mandatory=...,
-	#     ...
-	# )]
-	$dirSearchParamAttribute = new-object System.Management.Automation.ParameterAttribute
-	$dirSearchParamAttribute.Mandatory = $true
-	$dirSearchParamAttribute.Position = 1
-	$dirSearchParamAttribute.HelpMessage = "Enter one or more module names, separated by commas"
-	$dirSearch.Add($dirSearchParamAttribute)
+		# [parameter(mandatory=...,
+		#     ...
+		# )]
+		$dirSearchParamAttribute = new-object System.Management.Automation.ParameterAttribute
+		$dirSearchParamAttribute.Mandatory = $true
+		$dirSearchParamAttribute.Position = 0
+		$dirSearchParamAttribute.HelpMessage = "Enter one or more module names, separated by commas"
+		$dirSearch.Add($dirSearchParamAttribute)
 
-	# [ValidateSet[(...)]
-	$dirPossibles = @()
+		# [ValidateSet[(...)]
+		$dirPossibles = @()
 
-	$historyFile = (Get-PSReadlineOption).HistorySavePath
-	# directory Seperating character for the os; \ (escaped to \\) for windows (as C:\Users\); / for linux (as in /var/www/);
-	# a catch all would be \\\/  ; but this invalidates the whitespace escape character that may be used mid-drectory.
-	$dirSep = "\\"
-	# Group[1] = Directory , Group[length-1] = lowest folder
-	$regex = "^[[:blank:]]*cd ([a-zA-Z\.\~:]+([$dirSep][^$dirSep]+)*[$dirSep]([^$dirSep]+)[$dirSep]?)$"
-	# original: ^[[:blank:]]*cd [a-zA-Z\~:\\\/]+([^\\\/]+[\\\/]?)*[\\\/]([^\\\/]+)[\/\\]?$
-	# test for historyFile existance
-	if( -not (Test-Path $historyFile )){
-		Write-Warning "File $historyFile not found, unable to load command history. Exiting.";
-		return 1;
-	}
-	$historyLines = Get-Content $historyFile
-	# create a hash table, format of ;;; [directory path] = [lowest directory]
-	$searchHistory = @{}
-	# create a hash table for the count (number of times the command has been run)
-	$searchCount = @{}
-	ForEach ( $line in $historyLines ) {
-		if( $line -match $regex ){
-			try {
-				# since the matches index can change, and a hashtable.count is not a valid way to find the index...
-				# I need this to figure out the highest integer index
-				$lowestDirectory = $matches[($matches.keys | Sort-Object -Descending | Select-Object -First 1)]
-				$fullPath = $matches[1]
-				if($searchHistory.keys -notcontains $matches[1]){
-					$searchHistory.Add($matches[1],$lowestDirectory)
+		$historyFile = (Get-PSReadlineOption).HistorySavePath
+		# directory Seperating character for the os; \ (escaped to \\) for windows (as C:\Users\); / for linux (as in /var/www/);
+		# a catch all would be \\\/  ; but this invalidates the whitespace escape character that may be used mid-drectory.
+		# $dirSep = "\\"
+		# Group[1] = Directory , Group[length-1] = lowest folder
+		# $regex = "^[[:blank:]]*cd ([a-zA-Z\.\~:]+([$dirSep][^$dirSep]+)*[$dirSep]([^;]+))[$dirSep]?"
+		# try this 2019-08-24
+		$regex = @"
+[[:blank:]]*(?<=cd ) *(['\"]?(?<relative>\.{0,2}\\)*(?<fullpath>([\\a-zA-Z\.\~\-_:]+\\)+(?<leaf>[^\n][^\.\.][a-zA-Z\.\~\-_:]+)))
+"@
+
+
+		# try this 2019-08-02
+
+		# $regex = "^[[:blank:]]*cd ([a-zA-Z\.\~:]+([$dirSep][^$dirSep]+)*[$dirSep]([^;]+))[$dirSep]?"
+		# ForEach ( $line in $historyLines ) { 
+		# 	if( $line -match $regex){
+		# 		$Matches
+		# 		echo "--"
+		# 	}
+		# }
+
+		# edit 1: "^[[:blank:]]*cd ([a-zA-Z\.\~:]+([$dirSep][^$dirSep]+)*[$dirSep]([^$dirSep]+)[$dirSep]?)$"
+		# original: ^[[:blank:]]*cd [a-zA-Z\~:\\\/]+([^\\\/]+[\\\/]?)*[\\\/]([^\\\/]+)[\/\\]?$
+		# test for historyFile existance
+		if ( -not (Test-Path $historyFile )) {
+			Write-Warning "File $historyFile not found, unable to load command history. Exiting.";
+			return 1;
+		}
+		$historyLines = Get-Content $historyFile
+		# create a hash table, format of ;;; [directory path] = [lowest directory]
+		$searchHistory = @{ }
+		# create a hash table for the count (number of times the command has been run)
+		$searchCount = @{ }
+		ForEach ( $line in $historyLines ) {
+			if ( $line -match $regex ) {
+				try {
+					# since the matches index can change, and a hashtable.count is not a valid way to find the index...
+					# I need this to figure out the highest integer index
+					# $lowestDirectory = $matches[($matches.keys | Sort-Object -Descending | Select-Object -First 1)]
+					$leaf = $matches["leaf"]
+					$fullPath = $matches["fullpath"]
+					# if ( $leaf -eq "mkmrk-ml.7z" ){
+					# 	Add-Content -path C:\users\eric\Desktop\f_log.txt -Value ( $leaf + "in" + $line)
+					# }
+					if ($searchHistory.keys -notcontains $fullPath) {
+						$searchHistory.Add($fullPath, $leaf)
+					}
+					$searchCount[$fullPath] = 1
+				} catch {
+					$searchCount[$fullPath]++
 				}
-				$searchCount[$fullPath] = 1
-			} catch {
-				$searchCount[$fullPath]++
+				# DEBUG ONLY
+				# Write-Host ( "{0}   :   {1}" -f $leaf,$fullPath)
 			}
 		}
-	}
-	# this helps with hashtables
-	# https://www.simple-talk.com/sysadmin/powershell/powershell-one-liners-collections-hashtables-arrays-and-strings/
+		# this helps with hashtables
+		# https://www.simple-talk.com/sysadmin/powershell/powershell-one-liners-collections-hashtables-arrays-and-strings/
 
-	$dirPossibles = ( $searchHistory.values | Select -Unique )
+		$dirPossibles = ( $searchHistory.values | Select -Unique )
 
-	$modulesValidated_SetAttribute = New-Object -type System.Management.Automation.ValidateSetAttribute($dirPossibles)
-	$dirSearch.Add($modulesValidated_SetAttribute)
+		$modulesValidated_SetAttribute = New-Object -type System.Management.Automation.ValidateSetAttribute($dirPossibles)
+		$dirSearch.Add($modulesValidated_SetAttribute)
 
-	# Remaining boilerplate
-	$dirSearchDefinition = new-object -Type System.Management.Automation.RuntimeDefinedParameter("dirSearch", [String[]], $dirSearch)
+		# Remaining boilerplate
+		$dirSearchDefinition = new-object -Type System.Management.Automation.RuntimeDefinedParameter("dirSearch", [String[]], $dirSearch)
 
-	$paramDictionary = new-object -Type System.Management.Automation.RuntimeDefinedParameterDictionary
-	$paramDictionary.Add("dirSearch", $dirSearchDefinition)
+		$paramDictionary = new-object -Type System.Management.Automation.RuntimeDefinedParameterDictionary
+		$paramDictionary.Add("dirSearch", $dirSearchDefinition)
 
-	return $paramDictionary
+		write-host $paramDirectionary
+
+		return $paramDictionary
 	}
 	begin {
 		function Set-LocationHelper {
 			param(
-				[Parameter(Mandatory=$True)]
+				[Parameter(Mandatory = $True)]
 				[string] $dir,
 				[switch] $delete,
 				[switch] $addToHistory
 			)
 			# Add to history so that in the future this directory will be found with `cd` scanning and brute force WILL NOT BE REQUIRED
-			if ($addToHistory){
+			if ($addToHistory) {
 				[Microsoft.PowerShell.PSConsoleReadLine]::AddToHistory("cd $dir")
 			}
-			if ( $delete ){
+			if ( $delete ) {
 				Clear-History -CommandLine $filteredDirs -Confirm
 			} else {
 				Set-Location $dir
@@ -229,12 +254,12 @@ function Search-FrequentDirectory {
 		Write-Debug "dirSearch=$dirSearch"
 
 		#this is doing ___EQUAL___ /// or do I want to be doing a like dirSearch*
-		$filteredDirs = $searchHistory.GetEnumerator() | ?{ $_.Value -eq $dirSearch }
+		$filteredDirs = $searchHistory.GetEnumerator() | ? { $_.Value -eq $dirSearch }
 
 		# if there is a single match
-		if ( $filteredDirs.count -eq 1 ){
+		if ( $filteredDirs.count -eq 1 ) {
 			$testedPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($filteredDirs.name)
-			if( $testedPath | Test-Path ){
+			if ( $testedPath | Test-Path ) {
 				Set-LocationHelper $testedPath
 			}
 		} else {
@@ -245,14 +270,14 @@ function Search-FrequentDirectory {
 			## (DIR) ==> COUNT ##
 			Debug-Variable $searchCount
 
-			"More than one matching entry was found, now sorting and checking each historical cd"
+			Write-Information "More than one matching entry was found, now sorting and checking each historical cd"
 			$searchCount.GetEnumerator() | Sort-Object -Property Value -Descending | ForEach-Object {
 				$countedDir = $_
-				$highestDir = ( $filteredDirs.GetEnumerator() | ?{$_.Name -contains $countedDir.Name} )
-				if ( $highestDir.count -eq 1 ){
+				$highestDir = ( $filteredDirs.GetEnumerator() | ? { $_.Name -contains $countedDir.Name } )
+				if ( $highestDir.count -eq 1 ) {
 					Write-Debug "Check for $($highestDir.name)"
 					$testedPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($highestDir.name)
-					if( $testedPath | Test-Path ){
+					if ( $testedPath | Test-Path ) {
 						Set-LocationHelper $testedPath
 						break
 					} else {
@@ -265,17 +290,17 @@ function Search-FrequentDirectory {
 		}
 
 		# if a match was found above; but it did not immeditately resolve
-		if( ( $testedPath ) `
-				-and ( -not ( $testedPath | Test-Path ) ) ){
+		if ( ( $testedPath ) `
+				-and ( -not ( $testedPath | Test-Path ) ) ) {
 			Write-Information "Could not find test string '$dirSearch', possibly not an absolute path, Attempting to Locate"
 			# iterate history where the directory that was being searched for is PART of one of the historical items
 			# for example; if searching for dirB. This would find it in /dirA/dirB/dirC/ and return /dirA/dirB/
 			## <START LOOP>
 			$searchCount.GetEnumerator() | Sort-Object -Property Value -Descending | Where-Object { $_.Name -like "*$dirSearch*" } | ForEach-Object -ErrorAction SilentlyContinue {
 				$testedPath = $_.Name
-					Write-Debug "Command like dirsearch:$testedPath" -ErrorAction SilentlyContinue
+				Write-Debug "Command like dirsearch:$testedPath" -ErrorAction SilentlyContinue
 				$testedPath = Join-Path $testedPath.Substring( 0 , $testedPath.IndexOf($dirSearch) ) $dirSearch
-				if ( Test-Path $testedPath ){
+				if ( Test-Path $testedPath ) {
 					Set-LocationHelper $testedPath
 					break
 				}
