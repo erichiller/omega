@@ -3,7 +3,7 @@
 
 # Basic requirements
 ConEmuDir=$(pwd)
-BaseDir=$(dirname $( dirname $ConEmuDir))
+BaseDir=$(dirname "$( dirname "$ConEmuDir")")
 alias om='cd $BaseDir'
 HOME=/mnt/c/Users/$USER
 cd ~
@@ -58,7 +58,7 @@ bind '"\e[B": history-search-forward'
 
 # ls dir coloring
 export LS_OPTIONS='--color=auto'
-eval "`dircolors -b $BaseDir/core/wsl/dir_colors`"
+eval `dircolors -b "$BaseDir/core/wsl/dir_colors"`
 alias ls='ls $LS_OPTIONS -lA'
 alias pathprint='echo $PATH | tr \: \\n'
 

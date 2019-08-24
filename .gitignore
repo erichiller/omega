@@ -13,3 +13,11 @@ system/**/
 !system/fonts
 .vscode
 /omega.log
+
+# config
+/core/config/**
+!/core/config/git/**
+!/core/config/ConEmu.xml
+!/core/config/omega**
+!/core/config/powershell.cmd
+!/core/config/wsl.bashrc
