@@ -112,6 +112,18 @@ try {
 }
 
 
+# ?? sec
+try {
+	if ( Get-Module "DockerCompletion" ) {
+		Write-Verbose "module 'DockerCompletion' already loaded, skipping forced load"
+	} else {
+		Import-Module DockerCompletion -ErrorAction Stop >$null
+	}
+} catch {
+	Write-Warning "DockerCompletion module failed to load. Either not installed or there was an error. docker tab completion will not function."
+}
+
+
 #################################################
 ######       continued IMPORT MODULES       #####
 ######       ------> optional <------       #####
@@ -160,25 +172,25 @@ Set-Alias -Name "which" -Value "${env:windir}\System32\where.exe"
 Set-Alias -Name "whereis" -Value Search-Executable
 
 # new ls
-if (alias ls   -ErrorAction SilentlyContinue) { Remove-Item alias:ls   }
-if (alias ls   -ErrorAction SilentlyContinue) { Remove-Item alias:ls   }
+if (Get-Alias ls   -ErrorAction SilentlyContinue) { Remove-Item alias:ls   }
+if (Get-Alias ls   -ErrorAction SilentlyContinue) { Remove-Item alias:ls   }
 
 # new mv
-if (alias mv   -ErrorAction SilentlyContinue) { Remove-Item alias:mv   }
+if (Get-Alias mv   -ErrorAction SilentlyContinue) { Remove-Item alias:mv   }
 
 # new wget
-if (alias wget -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:wget }
-if (alias wget -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:wget }
+if (Get-Alias wget -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:wget }
+if (Get-Alias wget -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:wget }
 Set-Alias -Name "wget" -Value "$($config.basedir)\bin\wget.exe"
 
 # new curl
-if (alias curl -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:curl }
-if (alias curl -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:curl }
+if (Get-Alias curl -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:curl }
+if (Get-Alias curl -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:curl }
 Set-Alias -Name "curl" -Value "$($config.basedir)\bin\curl.cmd"
 
 # scp
-if (alias scp -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:scp }
-if (alias scp -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:scp }
+if (Get-Alias scp -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:scp }
+if (Get-Alias scp -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:scp }
 Set-Alias -Name "scp" -Value "$($config.basedir)\bin\scp.cmd"
 
 # less
@@ -211,11 +223,11 @@ Set-Alias -Name f -Value Search-FrequentDirectory -ErrorAction Ignore
 #################################################
 ######        STEP #4: USER SPECIFICS       #####
 #################################################
-set-alias -Name gh -Value Open-GitHubDevDirectory
-set-alias -Name om -Value Open-OmegaBaseDirectory
+Set-Alias -Name gh -Value Open-GitHubDevDirectory
+Set-Alias -Name om -Value Open-OmegaBaseDirectory
 
 
-set-alias -Name tail -Value Get-FileContentTail
+Set-Alias -Name tail -Value Get-FileContentTail
 Set-Alias -Name kb -Value Search-KnowledgeBase
 
 # function Show-HelpKeyGrid {
