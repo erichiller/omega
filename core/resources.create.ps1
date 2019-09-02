@@ -74,7 +74,6 @@ function New-Shortcut {
 		if ($positionDot -gt 0) {
 			$baseName = $baseName.substring(0, $positionDot)
 			Write-Debug $baseName
-
 		}
 		Write-Debug $baseName
 		$shortcutFile = Join-Path "${env:ALLUSERSPROFILE}\Microsoft\Windows\Start Menu\Programs\" $baseName
@@ -105,7 +104,11 @@ function New-Shortcut {
 	$Shortcut.IconLocation = Join-Path $conf.basedir $iconRelPath
 
 	$Shortcut.Save()
-	Write-Output "Shortcut Created at $shortcutFile"
+	if ( Test-Path $shortcutFile ){
+		Write-Output "Shortcut Created at $shortcutFile"
+	} else {
+		Write-Error "Shortcut was not created at $shortcutFile"
+	}
 
 	if ( $RegisterApp ){
 		$baseName = Split-Path -Path $shortcutFile -Leaf -Resolve
@@ -113,7 +116,7 @@ function New-Shortcut {
 		if ($positionDot -gt 0) {
 			$baseName = $baseName.substring(0, $positionDot)
 			Write-Debug "Registering $baseName"
-			Register-App -appName $baseName -targetPath $Shortcut.TargetPath
+			Register-OmegaApp -appName $baseName -targetPath $Shortcut.TargetPath
 		} else {
 			Write-Warning "App had no name to register"
 		}
@@ -124,7 +127,7 @@ function New-Shortcut {
 
 <#
 .SYNOPSIS
-Register-App creates an entry for Omega in the App Paths registry folder to index omega in windows start search
+Creates an entry for Omega in the App Paths registry folder to index omega in windows start search
 New-Shortcut must have been run prior.
 .PARAMETER appName 
 appName is the name of the application that will be indexed
@@ -133,14 +136,17 @@ If no value is provided, it defaults to omega
 .PARAMETER targetPath
 this is the path where the shortcut or exe to be linked to / executed is located
 #>
-function Register-App {
-
+function Register-OmegaApp {
 	param(
-		# 
 		[string]$appName = "omega",
-		[string]$targetPath = "${env:basedir}\omega.lnk"
+		[Parameter(Mandatory = $false)]
+			[string]$targetPath
 	)
+
     $conf = [OmegaConfig]::GetInstance()
+	if ( -not $targetPath ){
+		$targetPath = ( $conf.basedir + "\omega.lnk" )
+	}
 	
 	# add .exe suffix if not present asa the appPath requires it.
 	# .exe will not show up in the index

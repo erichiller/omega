@@ -289,8 +289,11 @@ Set-PSReadlineKeyHandler -Key UpArrow   -Function HistorySearchBackward
 Set-PSReadlineKeyHandler -Key DownArrow -Function HistorySearchForward
 
 # These keys use alt+arrow which requires `$env:PSREADLINE_VTINPUT=1` to be set BEFORE starting PowerShell
+# see issue <https://github.com/PowerShell/PSReadLine/issues/558>
 # Set-PSReadLineKeyHandler -Chord "Alt,LeftArrow" -Function BackwardWord
+Set-PSReadLineKeyHandler -Chord Alt+LeftArrow -Function BackwardWord
 # Set-PSReadLineKeyHandler -Chord "Alt,RightArrow" -Function ForwardWord
+Set-PSReadLineKeyHandler -Chord Alt+RightArrow -Function ForwardWord
 
 
 

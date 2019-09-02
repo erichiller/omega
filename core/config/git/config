@@ -70,11 +70,46 @@
     # detailed log
     alog = log --graph --decorate --pretty=oneline --abbrev-commit --all
 
-
+# [alias]
+#     hep = "!f() { $SYSTEMROOT/System32/bash -c \"git help $1\"; }; f"
 
 [help]
 	format = man
 [man]
+	viewer = man
+	# viewer = "g"
+	# viewer = "git-help-redir"
+	# viewer = "git-help-ps1"
+	# viewer = "git-help-cmd"
+	# viewer = "git-help-bash"
+
+[man "g"]
+	cmd = "echo eric"
+
+[man "git-help-redir"]
+	cmd = "git hep"
+
+[man "git-help-bash"]
+	# cmd = bash -c "git help"
+	cmd = $SYSTEMROOT/System32/bash -c \"git help $1\";
+
+[man "git-help-ps1"]
+	cmd = C:/PROGRA~1/WindowsPowerShell/Modules/omega/bin/git-help.ps1
+
+[man "git-help-cmd"]
+	cmd = C:/PROGRA~1/WindowsPowerShell/Modules/omega/bin/man.cmd
+
+
+# [man "git-help-ps1"]
+	# cmd = "man.exe"
+	# cmd = "bash C:/PROGRA~1/WindowsPowerShell/Modules/omega/bin/foo.sh"
+	# cmd = bash.exe -c 'echo foo'
+	# cmd = "/c/Program\ Files/WindowsPowerShell/Modules/omega/bin/foo.sh"
+	# cmd = "C:/Program Files/WindowsPowerShell/Modules/omega/bin/foo.sh"
+	# cmd = /c/Program Files/WindowsPowerShell/Modules/omega/bin/foo.sh
+	# cmd = /c/Program Files/WindowsPowerShell/Modules/omega/bin/git-help.ps1
+	# cmd = ./../../bin/git-help.ps1
+	# viewer = ./../../bin/git-help.ps1
 	# viewer = less
 # [man "less"]
 	# cmd = ./../../system/git/usr/share/vim/vim81/macros/less.sh

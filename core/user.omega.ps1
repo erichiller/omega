@@ -33,7 +33,7 @@ function Get-History {
 	param (
         [Parameter(Mandatory = $False)]
         [Alias("f", "search", "s")]
-        [string] $Find = "*",
+        [string] $Find = ".*",
 
         [Parameter(Mandatory = $False)]
         [Alias("tail", "n")]

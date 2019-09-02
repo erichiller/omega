@@ -80,6 +80,7 @@
 		"Get-History"
 		"back"
 		"killall"
+		"Register-OmegaApp"
         # "Prompt"
 
 
