@@ -113,7 +113,7 @@
         # "Show-Colors"
         # "Show-ThemeColors"
         # "Show-ThemeSymbols"
-        # "Test-Administrator"
+        "Test-Administrator"
         # "Test-NotDefaultUser"
         # "Test-VirtualEnv"
 
@@ -148,7 +148,7 @@
         "Search-KnowledgeBase"
         "Set-RegisterCommandAvailable"
 #         "Set-UserRepo"
-#         "Test-Admin"
+        "Test-Admin"
 
 #         "ArrayAddUnique"
 #         "checkGit"

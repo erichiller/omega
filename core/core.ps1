@@ -26,8 +26,8 @@ function Add-DirToPath {
         # if it isn't already in the PATH, add it
         if ( -not $env:Path.Contains($dir) ) {
             $env:Path += ";" + $dir
-            return
         }
+        return
     } else {
         throw "Directory $dir does not exist, can not add to path"
     }
