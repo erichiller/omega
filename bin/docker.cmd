@@ -8,7 +8,9 @@
 ) else (
 
 @if exist %USERPROFILE%\.docker\.env (
-    @for /f "delims=" %%x in (.env) do ( @set "%%x" )
+    pushd %USERPROFILE%\.docker
+    @for /f "delims=" %%x in (.env) do @( @set "%%x" )
+    popd
 )
 
 )
