@@ -262,7 +262,7 @@ $sl.Colors.ClockTextColor                    = [ConsoleColor]::White
 $global:PSColor.File.Code = @{ Color = 'DarkYellow'; Pattern = '\.(java|c|cpp|cs|js|ts|go|jsx|tsx|css|html)$' }
  
 <###########################################
- ##### PSReadline options ##################
+ ########## PSReadline options #############
  ###########################################
 
 Options can be seen with the command:
@@ -270,7 +270,8 @@ Options can be seen with the command:
 
 See: https://technet.microsoft.com/en-us/library/mt560335.aspx
 
-Can use this to create syntax highlighting
+Can use PSReadLineOption to create syntax highlighting
+
 
 
 # Defaults
@@ -278,6 +279,9 @@ Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
 Set-PSReadlineOption -TokenKind Command -ForegroundColor DarkBlue
 Set-PSReadlineOption -TokenKind Parameter -ForegroundColor Yellow
 #>
+
+# Set the cursor to be at the end of the line when searching history. ie. ^ Up arrow
+Set-PSReadLineOption -HistorySearchCursorMovesToEnd
 
 # see possible options under "Tab Complete" here: 
 # https://github.com/lzybkr/PSReadLine/blob/master/docs/about_PSReadLine.help.txt
