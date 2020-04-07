@@ -283,6 +283,9 @@ Set-PSReadlineOption -TokenKind Parameter -ForegroundColor Yellow
 # Set the cursor to be at the end of the line when searching history. ie. ^ Up arrow
 Set-PSReadLineOption -HistorySearchCursorMovesToEnd
 
+# Change character prefix for multiline commands
+Set-PSReadLineOption -ContinuationPrompt '    '
+
 # see possible options under "Tab Complete" here: 
 # https://github.com/lzybkr/PSReadLine/blob/master/docs/about_PSReadLine.help.txt
 # Note: Ctrl + Space already performs MenuComplete
