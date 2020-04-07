@@ -38,39 +38,6 @@
                                                 "SymLinks":  null
                                             }
                              },
-                     "nodejs":  {
-                                    "UpdateDate":  "2018-Jul-27 18:00",
-                                    "Version":  "10.7.0",
-                                    "Name":  "nodejs",
-                                    "Brief":  "Node and Npm",
-                                    "Required":  false,
-                                    "Install":  {
-                                                    "Source":  1,
-                                                    "Destination":  "SystemPath",
-                                                    "AdminRequired":  true,
-                                                    "SearchPath":  [
-                                                                       "https://nodejs.org/download/release/latest/",
-                                                                       "node-v[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}-win-x64.zip"
-                                                                   ],
-                                                    "VersionPattern":  ".*node-v(.*)-win-x64\\.zip$",
-                                                    "Org":  null,
-                                                    "Repo":  null
-                                                },
-                                    "Provides":  {
-                                                     "Commands":  null,
-                                                     "Binaries":  [
-                                                                      "node",
-                                                                      "npm"
-                                                                  ]
-                                                 },
-                                    "System":  {
-                                                   "PathAdditions":  [
-                                                                         "$( ( [OmegaConfig]::GetInstance() ).BaseDir)\\system\\nodejs"
-                                                                     ],
-                                                   "SystemEnvironmentVariables":  null,
-                                                   "SymLinks":  null
-                                               }
-                                },
                      "vim":  {
                                  "UpdateDate":  "2018-Aug-19 11:16",
                                  "Version":  "8.1.0296",
@@ -114,7 +81,43 @@
                                                        "RegisterApp":  true
                                                    }
                                                ]
-                             }
+                             },
+                     "nodejs":  {
+                                    "UpdateDate":  "2019-Sep-21 17:15",
+                                    "Version":  "12.10.0",
+                                    "Name":  "nodejs",
+                                    "Brief":  "Node and Npm",
+                                    "Required":  false,
+                                    "Dependencies":  null,
+                                    "Install":  {
+                                                    "Source":  2,
+                                                    "Destination":  "SystemPath",
+                                                    "AdminRequired":  true,
+                                                    "SearchPath":  [
+                                                                       "https://nodejs.org/download/release/latest/",
+                                                                       "node-v[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}-win-x64.zip"
+                                                                   ],
+                                                    "VersionPattern":  ".*node-v(.*)-win-x64\\.zip$",
+                                                    "Org":  null,
+                                                    "Repo":  null
+                                                },
+                                    "System":  {
+                                                   "PathAdditions":  [
+                                                                         "$( ( [OmegaConfig]::GetInstance() ).BaseDir)\\system\\nodejs"
+                                                                     ],
+                                                   "SystemEnvironmentVariables":  null,
+                                                   "SymLinks":  null,
+                                                   "Directories":  null
+                                               },
+                                    "Provides":  {
+                                                     "Commands":  null,
+                                                     "Binaries":  [
+                                                                      "node",
+                                                                      "npm"
+                                                                  ]
+                                                 },
+                                    "Shortcuts":  null
+                                }
                  },
     "RegisteredCommands":  null,
     "Verbosity":  {

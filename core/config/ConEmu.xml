@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <key name="Software">
 	<key name="ConEmu">
-		<key name=".Vanilla" modified="2019-09-27 07:21:42" build="190714">
+		<key name=".Vanilla" modified="2020-02-15 08:48:53" build="191012">
 			<value name="StartType" type="hex" data="00"/>
 			<value name="CmdLine" type="string" data=""/>
 			<value name="StartTasksFile" type="string" data=""/>
@@ -146,10 +146,10 @@
 			<value name="Cascaded" type="hex" data="01"/>
 			<value name="IntegralSize" type="hex" data="01"/>
 			<value name="WindowMode" type="dword" data="0000051f"/>
-			<value name="ConWnd X" type="long" data="1343"/>
-			<value name="ConWnd Y" type="long" data="3"/>
+			<value name="ConWnd X" type="long" data="1213"/>
+			<value name="ConWnd Y" type="long" data="-3"/>
 			<value name="LastMonitor" type="string" data="0,0,3840,2120"/>
-			<value name="ConWnd Width" type="dword" data="00000091"/>
+			<value name="ConWnd Width" type="dword" data="00000063"/>
 			<value name="ConWnd Height" type="dword" data="02000064"/>
 			<value name="16bit Height" type="ulong" data="0"/>
 			<value name="QuakeStyle" type="hex" data="00"/>
@@ -245,7 +245,7 @@
 			<value name="DragPanel" type="hex" data="02"/>
 			<value name="DragPanelBothEdges" type="hex" data="00"/>
 			<value name="KeyBarRClick" type="hex" data="01"/>
-			<value name="StatusBar.Show" type="hex" data="00"/>
+			<value name="StatusBar.Show" type="hex" data="01"/>
 			<value name="StatusBar.Flags" type="dword" data="00000009"/>
 			<value name="StatusFontFace" type="string" data="Tahoma"/>
 			<value name="StatusFontCharSet" type="ulong" data="0"/>
@@ -845,6 +845,7 @@
 			<value name="AutoTrimSingleLine" type="hex" data="00"/>
 			<value name="AnsiLogCodes" type="hex" data="00"/>
 			<value name="AutoReloadEnvironment" type="hex" data="01"/>
+			<value name="StatusBar.Hide.InputGrouping" type="hex" data="00"/>
 		</key>
 	</key>
 </key>

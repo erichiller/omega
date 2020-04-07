@@ -123,6 +123,30 @@ try {
 	Write-Warning "DockerCompletion module failed to load. Either not installed or there was an error. docker tab completion will not function."
 }
 
+try {
+    Write-Verbose "loading dotnet suggest"
+    # dotnet suggest shell start
+    # updated register completer command available with:
+    #   dotnet-suggest script PowerShell
+    $availableToComplete = (dotnet-suggest list) | Out-String
+    $availableToCompleteArray = $availableToComplete.Split([Environment]::NewLine, [System.StringSplitOptions]::RemoveEmptyEntries)
+
+
+    Register-ArgumentCompleter -Native -CommandName $availableToCompleteArray -ScriptBlock {
+        param($commandName, $wordToComplete, $cursorPosition)
+        $fullpath = (Get-Command $wordToComplete.CommandElements[0]).Source
+
+        $arguments = $wordToComplete.Extent.ToString().Replace('"', '\"')
+        dotnet-suggest get -e $fullpath --position $cursorPosition -- "$arguments" | ForEach-Object {
+            [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
+        }
+    }
+    $env:DOTNET_SUGGEST_SCRIPT_VERSION = "1.0.0"
+    # dotnet suggest script end
+} catch {
+    Write-Warning "dotnet Suggest module failed to load. Either not installed or there was an error. dotnet tools tab completion will not function."
+}
+
 
 #################################################
 ######       continued IMPORT MODULES       #####
