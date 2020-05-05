@@ -259,7 +259,10 @@ $sl.Colors.ClockTextColor                    = [ConsoleColor]::White
 
 # add some newer languages --> typescript, jsx, tsx, golang
 # change the color to goldy
-$global:PSColor.File.Code = @{ Color = 'DarkYellow'; Pattern = '\.(java|c|cpp|cs|js|ts|go|jsx|tsx|css|html)$' }
+####
+# This is originally from PSColor which is no longer used.
+####
+# $global:PSColor.File.Code = @{ Color = 'DarkYellow'; Pattern = '\.(java|c|cpp|cs|js|ts|go|jsx|tsx|css|html)$' }
 
  
 <###########################################
