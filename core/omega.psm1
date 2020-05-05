@@ -33,16 +33,6 @@ try {
 	$gitStatus = $false
 }
 
-$local:ModulePath = Join-Path $Config.BaseDir "\system\psmodules"
-if ( Test-Path $local:ModulePath ) {
-	# Add local modules directory to the autoload path.
-	if ( -not $env:PSModulePath.Contains($local:ModulePath) ) {
-		$env:PSModulePath = $env:PSModulePath.Insert(0, $local:ModulePath + ";")
-	}
-	# load local psmodules
-	$global:UserModuleBasePath = $local:ModulePath
-}
-
 #################################################
 ######        STEP #2: IMPORT MODULES       #####
 ######        -----> mandatory <-----       #####
@@ -75,15 +65,15 @@ try {
 # 0.6 sec
 # load GitStatusCachePoshClient
 # see: https://github.com/cmarcusreid/git-status-cache-posh-client
-try {
-    if ( Get-Module "GitStatusCachePoshClient" ){
-        Write-Verbose "module 'GitStatusCachePoshClient' already loaded, skipping forced load"
-    } else {
-        Import-Module -Name "GitStatusCachePoshClient" -ErrorAction Stop >$null
-    }
-} catch {
-	Write-Warning "The GitStatusCachePoshClient module could not be found & imported, large directories may take significantly longer without it."
-}
+# try {
+#     if ( Get-Module "GitStatusCachePoshClient" ){
+#         Write-Verbose "module 'GitStatusCachePoshClient' already loaded, skipping forced load"
+#     } else {
+#         Import-Module -Name "GitStatusCachePoshClient" -ErrorAction Stop >$null
+#     }
+# } catch {
+# 	Write-Warning "The GitStatusCachePoshClient module could not be found & imported, large directories may take significantly longer without it."
+# }
 
 # # 4.2 sec
 try {
@@ -99,18 +89,6 @@ try {
 } catch {
 	Write-Warning "oh-my-posh module failed to load. Either not installed or there was an error. Modules styling will not be present."
 }
-
-# 4.4 sec
-try {
-    if ( Get-Module "PSColor" ){
-        Write-Verbose "module 'PSColor' already loaded, skipping forced load"
-    } else {
-        Import-Module PSColor -ErrorAction Stop >$null
-    }
-} catch {
-	Write-Warning "PSColor module failed to load. Either not installed or there was an error. Directory and console coloring will be limited."
-}
-
 
 # ?? sec
 try {
