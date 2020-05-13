@@ -143,7 +143,7 @@ function Send-LinuxConfig {
 		[switch] $help
 	)
 	$user = [User]::GetInstance()
-	$conf = [OmegaConfig]::GetInstance()
+	# $conf = [OmegaConfig]::GetInstance()
 
 	if ( $help -or -not $ConnectionString){
 		get-help $MyInvocation.MyCommand
@@ -178,9 +178,9 @@ function Send-LinuxConfig {
 	}
 
 	# push bashrc and vimrc
-	$(Invoke-WebRequest -UseBasicParsing $user.push.bashrc).Content | & "$($config.basedir)\bin\ssh.cmd" $ConnectionString "sed $'s/\r//' > ~/.bashrc"
+	$(Invoke-WebRequest $user.push.bashrc).Content | & "$($config.basedir)\bin\ssh.cmd" $ConnectionString "sed $'s/\r//' > ~/.bashrc"
 	Write-Output "Sent .bashrc"
-	$(Invoke-WebRequest -UseBasicParsing $user.push.vimrc).Content | & "$($config.basedir)\bin\ssh.cmd" $ConnectionString "sed $'s/\r//' > ~/.vimrc"
+	$(Invoke-WebRequest $user.push.vimrc).Content | & "$($config.basedir)\bin\ssh.cmd" $ConnectionString "sed $'s/\r//' > ~/.vimrc"
 	Write-Output "Sent .vimrc"
 	Remove-Item env:SSHCallBasic
 }

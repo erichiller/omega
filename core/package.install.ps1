@@ -13,7 +13,7 @@ function Install-PackageFromURL {
 	for ( $i = 1; $i -lt $Package.Install.SearchPath.Length; $i++) {
 		Write-Debug "i=$i of $($Package.Install.SearchPath.Length)"
 		Write-Debug "requesting $concat"
-		$filename = ( ((Invoke-WebRequest -UseBasicParsing -Uri $concat).Links | Where-Object { $_.href -match $Package.Install.SearchPath[$i] } | Where-Object { $_.href -notin $matchFilter[$i] }).href | Sort-Object )
+		$filename = ( ((Invoke-WebRequest -Uri $concat).Links | Where-Object { $_.href -match $Package.Install.SearchPath[$i] } | Where-Object { $_.href -notin $matchFilter[$i] }).href | Sort-Object )
 		if ( -not $filename ) {
 			Debug-Variable $matchPath "matchPath"
 			Write-Warning "Filename not found, dropping i to recurse at the lower hierarchy"
@@ -70,7 +70,7 @@ function Install-PackageFromGitRelease {
 	# The tag could also be used for the version, but I've found it generally less precise than parsing the download uri
 	Write-Debug ( "download url is: $url" )
 	[Net.ServicePointManager]::SecurityProtocol = 'Tls12';
-	$json = (Invoke-WebRequest -UseBasicParsing -Uri $url | ConvertFrom-Json)
+	$json = (Invoke-WebRequest -Uri $url | ConvertFrom-Json)
 	if ( $json.name ) {
 		Write-Verbose "Successfully navigated to latest release for $($json.name)"
 	}
@@ -102,7 +102,7 @@ function Install-PackageFromGitMaster {
 	Write-Debug ( "(download) file_url is: $file_url" )
 	Write-Debug ( "api_url url is: $api_url" )
 	[Net.ServicePointManager]::SecurityProtocol = 'Tls12';
-	$json = (Invoke-WebRequest -UseBasicParsing -Uri $api_url | ConvertFrom-Json)
+	$json = (Invoke-WebRequest -Uri $api_url | ConvertFrom-Json)
 	if ( $json.name ) {
 		Write-Verbose "Successfully navigated to the api - commits for $($json.name)"
 	}

@@ -65,7 +65,8 @@ For very detailed information on aliases present:
 
 ## Web Download
 
-`Invoke-Webrequest` seems to rely upon Internet Explorer, so to bypass this requirement use `-UseBasicParsing`
+~~`Invoke-Webrequest` seems to rely upon Internet Explorer, so to bypass this requirement use `-UseBasicParsing`~~
+As of PowerShell 7, `-UseBasicParsing` is no longer an option.
 
 In order to use SSL/TLS connections, you must set SecurityProtocol before using `Invoke-Webrequest`
 

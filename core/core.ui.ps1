@@ -152,7 +152,7 @@ function Search-FrequentDirectory {
 		# $regex = "^[[:blank:]]*cd ([a-zA-Z\.\~:]+([$dirSep][^$dirSep]+)*[$dirSep]([^;]+))[$dirSep]?"
 		# try this 2019-08-24
 		$regex = @"
-[[:blank:]]*(?<=cd ) *(['\"]?(?<relative>\.{0,2}\\)*(?<fullpath>([\\a-zA-Z\.\~\-_:]+\\)+(?<leaf>[^\n][^\.\.][a-zA-Z\.\~\-_:]+)))
+\s*(?<=cd ) *(['\"]?(?<relative>\.{0,2}\\)*(?<fullpath>([\\a-zA-Z\.\~\-_:]+\\)+(?<leaf>[^\n][^\.\.][a-zA-Z\.\~\-_:]+)))
 "@
 
 
@@ -203,10 +203,16 @@ function Search-FrequentDirectory {
 		# this helps with hashtables
 		# https://www.simple-talk.com/sysadmin/powershell/powershell-one-liners-collections-hashtables-arrays-and-strings/
 
-		$dirPossibles = ( $searchHistory.values | Select -Unique )
+        $dirPossibles = ( $searchHistory.values | Select-Object -Unique )
+        if ( $null -ne $dirPossibles ){
+            # https://docs.microsoft.com/en-us/dotnet/api/system.management.automation.validatesetattribute
+            $modulesValidated_SetAttribute = New-Object -type System.Management.Automation.ValidateSetAttribute($dirPossibles)
+            $dirSearch.Add($modulesValidated_SetAttribute)
+        } else {
+            Write-Warning 'no history found';
+            return 1;
+        }
 
-		$modulesValidated_SetAttribute = New-Object -type System.Management.Automation.ValidateSetAttribute($dirPossibles)
-		$dirSearch.Add($modulesValidated_SetAttribute)
 
 		# Remaining boilerplate
 		$dirSearchDefinition = new-object -Type System.Management.Automation.RuntimeDefinedParameter("dirSearch", [String[]], $dirSearch)

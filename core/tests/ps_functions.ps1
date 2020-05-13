@@ -196,7 +196,7 @@ function opkg {
 
 						Write-Debug "Searching for package in $($Package.installParams.searchPath)"
 
-						$filename = ((Invoke-WebRequest -UseBasicParsing -Uri $Package.installParams.searchPath).Links | Where { $_.href -like $Package.installParams.searchTerm }).href
+						$filename = ((Invoke-WebRequest -Uri $Package.installParams.searchPath).Links | Where { $_.href -like $Package.installParams.searchTerm }).href
 						Write-Debug "Found Filename: $filename"
 
 						$version = ( $filename | Select-String -Pattern $Package.installParams.versionPattern | % {"$($_.matches.groups[1])"} )

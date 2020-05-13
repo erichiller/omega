@@ -4,8 +4,8 @@ powershell -command Enable-WindowsOptionalFeature -Online -FeatureName Microsoft
 
 
 # do the same as send-linuxconfig
-Invoke-WebRequest -UseBasicParsing "http://gist.github.com/erichiller/ac3be5b4a562a61b255b0baccb3f2da8/raw/.bashrc" -OutFile "$env:HOME\.bashrc"
-Invoke-WebRequest -UseBasicParsing "http://gist.github.com/erichiller/ac3be5b4a562a61b255b0baccb3f2da8/raw/.vimrc" -OutFile "$env:HOME\.vimrc"
+Invoke-WebRequest "http://gist.github.com/erichiller/ac3be5b4a562a61b255b0baccb3f2da8/raw/.bashrc" -OutFile "$env:HOME\.bashrc"
+Invoke-WebRequest "http://gist.github.com/erichiller/ac3be5b4a562a61b255b0baccb3f2da8/raw/.vimrc" -OutFile "$env:HOME\.vimrc"
 
 
 # we have colors!
