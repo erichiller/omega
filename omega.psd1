@@ -9,12 +9,12 @@
 @{
 	Author            = "Eric D Hiller"
 	Description       = "Max Power Shell - Get more out of your command environment."
-	ModuleVersion     = "0.0.0.3"
+	ModuleVersion     = "0.0.0.4"
 	GUID              = "ad3159e1-ef91-4c84-9b48-62f746dc4a25"
 
 
 	RootModule        = "core\omega.psm1"
-	PowerShellVersion = "5.1"
+	PowerShellVersion = "7.0"
 	# RequiredModules are modules which are required to be loaded into the GLOBAL environment before this module loads (else it fails to load)
 	# Nothing is processed within the module before this, so it is impossible to 'install' dependencies first
 
