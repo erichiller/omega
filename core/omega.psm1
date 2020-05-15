@@ -174,21 +174,21 @@ Set-Alias -Name "which" -Value "${env:windir}\System32\where.exe"
 Set-Alias -Name "whereis" -Value Search-Executable
 
 # new ls
-Remove-Item -Name ls -Force
+if (Get-Alias ls -ErrorAction SilentlyContinue) { Remove-Alias -Name ls -Force }
 
 # new mv
-Remove-Item -Name mv -Force
+if (Get-Alias mv -ErrorAction SilentlyContinue) { Remove-Alias -Name mv -Force }
 
 # new wget
-Remove-Item -Name wget -Force
+if (Get-Alias wget -ErrorAction SilentlyContinue) { Remove-Alias -Name wget -Force }
 Set-Alias -Name "wget" -Value "$($config.basedir)\bin\wget.exe"
 
 # new curl
-Remove-Item -Name curl -Force
+if (Get-Alias curl -ErrorAction SilentlyContinue) { Remove-Alias -Name curl -Force }
 Set-Alias -Name "curl" -Value "$($config.basedir)\bin\curl.cmd"
 
 # scp
-Remove-Item -Name scp -Force
+if (Get-Alias scp -ErrorAction SilentlyContinue) { Remove-Alias -Name scp -Force }
 Set-Alias -Name "scp" -Value "$($config.basedir)\bin\scp.cmd"
 
 # less

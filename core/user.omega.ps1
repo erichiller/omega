@@ -383,7 +383,7 @@ function Search-KnowledgeBase {
 		[string] $Term,
 
 		[Parameter(Mandatory = $false, HelpMessage = "The Path can not have a trailing slash.")]
-		[string] $Path = (Join-Path ${env:Home} "\Google Drive\Documents\Knowledge Base"),
+		[string] $Path = (Join-Path ${env:USERPROFILE} "\Documents\Knowledge Base"),
 
 		[Parameter(Mandatory = $false, HelpMessage = "Opens a new vscode window into your kb folder.")]
 		[switch] $Create,

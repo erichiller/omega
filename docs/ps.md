@@ -87,6 +87,7 @@ In order to use SSL/TLS connections, you must set SecurityProtocol before using 
 `-WhatIf` can be supplied to flag the function to output only what it _would_ do, rather than take any action. `-WhatIf` requires the function to have specific code to operate.
 
 **Allow the function to accept `-WhatIf` by appending the following to the opening lines of the function.**
+
 ```powershell
 # SupportsShouldProcess=$true required for WhatIf
 [cmdletBinding(SupportsShouldProcess=$true)]
@@ -94,6 +95,7 @@ In order to use SSL/TLS connections, you must set SecurityProtocol before using 
 ```
 
 **Test for `-WhatIf` being supplied to the function with:**
+
 ```powershell
 if ( $WhatIfPreference.IsPresent ){
         Write-Information "WhatIf is present... this is what I would do"
