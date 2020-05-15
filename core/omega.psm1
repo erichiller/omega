@@ -174,25 +174,21 @@ Set-Alias -Name "which" -Value "${env:windir}\System32\where.exe"
 Set-Alias -Name "whereis" -Value Search-Executable
 
 # new ls
-if (Get-Alias ls   -ErrorAction SilentlyContinue) { Remove-Item alias:ls   }
-if (Get-Alias ls   -ErrorAction SilentlyContinue) { Remove-Item alias:ls   }
+Remove-Item -Name ls -Force
 
 # new mv
-if (Get-Alias mv   -ErrorAction SilentlyContinue) { Remove-Item alias:mv   }
+Remove-Item -Name mv -Force
 
 # new wget
-if (Get-Alias wget -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:wget }
-if (Get-Alias wget -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:wget }
+Remove-Item -Name wget -Force
 Set-Alias -Name "wget" -Value "$($config.basedir)\bin\wget.exe"
 
 # new curl
-if (Get-Alias curl -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:curl }
-if (Get-Alias curl -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:curl }
+Remove-Item -Name curl -Force
 Set-Alias -Name "curl" -Value "$($config.basedir)\bin\curl.cmd"
 
 # scp
-if (Get-Alias scp -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:scp }
-if (Get-Alias scp -ErrorAction SilentlyContinue) { Remove-Item  -Force alias:scp }
+Remove-Item -Name scp -Force
 Set-Alias -Name "scp" -Value "$($config.basedir)\bin\scp.cmd"
 
 # less
