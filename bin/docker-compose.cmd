@@ -30,7 +30,6 @@
 
 
 @if DEFINED DOCKER_TLS if %DOCKER_TLS% EQU 1 (
-    echo Using TLS...
     @docker-compose-cli.exe --tlsverify --skip-hostname-check %*
 ) else (
     @docker-compose-cli.exe %*
