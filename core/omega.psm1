@@ -1,5 +1,6 @@
 try { . ([ScriptBlock]::Create("using module '$($MyInvocation.MyCommand.ScriptBlock.Module.ModuleBase)\objects.ps1'")); } catch { Write-Verbose $_ }
 
+
 <#
 ####### OMEGA - init script for PowerShell ######
 #################################################
@@ -18,6 +19,9 @@ $Config = [OmegaConfig]::GetInstance()
 $VerbosePreference = $User.verbosity.verbose
 $InformationPreference = $User.verbosity.information
 $DebugPreference = $User.verbosity.debug
+
+# TODO: not sure this works with linux
+$env:HOME = Join-Path $env:HOMEDRIVE $env:HOMEPATH;
 
 
 #################################################
@@ -245,33 +249,46 @@ $PSDefaultParameterValues variable does not affect native commands
 https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_parameters_default_values?view=powershell-6
 #>
 Register-ArgumentCompleter -Native -CommandName ssh -ScriptBlock {
-	param($wordToComplete, $commandAst, $cursorPosition)
-	$known_hosts_path = Join-Path $env:HOME ".ssh\known_hosts"
-	$ssh_config_path = Join-Path $env:HOME ".ssh\config"
+    param($wordToComplete, $commandAst, $cursorPosition)
+    $known_hosts_path = Join-Path $env:HOME ".ssh\known_hosts"
+    $ssh_config_path = Join-Path $env:HOME ".ssh\config"
 	$matches = @()
 	if ( Test-Path $known_hosts_path ) {
 		(select-string $known_hosts_path -pattern "((?<=,)([\w.:]+))|(^[\d\w.:]+)" -AllMatches) | ForEach-Object {
 			$matches += $_.Matches.Value
 		}
 	}
-	if ( Test-Path $known_hosts_path ) {
+    if ( Test-Path $known_hosts_path ) {
 		# select Hostnames and Aliases
 		(select-string $ssh_config_path -pattern "((?<=host )([\w\d.\- ]*))|([\d]{1,3}\.[\d]{1,3}.[\d]{1,3}.[\d]{1,3})" -AllMatches) | foreach-object {
 			$matches += $_.Matches.Value.Split(" ")
 		}
-	}
-	if ( Test-Path variable:matches ){
-		$matches | Select -Unique | Where-Object {
-			$_ -like "$wordToComplete*"
+    }
+    if ( Test-Path variable:matches ) {
+        # return $matches | Select-String -Unique;
+        # [System.Management.Automation.CompletionResult]::new('foo', 'foo', 'ParameterValue', 'foo');
+        # return @( 'a', 'b' ) | Foreach-Object {
+        # return $matches | Select-Object -Unique | where-object { ( $_ -ne $null ) -and ( $_ -is [string]) -and ( $_.Length -gt 0 )} | Foreach-Object {
+        #     # Write-Output ">>"  $_ $_.GetType() $_.Length;
+        #     $hostname = $_ ;
+        #     [System.Management.Automation.CompletionResult]::new($hostname, $hostname, 'ParameterValue', $hostname );
+        # }
+        # return $matches | Select-String -Unique | Foreach-Object { [System.Management.Automation.CompletionResult]::new($hostname, $hostname, 'ParameterValue', $hostname ); }
+        $matches | Select-Object -Unique | where-object { 
+            ( $_ -ne $null ) -and 
+            ( $_ -is [string]) -and 
+            ( $_.Length -gt 0 ) -and
+			( $_ -like "$wordToComplete*" )
 		} | Sort-Object |
 			Foreach-Object {
 			$CompletionText = $_
 			$ListItemText = $_
-			$ResultType = 'ParameterValue'
+            $ResultType = [System.Management.Automation.CompletionResultType]::ParameterValue
 			$ToolTip = $_
-			[System.Management.Automation.CompletionResult]::new($CompletionText, $ListItemText, $ResultType, $ToolTip)
+            [System.Management.Automation.CompletionResult]::new($CompletionText, $ListItemText, $ResultType, $ToolTip)
+            # [System.Management.Automation.CompletionResult]::new($_, $_, 'ParameterValue', $_)
 		}
-	}
+    }
 }
 
 <#

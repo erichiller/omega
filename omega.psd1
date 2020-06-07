@@ -63,6 +63,7 @@
         "Show-Env"
         "Show-Path"
         "Get-DirectoryDiff"
+        "Get-ArgumentCompleter"
         "Open-OmegaBaseDirectory"
         "Open-GitHubDevDirectory"
         "Get-FileContentTail"
