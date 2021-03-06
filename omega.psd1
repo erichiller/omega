@@ -82,6 +82,7 @@
 		"back"
 		"killall"
 		"Register-OmegaApp"
+        "Set-Env"
         # "Prompt"
 
 

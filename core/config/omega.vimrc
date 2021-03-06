@@ -132,26 +132,26 @@ set confirm						" raise a dialog asking if you wish to save the current file(s)
 
 set noshowcmd
 " Enable Colors
-set term=xterm
-set t_Co=256
-let &t_AB="\e[48;5;%dm"
-let &t_AF="\e[38;5;%dm"
+"set term=xterm
+"set t_Co=256
+"let &t_AB="\e[48;5;%dm"
+"let &t_AF="\e[38;5;%dm"
 
 " """"""""""""""""""""""""""""""""""""""
 " "" mouse wheel scroll file contents ""
 " """"""""""""""""""""""""""""""""""""""
 " " issue with scrolling
 " " https://github.com/Maximus5/ConEmu/issues/1007
-set mouse=a
-map <ScrollWheelUp> <C-Y>
-map <ScrollWheelDown> <C-E>
+"set mouse=a
+"map <ScrollWheelUp> <C-Y>
+"map <ScrollWheelDown> <C-E>
 
 " Fix arrow keys in xterm
-inoremap <Esc>[A <Up>
-inoremap <Esc>[B <Down>
-inoremap <Esc>[C <Right>
-inoremap <Esc>[D <Left>
+"inoremap <Esc>[A <Up>
+"inoremap <Esc>[B <Down>
+"inoremap <Esc>[C <Right>
+"inoremap <Esc>[D <Left>
 
 " " this fixes backspace when in xterm
-inoremap <Char-0x07F> <BS>
-nnoremap <Char-0x07F> <BS>
+"inoremap <Char-0x07F> <BS>
+"nnoremap <Char-0x07F> <BS>

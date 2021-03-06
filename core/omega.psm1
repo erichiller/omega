@@ -184,15 +184,15 @@ if (Get-Alias ls -ErrorAction SilentlyContinue) { Remove-Alias -Name ls -Force }
 if (Get-Alias mv -ErrorAction SilentlyContinue) { Remove-Alias -Name mv -Force }
 
 # new wget
-if (Get-Alias wget -ErrorAction SilentlyContinue) { Remove-Alias -Name wget -Force }
+if ( ( ( Get-ChildItem -Path Alias: ).Name -like "wget").Length -ne 0 ) { Remove-Alias -Name wget -Force }
 Set-Alias -Name "wget" -Value "$($config.basedir)\bin\wget.exe"
 
 # new curl
-if (Get-Alias curl -ErrorAction SilentlyContinue) { Remove-Alias -Name curl -Force }
+if ( ( ( Get-ChildItem -Path Alias: ).Name -like "curl").Length -ne 0 ) { Remove-Alias -Name curl -Force }
 Set-Alias -Name "curl" -Value "$($config.basedir)\bin\curl.cmd"
 
 # scp
-if (Get-Alias scp -ErrorAction SilentlyContinue) { Remove-Alias -Name scp -Force }
+if ( ( ( Get-ChildItem -Path Alias: ).Name -like "scp").Length -ne 0 ) { Remove-Alias -Name scp -Force }
 Set-Alias -Name "scp" -Value "$($config.basedir)\bin\scp.cmd"
 
 # less

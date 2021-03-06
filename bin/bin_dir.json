@@ -1,0 +1,19 @@
+{
+    "watchman": {
+        "author": "facebook",
+        "repo": "https://github.com/facebook/watchman",
+        "source": {
+            "method": "url",
+            "url": "https://github.com/facebook/watchman/actions?query=is%3Asuccess+event%3Apush+branch%3Amaster+workflow%3Awindows"
+        },
+        "docs": "https://facebook.github.io/watchman/docs/",
+        "dependencies": [
+            {
+                "name": "gflags.dll"
+            },
+            {
+                "name": "glog.dll"
+            }
+        ]
+    }
+}
