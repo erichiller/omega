@@ -196,7 +196,9 @@ function Convert-DirectoryStringToUnix {
 	[Parameter(Position=1,Mandatory=$True)]
 	[String] $path
 	)
-	return $path.Replace("\", "/")
+    $path = (New-Object -ComObject Scripting.FileSystemObject).GetFolder(path).ShortPath
+    $path = $path.Replace(" ", "\");
+	return $path;
 }
 
 <#
