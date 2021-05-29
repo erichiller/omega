@@ -196,7 +196,12 @@ function Convert-DirectoryStringToUnix {
 	[Parameter(Position=1,Mandatory=$True)]
 	[String] $path
 	)
-    $path = (New-Object -ComObject Scripting.FileSystemObject).GetFolder(path).ShortPath
+    $o = New-Object -ComObject Scripting.FileSystemObject;
+    if ( $o.FileExists($path) ){
+        $path = $o.GetFile($path).ShortPath;
+    } elseif( $o.FolderExists($path) ){
+        $path = $o.GetFolder($path).ShortPath;
+    }
     $path = $path.Replace(" ", "\");
 	return $path;
 }
