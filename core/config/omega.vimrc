@@ -11,6 +11,7 @@
 "       :messages
 "       :echo errmsg
 
+
 " Setting some decent VIM settings for programming
 filetype plugin indent on
 syntax on                       " turn syntax highlighting on by default
@@ -66,6 +67,11 @@ if has('win32') || has('win64')
 endif
 set updatecount=20									" save every <updatecount> number of characters
 set updatetime=2000									" save every 2000ms (2s)
+
+
+call plug#begin($VIM . "/../vimfiles/plugged")
+Plug 'tpope/vim-fugitive'
+call plug#end()
 
 "" EDH "" force tabs-not spaces "
 set autoindent					" set auto-indenting on for programming; filetype plugin should
