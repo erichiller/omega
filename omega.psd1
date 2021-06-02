@@ -49,6 +49,7 @@
         "sed"
         "ssh"
         "tail"
+        "vim"
         "wget"
         "whereis"
         "which"

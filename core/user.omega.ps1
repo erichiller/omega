@@ -156,19 +156,17 @@ function Send-LinuxConfig {
 
 	## Send key(s) , and skip if already present
 	# get keys from ssh-agent ; THAT MEANS THIS WORKS WITH keeagent (KeePass) !! _nice_
-	$keys = & "$($config.basedir)\system\git\usr\bin\ssh-add.exe" -L
+	$keys = & "$($config.GitDir)\usr\bin\ssh-add.exe" -L
 	if( -not $keys ){
 		Write-Warning "No keys present in ssh-agent`n Operation can not proceed, exiting."
 	}
-	foreach ( $line in ( & "$($config.basedir)\system\git\usr\bin\ssh-add.exe" -L ) ) {
+	foreach ( $line in ( & "$($config.GitDir)\usr\bin\ssh-add.exe" -L ) ) {
 		$sh = "cd ; umask 077 ; mkdir -p .ssh; touch .ssh/authorized_keys; grep '" + $line + "' "
 		$sh += `
 @"
 -F ~/.ssh/authorized_keys > /dev/null || sed $'s/\r//' >> .ssh/authorized_keys || exit 1 ; if type restorecon >/dev/null 2>&1 ; then restorecon -F .ssh .ssh/authorized_keys ; fi
 "@
 		Write-Output "Sending Key: $($($line.Split(" ")) | Select-Object -last 1)"
-		# do your thing
-		# $line | & "$($config.basedir)\system\git\usr\bin\ssh.exe" $ConnectionString $sh
 		$env:SSHCallBasic = $True
 		$line | & "$($config.basedir)\bin\ssh.cmd" $ConnectionString $sh
 	}

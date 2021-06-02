@@ -39,6 +39,7 @@ class OmegaConfig {
 
 	# generated
 	[string] $BaseDir;
+    [string] $GitDir;
 	# static, generated
 	static hidden [string] $ConfigPath;
 	# Singleton
@@ -54,18 +55,25 @@ class OmegaConfig {
 			else {
 				$local:BaseDir = Split-Path $PSScriptRoot -Parent
 				Write-Verbose "[OmegaConfig]::BaseDir set via PSScriptRoot to $($local:BaseDir)"
-			}
+            }
 
 			[OmegaConfig]::ConfigPath = ( Join-Paths ($local:BaseDir) "core" "config" "config.json" )
 			Write-Debug "[OmegaConfig]:: Testing to Path $([OmegaConfig]::ConfigPath)"
 			if (Test-Path ( [OmegaConfig]::ConfigPath ) ) {
 				Write-Debug "[OmegaConfig]:: Found ConfigPath @ $([OmegaConfig]::ConfigPath)"
 				[OmegaConfig]::instance = [OmegaConfig] ( Get-Content ( [OmegaConfig]::ConfigPath ) | ConvertFrom-Json )
-				([OmegaConfig]::instance).BaseDir = $local:BaseDir
+                ([OmegaConfig]::instance).BaseDir = $local:BaseDir ;
 			}
 			else {
 				Write-Error "[OmegaConfig] -- Config file not found: $( [OmegaConfig]::ConfigPath )"
 			}
+
+            $gitExePath = Search-Executable git.exe ;
+            if ( $gitExePath ) {
+                $local:GitDir = $gitExePath | Split-Path -Parent | Split-Path -Parent ;
+                ([OmegaConfig]::instance).GitDir = $local:GitDir ;
+            }
+
 		}
 		return [OmegaConfig]::instance
 	}
