@@ -72,7 +72,6 @@ function Get-PrettyPath {
 			return '~'
 		}
 		$result = @()
-		$currentDir = Get-Item $dir.path
 		if ( $prependBase -eq $True ) {
 			# the first is a blank `/` root ; so subtract 1
 			$pathSegmentsLength = (new-object System.Uri(Convert-Path .)).Segments.Length - 1
@@ -88,9 +87,14 @@ function Get-PrettyPath {
 				}
 			}
 		}
-		while ( ($currentDir.Parent) -And ($result.Count -lt 2 ) -And ($currentDir -ne $base ) ) {
-			$result = , $currentDir.Name + $result
-			$currentDir = $currentDir.Parent
+        $currentDir = $dir;
+        $parentDir = Split-Path -Parent $currentDir;
+		while ( $parentDir -And ($result.Count -lt 2 ) -And ($currentDir -ne $base ) ) {
+            # $result = , $currentDir.Name + $result
+            # $currentDir = $currentDir.Parent
+            $result = , ( Split-Path -Leaf $currentDir ) + $result;
+            $currentDir = $parentDir;
+            $parentDir = Split-Path -Parent $currentDir;
 		}
 		if ( $prependBase -ne $True ) {
 			return $result -join $ThemeSettings.PromptSymbols.PathSeparator
