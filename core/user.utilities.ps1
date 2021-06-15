@@ -91,7 +91,7 @@ function grep {
 	)
 	Begin {
 		$op = $env:PATH
-		$env:PATH += ";$(([OmegaConfig]::GetInstance()).basedir)\system\git\usr\bin\"
+		$env:PATH += ";$(([OmegaConfig]::GetInstance()).GitDir)\usr\bin\"
 		Write-Verbose "in grep, searching ${pipelineInput} for ${needle}"
 	}
 	Process {
@@ -158,7 +158,7 @@ function ls {
 	)
 	Begin {
 		$op = $env:PATH
-		$env:PATH += ";$(([OmegaConfig]::GetInstance()).basedir)\system\git\usr\bin\"
+		$env:PATH += ";$(([OmegaConfig]::GetInstance()).GitDir)\usr\bin\"
 	}
 	Process {
         <#

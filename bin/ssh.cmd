@@ -2,7 +2,6 @@
 @setlocal
 
 
-
 @rem we are going to call the cygwin connector if available.
 @IF "%1" == "-v" (
 	@echo ****************************************	
@@ -13,8 +12,13 @@
 @rem Get the abolute path to the parent directory, which is assumed to be the
 @rem Git installation root.
 @for /F "delims=" %%I in ("%~dp0..") do @set BaseDir=%%~fI
-@set git_install_root=%BaseDir%\system\git
+@REM @set git_install_root=%BaseDir%\system\git
+
+@REM Get the path to the Git Installation (GitDir)
+@FOR /F "tokens=* USEBACKQ" %%F IN (`where git`) DO @SET _gitCmdDir=%%F
+@for /F "delims=" %%I in ("%_gitCmdDir%\..\..") do @set git_install_root=%%~fI
 @set PATH=%git_install_root%\usr\bin;%PATH%
+
 
 @REM Ensure we use a HOME directory that has a preexisting .ssh directory
 @if not exist "%HOME%\.ssh\config" @set HOME=%USERPROFILE%

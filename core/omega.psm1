@@ -142,6 +142,7 @@ try {
 # - vim
 # - pssudo
 
+Set-Alias -Name vim -Value $config.BaseDir;
 # Set config for ViM
 if ( Test-Path ( Join-Path $config.basedir "/system/vim/vim.exe" ) ) {
 	$env:GIT_EDITOR = Convert-DirectoryStringtoUnix (Join-Path $config.basedir "/system/vim/vim.exe" )
@@ -196,10 +197,10 @@ if ( ( ( Get-ChildItem -Path Alias: ).Name -like "scp").Length -ne 0 ) { Remove-
 Set-Alias -Name "scp" -Value "$($config.basedir)\bin\scp.cmd"
 
 # less
-Set-Alias -Name "less" -Value "$($config.basedir)\system\git\usr\bin\less.exe"
+Set-Alias -Name "less" -Value "$($config.GitDir)\usr\bin\less.exe"
 
 # sed
-Set-Alias -Name sed -Value "$($config.basedir)\system\git\usr\bin\sed.exe"
+Set-Alias -Name sed -Value "$($config.GitDir)\usr\bin\sed.exe"
 
 # ssh
 Set-Alias -Name ssh -Value "$($config.basedir)\bin\ssh.cmd"
