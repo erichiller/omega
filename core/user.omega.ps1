@@ -189,7 +189,10 @@ function Send-LinuxConfig {
 
 <#
 .SYNOPSIS
-Swap \ for / ; windows directories to linux style
+Windows directories to linux style by:
+- Swap `\` for `/`
+- Escape spaces
+- Convert to short file path
 #>
 function Convert-DirectoryStringToUnix {
 	param (
@@ -203,12 +206,13 @@ function Convert-DirectoryStringToUnix {
         $path = $o.GetFolder($path).ShortPath;
     }
     $path = $path.Replace(" ", "\");
+    $path = $path.Replace("\", "/");
 	return $path;
 }
 
 <#
 .SYNOPSIS
-Swap \ for / ; windows directories to linux style
+Swap \ for \\ ; windows directories to escaped format, suitable eg. for JSON
 #>
 function Convert-DirectoryStringEscape {
 	param (
